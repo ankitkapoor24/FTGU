@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aviation Altimetry Abbreviations Mastery Quiz</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 24px; }
+    h1 { font-size: 1.5rem; color: var(--primary); }
+    .timer-badge { background: #fee2e2; color: var(--danger); font-weight: 700; padding: 8px 16px; border-radius: 20px; font-size: 1.1rem; }
+
+    .quiz-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
+    @media (max-width: 768px) { .quiz-layout { grid-template-columns: 1fr; } }
+
+    .sidebar { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); height: fit-content; }
+    .grid-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 12px; }
+    .q-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-height: 400px; overflow-y: auto; padding-right: 4px; }
+    .q-btn { aspect-ratio: 1; border: 1px solid var(--border); background: var(--bg); border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .q-btn:hover { border-color: var(--accent); }
+    .q-btn.active { border-color: var(--accent); background: #eff6ff; color: var(--accent); }
+    .q-btn.answered { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .main-content { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .q-header { margin-bottom: 20px; font-size: 1.2rem; font-weight: 600; color: var(--primary); }
+    .options-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
+    .option-item { border: 2px solid var(--border); border-radius: 8px; padding: 14px 18px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+    .option-item:hover { border-color: var(--accent); background: #f8fafc; }
+    .option-item.selected { border-color: var(--accent); background: #eff6ff; }
+    .radio-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--muted); display: inline-block; flex-shrink: 0; }
+    .option-item.selected .radio-dot { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 3px white; }
+
+    .actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
+    .btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-secondary { background: #e2e8f0; color: var(--text); }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-submit { background: var(--success); color: white; }
+    .btn-submit:hover { background: #15803d; }
+
+    #summary-container { display: none; }
+    .summary-header { background: var(--card); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .score-badge { font-size: 3rem; font-weight: 800; color: var(--accent); margin: 10px 0; }
+    .review-item { background: var(--card); padding: 24px; border-radius: 12px; margin-bottom: 16px; border-left: 6px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .review-item.correct { border-left-color: var(--success); }
+    .review-item.incorrect { border-left-color: var(--danger); }
+    .explanation { background: #f1f5f9; padding: 12px 16px; border-radius: 6px; margin-top: 12px; font-size: 0.95rem; color: #334155; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Aviation Altimetry Mastery Quiz</h1>
+    <div class="timer-badge" id="timer">50:00</div>
+  </header>
+
+  <div class="quiz-layout" id="quiz-container">
+    <div class="sidebar">
+      <div class="grid-title">Questions Overview</div>
+      <div class="q-grid" id="q-grid"></div>
+    </div>
+
+    <div class="main-content">
+      <div class="q-header" id="question-text">Loading question...</div>
+      <div class="options-list" id="options-container"></div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="prev-btn" onclick="nav(-1)">Previous</button>
+        <div>
+          <button class="btn btn-secondary" id="skip-btn" onclick="nav(1)">Skip</button>
+          <button class="btn btn-primary" id="next-btn" onclick="nav(1)">Next</button>
+        </div>
+        <button class="btn btn-submit" onclick="submitQuiz()">Submit Quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="summary-container">
+    <div class="summary-header">
+      <h2>Quiz Results & Detailed Summary</h2>
+      <div class="score-badge" id="final-score">0 / 50</div>
+      <p id="time-taken-text"></p>
+    </div>
+    <div id="review-list"></div>
+  </div>
+</div>
+
+<script>
+  const rawQuestions = [
+    {
+      q: "What is defined as the vertical distance between Mean Sea Level (MSL) and a point in the air?",
+      options: ["Altitude", "Height", "Elevation", "Flight Level"],
+      correct: 0,
+      exp: "Altitude is specifically defined as the vertical distance measured from Mean Sea Level (MSL) to an object or point in the air."
+    },
+    {
+      q: "What does the term 'Height' represent in aviation altimetry?",
+      options: ["Vertical distance between MSL and the aircraft", "Vertical distance between a point on the ground and a point in the air", "Vertical distance between standard pressure level and the aircraft", "Vertical distance between MSL and a point on the ground"],
+      correct: 1,
+      exp: "Height refers to the vertical distance between a ground reference point and a point in the air."
+    },
+    {
+      q: "What is 'Elevation' defined as?",
+      options: ["Vertical distance between MSL and a point on the ground", "Vertical distance between ground and aircraft", "Vertical distance between 1013 HPa and terrain", "Vertical distance between airport level and aircraft"],
+      correct: 0,
+      exp: "Elevation is the vertical distance measured between Mean Sea Level (MSL) and a specific fixed point on the surface/ground."
+    },
+    {
+      q: "A Flight Level (FL) is referenced to which standard pressure datum?",
+      options: ["1013.25 hectopascals or 29.92 inches of mercury", "1000 hectopascals or 29.00 inches of mercury", "1020 hectopascals or 30.00 inches of mercury", "Local QNH pressure"],
+      correct: 0,
+      exp: "Flight level is measured from the standard pressure datum of 1013.25 hPa / 29.92 inHg."
+    },
+    {
+      q: "What does the abbreviation AMSL stand for?",
+      options: ["Above Mean Sea Level", "Aircraft Mean Sea Level", "Absolute Mean Surface Level", "Aeronautical Mean Sea Level"],
+      correct: 0,
+      exp: "AMSL stands for Above Mean Sea Level."
+    },
+    {
+      q: "In aviation charts and altimetry, AMSL is often shortened to which of the following?",
+      options: ["MSL", "ASL", "SEA", "MLS"],
+      correct: 0,
+      exp: "AMSL is often displayed simply as MSL."
+    },
+    {
+      q: "What does AGL stand for?",
+      options: ["Above Ground Level", "Aerodrome Ground Limit", "Aircraft Ground Clearance", "Absolute Ground Level"],
+      correct: 0,
+      exp: "AGL stands for Above Ground Level."
+    },
+    {
+      q: "When an aircraft is flying over mountainous terrain, AGL height is measured relative to:",
+      options: ["The terrain immediately directly below the aircraft", "The elevation of the departure airport", "The nearest airport field elevation", "Mean Sea Level"],
+      correct: 0,
+      exp: "AGL measures the vertical distance relative to the terrain directly underneath the aircraft at any given instant."
+    },
+    {
+      q: "AGL is sometimes referred to as:",
+      options: ["Absolute Altitude", "Pressure Altitude", "Density Altitude", "Indicated Altitude"],
+      correct: 0,
+      exp: "AGL height is frequently referred to as absolute altitude."
+    },
+    {
+      q: "Which onboard instrument provides accurate real-time AGL height readings?",
+      options: ["Radio / Radar Altimeter", "Barometric Altimeter", "Vertical Speed Indicator", "GPS Receiver"],
+      correct: 0,
+      exp: "A radio (or radar) altimeter is the sole onboard instrument capable of measuring exact real-time height above terrain."
+    },
+    {
+      q: "How does a radio altimeter calculate the aircraft's AGL height?",
+      options: ["By emitting radio waves down to the ground and measuring their bounce return time", "By measuring barometric air pressure changes", "By calculating GPS satellite triangulation coordinates", "By measuring pitot-static pressure differential"],
+      correct: 0,
+      exp: "Radio altimeters function by transmitting radio pulses directly downward and measuring the round-trip signal bounce time."
+    },
+    {
+      q: "Where can radio altimeter displays be integrated inside modern flight decks?",
+      options: ["Either as an independent analog indicator or integrated inside the EFIS display", "Exclusively on standby backup displays", "Only inside mechanical turn indicators", "Exclusively on primary GPS units"],
+      correct: 0,
+      exp: "Radio altimeters can exist as standalone gauges or integrated directly within Electronic Flight Instrument Systems (EFIS)."
+    },
+    {
+      q: "What abbreviation specifies height relative to a specific aerodrome elevation regardless of underlying terrain fluctuations?",
+      options: ["AFE", "AGL", "MSL", "FL"],
+      correct: 0,
+      exp: "AFE stands for Above Field Elevation, referencing aircraft height relative to aerodrome elevation."
+    },
+    {
+      q: "What does AFE stand for?",
+      options: ["Above Field Elevation", "Aerodrome Field Estimation", "Aircraft Flight Elevation", "Above Final Elevation"],
+      correct: 0,
+      exp: "AFE stands for Above Field Elevation."
+    },
+    {
+      q: "Which abbreviation shares the exact same operational meaning as AFE?",
+      options: ["AAL", "AGL", "AMSL", "FL"],
+      correct: 0,
+      exp: "AAL (Above Aerodrome Level) is completely synonymous with AFE."
+    },
+    {
+      q: "What does AAL stand for?",
+      options: ["Above Aerodrome Level", "Aircraft Approach Level", "Aerodrome Altitude Limit", "Above Airport Layer"],
+      correct: 0,
+      exp: "AAL stands for Above Aerodrome Level."
+    },
+    {
+      q: "If an airport field elevation is 2,000 ft and an aircraft flies level at an altitude of 3,500 ft AMSL, what is its AFE height?",
+      options: ["1,500 feet", "2,000 feet", "3,500 feet", "500 feet"],
+      correct: 0,
+      exp: "AFE = Altitude AMSL (3500 ft) - Field Elevation (2000 ft) = 1500 ft AFE."
+    },
+    {
+      q: "If an aircraft maintains level flight at 3,500 ft AMSL over an airport at 2,000 ft elevation, and passes a hill 3,000 ft high, what is its AGL height over the hill?",
+      options: ["500 feet", "1,500 feet", "3,500 feet", "1,000 feet"],
+      correct: 0,
+      exp: "AGL = Altitude AMSL (3,500 ft) - Hill Terrain Elevation (3,000 ft) = 500 ft AGL."
+    },
+    {
+      q: "Why does an aircraft's AFE height remain constant during level cruising flight near an airfield while its AGL fluctuates?",
+      options: ["AFE uses fixed field elevation as a baseline, whereas AGL reacts to varying ground contours", "AGL relies on barometric standard baseline while AFE depends on GPS", "AFE fluctuates with barometric pressure shifts while AGL remains static", "AFE is only used during high-altitude cruise"],
+      correct: 0,
+      exp: "AFE stays static in level flight because field elevation is constant; AGL changes as the physical ground rises and falls below."
+    },
+    {
+      q: "Class Delta airspace lower boundaries defined in terms of AGL will:",
+      options: ["Follow terrain contours directly", "Remain perfectly flat regardless of terrain", "Shift according to local air temperature changes", "Align only with standard pressure levels"],
+      correct: 0,
+      exp: "Airspace defined in AGL varies dynamically over hills and valleys to mirror physical ground topography."
+    },
+    {
+      q: "Automatic radio altimeter callouts in modern cockpits primarily function to increase:",
+      options: ["Situational awareness regarding height above ground", "Engine fuel efficiency tracking", "Barometric altimeter setting accuracy", "Air traffic control radar transponder visibility"],
+      correct: 0,
+      exp: "Radio altimeter callouts provide real-time audio distance cues to heighten terrain situational awareness."
+    },
+    {
+      q: "During approach over uneven terrain, radio altimeter height callout intervals may fluctuate because:",
+      options: ["Ground contours under the flight path fluctuate in elevation", "The barometric setting is constantly changing", "Engine thrust shifts altimeter readings", "Radio waves bend due to temperature inversions"],
+      correct: 0,
+      exp: "Ground contours alter distance to aircraft, causing minor callout cadence shifts."
+    },
+    {
+      q: "Which onboard safety system utilizes radio altimeter input to alert pilots to unsafe ground proximity?",
+      options: ["GPWS (Ground Proximity Warning System)", "TCAS (Traffic Collision Avoidance System)", "FMS (Flight Management System)", "VOR Receiver"],
+      correct: 0,
+      exp: "GPWS uses radio altimeter inputs to warn pilots of hazardous terrain proximity ('Too Low Gear', 'Pull Up')."
+    },
+    {
+      q: "Speed limitations published for specific airspace classes (e.g., 250 knots below 10,000 ft in Class E) are stated in terms of:",
+      options: ["AMSL", "AGL", "AFE", "FL"],
+      correct: 0,
+      exp: "Airspace speed limits are specified in barometric altitude AMSL."
+    },
+    {
+      q: "A requirement to be stabilized for landing at 500 ft AAL means 500 feet above:",
+      options: ["Airport elevation", "Terrain directly underneath aircraft at that moment", "Mean Sea Level", "Standard pressure level"],
+      correct: 0,
+      exp: "AAL specifies distance above the designated airport elevation."
+    },
+    {
+      q: "A policy mandating landing gear down and locked by 1,500 ft AFE uses which reference point?",
+      options: ["Airport field elevation", "Instantaneous ground terrain below aircraft", "Sea level baseline", "Standard 1013.25 hPa isobar"],
+      correct: 0,
+      exp: "AFE measures height against the reference airport elevation."
+    },
+    {
+      q: "What does the abbreviation 'FL' stand for?",
+      options: ["Flight Level", "Field Level", "Final Limit", "Flight Line"],
+      correct: 0,
+      exp: "FL stands for Flight Level."
+    },
+    {
+      q: "Flight Level 200 (FL200) corresponds to a pressure altitude of:",
+      options: ["20,000 feet above 1013.25 hPa / 29.92 inHg datum", "20,000 feet above ground level", "2,000 feet above mean sea level", "20,000 feet above airfield elevation"],
+      correct: 0,
+      exp: "FL200 equals 20,000 feet referenced to standard pressure 29.92 inHg / 1013.25 hPa."
+    },
+    {
+      q: "When an altitudinal figure on an aviation chart lacks an accompanying abbreviation (e.g., '15,000'), it is implicitly understood to be referenced to:",
+      options: ["Mean Sea Level (MSL)", "Ground level (AGL)", "Airport Field Elevation (AFE)", "Standard Pressure Isobar (FL)"],
+      correct: 0,
+      exp: "Altitude numbers published without explicit abbreviations are assumed by default to be AMSL."
+    },
+    {
+      q: "Which term represents vertical distance from the 29.92 inHg pressure datum to the aircraft?",
+      options: ["Flight Level", "Absolute Altitude", "Height AGL", "True Elevation"],
+      correct: 0,
+      exp: "Flight level represents pressure altitude above the 29.92 inHg standard plane."
+    },
+    {
+      q: "An aircraft flying over a deep valley will experience an increase in which parameter if pitch and power remain constant?",
+      options: ["AGL Height", "AFE Height", "AMSL Altitude", "Flight Level"],
+      correct: 0,
+      exp: "Over a valley, ground drops away, increasing AGL height while AMSL and AFE remain unchanged."
+    },
+    {
+      q: "Radio altimeter callouts typically announce height during final approach down to touchdown, including callouts such as:",
+      options: ["'1000', '500', '50', '40', '30', '20', '10'", "'FL100', 'FL050', 'FL010'", "'1000 AFE', '500 AFE'", "'MSL 1000', 'MSL 500'"],
+      correct: 0,
+      exp: "Radio altimeter callouts count down direct AGL feet above terrain (1000, 500, 50, 40, 30, 20, 10)."
+    },
+    {
+      q: "Which altimetry measurement is unaffected by physical terrain changes underneath the aircraft during level cruise?",
+      options: ["AFE & AMSL", "AGL only", "AGL & Radar Altitude", "Ground Proximity Index"],
+      correct: 0,
+      exp: "AFE and AMSL rely on fixed baselines (airport level & sea level) and do not fluctuate over changing ground terrain."
+    },
+    {
+      q: "Why is a radio altimeter superior for terrain avoidance over a standard barometric altimeter?",
+      options: ["It directly measures physical ground clearance using radio signals rather than static air pressure", "It operates accurately regardless of pitch angle or bank limits", "It is linked directly to satellite GPS constellations", "It automatically calculates standard density corrections"],
+      correct: 0,
+      exp: "Radio altimeters measure direct ground reflection, whereas barometric altimeters only measure ambient pressure."
+    },
+    {
+      q: "What metric is used when setting altimeter pressure to QNH?",
+      options: ["Altitude AMSL", "Height AGL", "Flight Level", "Field Height"],
+      correct: 0,
+      exp: "QNH altimeter setting provides altitude above Mean Sea Level (AMSL)."
+    },
+    {
+      q: "What metric is indicated when an altimeter is set to local QFE pressure at an airport?",
+      options: ["Height AFE / AAL (reads zero on runway ground)", "Altitude AMSL", "Flight Level standard", "Absolute Radar Distance"],
+      correct: 0,
+      exp: "QFE sets altimeter reading to zero on airfield ground, displaying height AFE/AAL."
+    },
+    {
+      q: "What metric is indicated when an altimeter is set to 1013.25 hPa / 29.92 inHg?",
+      options: ["Flight Level (Pressure Altitude)", "AGL Height", "AMSL Altitude", "AFE Height"],
+      correct: 0,
+      exp: "Setting standard barometric pressure 1013/29.92 indicates Flight Level."
+    },
+    {
+      q: "If airport elevation is 500 ft AMSL and an aircraft is on runway ground, its barometric altimeter set to QNH will read:",
+      options: ["500 feet", "0 feet", "1013 feet", "2992 feet"],
+      correct: 0,
+      exp: "Set to QNH, an altimeter displays airport elevation AMSL (500 ft)."
+    },
+    {
+      q: "In the same scenario, with barometric altimeter set to QFE on the runway, it will read:",
+      options: ["0 feet", "500 feet", "1000 feet", "1500 feet"],
+      correct: 0,
+      exp: "Set to QFE, the altimeter reads zero on the field surface."
+    },
+    {
+      q: "What GPWS auditory warning is triggered if landing gear is not extended close to ground?",
+      options: ["'Too low gear'", "'Glideslope'", "'Bank angle'", "'Windshear'"],
+      correct: 0,
+      exp: "GPWS generates 'Too low gear' warning when low AGL height is reached without gear down."
+    },
+    {
+      q: "What GPWS auditory warning is issued if flaps are not set during low approach?",
+      options: ["'Too low flaps'", "'Terrain pull up'", "'Check speed'", "'Flap limit'"],
+      correct: 0,
+      exp: "GPWS alerts 'Too low flaps' if approaching ground without landing flap configuration."
+    },
+    {
+      q: "The term 'Absolute Altitude' refers strictly to:",
+      options: ["AGL", "AMSL", "AFE", "FL"],
+      correct: 0,
+      exp: "Absolute altitude is synonymous with height Above Ground Level (AGL)."
+    },
+    {
+      q: "Which acronym describes the general aviation electronic flight display system that incorporates radio altimeter displays?",
+      options: ["EFIS", "FADEC", "ACARS", "TCAS"],
+      correct: 0,
+      exp: "EFIS (Electronic Flight Instrument System) hosts integrated flight displays."
+    },
+    {
+      q: "Terminal Area (TMA) lower boundaries designated in AGL ensure:",
+      options: ["Consistent minimum vertical terrain clearance above underlying ground", "Fixed uniform altitude above sea level across hundreds of miles", "Direct alignment with standard flight levels", "Elimination of pilot barometric adjustments"],
+      correct: 0,
+      exp: "AGL boundaries maintain minimum vertical clearance buffer above physical ground contours."
+    },
+    {
+      q: "If an aircraft maintains 5,000 ft AMSL and flies over ocean (sea level), its AGL is:",
+      options: ["5,000 feet", "0 feet", "2,500 feet", "10,000 feet"],
+      correct: 0,
+      exp: "At sea level, elevation is 0 ft; thus AGL equals AMSL altitude (5,000 ft)."
+    },
+    {
+      q: "If an aircraft flies over high mountain plateau at 8,000 ft elevation while maintaining 10,000 ft AMSL, its AGL is:",
+      options: ["2,000 feet", "8,000 feet", "10,000 feet", "18,000 feet"],
+      correct: 0,
+      exp: "10,000 ft AMSL - 8,000 ft ground elevation = 2,000 ft AGL."
+    },
+    {
+      q: "Which altimetry reference relies exclusively on international standard atmospheric pressure without local altimeter setting adjustments?",
+      options: ["Flight Level (FL)", "Altitude AMSL", "Height AFE", "Height AAL"],
+      correct: 0,
+      exp: "Flight Levels rely solely on standard pressure (29.92 inHg / 1013.25 hPa)."
+    },
+    {
+      q: "An airliner cruising at FL350 is flying at a barometric pressure surface equal to:",
+      options: ["35,000 feet above standard 29.92 inHg baseline", "35,000 feet above local ground level", "35,000 feet above departure airport field elevation", "3,500 feet above mean sea level"],
+      correct: 0,
+      exp: "FL350 represents 35,000 ft pressure altitude above standard datum."
+    },
+    {
+      q: "Why are stabilization height criteria published as AFE or AAL instead of AGL?",
+      options: ["They establish a fixed reference relative to the landing threshold regardless of uneven approach terrain", "They change depending on local temperature", "They are easier to read on standard radar altimeters", "AGL cannot be measured during approach"],
+      correct: 0,
+      exp: "Stabilization targets require a stable baseline relative to runway threshold (AFE/AAL) rather than fluctuating ground terrain."
+    },
+    {
+      q: "In aviation altimetry, what primary distinction separates 'Altitude' from 'Height'?",
+      options: ["Altitude is referenced to Mean Sea Level; Height is referenced to a specific ground surface point", "Altitude uses radio waves; Height uses static pressure", "Altitude is measured in meters; Height is measured in feet", "Altitude applies only above 18,000 feet; Height applies below"],
+      correct: 0,
+      exp: "By definition, Altitude is referenced to MSL, whereas Height is referenced to a surface ground location."
+    }
+  ];
+
+  let questions = [];
+  let userAnswers = {};
+  let currentIdx = 0;
+  let timerInterval = null;
+  let timeRemaining = 50 * 60; // 50 minutes in seconds
+
+  function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function initQuiz() {
+    // Process and randomize questions and answer options
+    const shuffledQ = shuffleArray(rawQuestions);
+    questions = shuffledQ.map(qObj => {
+      const optionsWithOrig = qObj.options.map((opt, idx) => ({
+        text: opt,
+        isCorrect: idx === qObj.correct
+      }));
+      const shuffledOpt = shuffleArray(optionsWithOrig);
+      const newCorrectIdx = shuffledOpt.findIndex(o => o.isCorrect);
+      return {
+        q: qObj.q,
+        options: shuffledOpt.map(o => o.text),
+        correct: newCorrectIdx,
+        exp: qObj.exp
+      };
+    });
+
+    renderGrid();
+    loadQuestion(0);
+    startTimer();
+  }
+
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      timeRemaining--;
+      const m = Math.floor(timeRemaining / 60);
+      const s = timeRemaining % 60;
+      document.getElementById("timer").textContent = 
+        `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+      if (timeRemaining <= 0) {
+        clearInterval(timerInterval);
+        submitQuiz();
+      }
+    }, 1000);
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById("q-grid");
+    grid.innerHTML = "";
+    questions.forEach((_, idx) => {
+      const btn = document.createElement("button");
+      btn.className = `q-btn ${idx === currentIdx ? 'active' : ''}`;
+      btn.id = `grid-btn-${idx}`;
+      btn.textContent = idx + 1;
+      btn.onclick = () => loadQuestion(idx);
+      grid.appendChild(btn);
+    });
+  }
+
+  function loadQuestion(idx) {
+    currentIdx = idx;
+    document.querySelectorAll(".q-btn").forEach((b, i) => {
+      b.classList.toggle("active", i === idx);
+    });
+
+    const q = questions[idx];
+    document.getElementById("question-text").textContent = `${idx + 1}. ${q.q}`;
+    
+    const optContainer = document.getElementById("options-container");
+    optContainer.innerHTML = "";
+
+    q.options.forEach((optText, optIdx) => {
+      const item = document.createElement("div");
+      item.className = `option-item ${userAnswers[idx] === optIdx ? 'selected' : ''}`;
+      item.onclick = () => selectOption(optIdx);
+
+      item.innerHTML = `
+        <span class="radio-dot"></span>
+        <span>${optText}</span>
+      `;
+      optContainer.appendChild(item);
+    });
+
+    document.getElementById("prev-btn").disabled = idx === 0;
+    document.getElementById("next-btn").style.display = idx === questions.length - 1 ? 'none' : 'inline-block';
+  }
+
+  function selectOption(optIdx) {
+    userAnswers[currentIdx] = optIdx;
+    document.querySelectorAll(".option-item").forEach((el, i) => {
+      el.classList.toggle("selected", i === optIdx);
+    });
+    const gridBtn = document.getElementById(`grid-btn-${currentIdx}`);
+    if (gridBtn) gridBtn.classList.add("answered");
+  }
+
+  function nav(direction) {
+    const newIdx = currentIdx + direction;
+    if (newIdx >= 0 && newIdx < questions.length) {
+      loadQuestion(newIdx);
+    }
+  }
+
+  function submitQuiz() {
+    clearInterval(timerInterval);
+    document.getElementById("quiz-container").style.display = "none";
+    document.getElementById("timer").style.display = "none";
+    
+    const summaryContainer = document.getElementById("summary-container");
+    summaryContainer.style.display = "block";
+
+    let score = 0;
+    const reviewList = document.getElementById("review-list");
+    reviewList.innerHTML = "";
+
+    questions.forEach((q, idx) => {
+      const userAns = userAnswers[idx];
+      const isCorrect = userAns === q.correct;
+      if (isCorrect) score++;
+
+      const reviewCard = document.createElement("div");
+      reviewCard.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+
+      const userAnsText = userAns !== undefined ? q.options[userAns] : "<em>Skipped / Unanswered</em>";
+      const correctAnsText = q.options[q.correct];
+
+      reviewCard.innerHTML = `
+        <h3>Question ${idx + 1}: ${q.q}</h3>
+        <p style="margin-top: 8px;"><strong>Your Answer:</strong> ${userAnsText}</p>
+        <p><strong>Correct Answer:</strong> ${correctAnsText}</p>
+        <div class="explanation"><strong>Explanation:</strong> ${q.exp}</div>
+      `;
+      reviewList.appendChild(reviewCard);
+    });
+
+    document.getElementById("final-score").textContent = `${score} / ${questions.length}`;
+    const timeSpent = (50 * 60) - timeRemaining;
+    const mins = Math.floor(timeSpent / 60);
+    const secs = timeSpent % 60;
+    document.getElementById("time-taken-text").textContent = `Time elapsed: ${mins} minutes and ${secs} seconds`;
+  }
+
+  // Initialize on page load
+  window.onload = initQuiz;
+</script>
+
+</body>
+</html>
