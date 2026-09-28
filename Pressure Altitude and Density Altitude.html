@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviation Theory Quiz: Pressure & Density Altitude</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --correct: #16a34a;
+            --incorrect: #dc2626;
+            --skipped: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .header-title p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            backdrop-filter: blur(4px);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            height: fit-content;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .nav-btn {
+            aspect-ratio: 1;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--primary-light);
+            background: #eff6ff;
+        }
+
+        .nav-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-btn.answered {
+            background: #dbeafe;
+            color: var(--primary);
+            border-color: var(--primary-light);
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 24px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .option-item {
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary-light);
+            background-color: #f8fafc;
+        }
+
+        .option-item.selected {
+            border-color: var(--primary);
+            background-color: #eff6ff;
+            font-weight: 500;
+        }
+
+        .option-item input[type="radio"] {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-submit {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #15803d;
+        }
+
+        /* Results Screen */
+        .results-container {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 32px;
+            border: 1px solid var(--border);
+        }
+
+        .results-summary {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .score-box {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 12px 0;
+        }
+
+        .summary-details {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            font-weight: 600;
+        }
+
+        .review-item {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            background: #fafafa;
+        }
+
+        .review-item.correct {
+            border-left: 5px solid var(--correct);
+        }
+
+        .review-item.incorrect {
+            border-left: 5px solid var(--incorrect);
+        }
+
+        .review-item.skipped {
+            border-left: 5px solid var(--skipped);
+        }
+
+        .review-q-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .review-ans {
+            margin: 6px 0;
+            font-size: 0.9rem;
+        }
+
+        .explanation {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-title">
+            <h1>Pressure & Density Altitude Quiz</h1>
+            <p>Aviation Theory Exam (50 Questions | 50 Minutes)</p>
+        </div>
+        <div class="timer-box" id="timer">50:00</div>
+    </header>
+
+    <div class="main-layout" id="quiz-interface">
+        <aside class="sidebar">
+            <h3>Questions</h3>
+            <div class="nav-grid" id="nav-grid"></div>
+        </aside>
+
+        <main class="quiz-card">
+            <div class="question-header">
+                <span id="question-number">Question 1 of 50</span>
+                <span id="timestamp-ref" style="font-size: 0.8rem; color: #94a3b8;">Ref: 00:00</span>
+            </div>
+            
+            <div class="question-text" id="question-text">Loading question...</div>
+            
+            <div class="options-list" id="options-container"></div>
+
+            <div class="controls">
+                <button class="btn btn-secondary" id="prev-btn" onclick="navigate(-1)">Previous</button>
+                <button class="btn btn-secondary" id="next-btn" onclick="navigate(1)">Next / Skip</button>
+                <button class="btn btn-submit" id="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+            </div>
+        </main>
+    </div>
+
+    <div class="results-container" id="results-interface">
+        <div class="results-summary">
+            <h2>Exam Completed</h2>
+            <div class="score-box" id="score-display">0 / 50</div>
+            <div class="summary-details">
+                <span style="color: var(--correct);" id="correct-count">Correct: 0</span>
+                <span style="color: var(--incorrect);" id="incorrect-count">Incorrect: 0</span>
+                <span style="color: var(--skipped);" id="skipped-count">Skipped: 0</span>
+            </div>
+        </div>
+
+        <div id="review-list"></div>
+    </div>
+</div>
+
+<script>
+const rawQuestions = [
+    {
+        q: "What is the acronym used to represent Pressure Altitude?",
+        o: ["PA", "DA", "ISA", "QNH"],
+        a: 0,
+        ts: "00:23",
+        exp: "Pressure Altitude is standardly abbreviated as PA in aviation theory and performance calculations."
+    },
+    {
+        q: "Pressure Altitude is defined as the altitude measured relative to which standard isobaric datum?",
+        o: ["29.92 inHg / 1013 hPa", "29.80 inHg / 1000 hPa", "30.00 inHg / 1015 hPa", "29.95 inHg / 1012 hPa"],
+        a: 0,
+        ts: "00:30",
+        exp: "Pressure altitude is measured relative to the standard datum plane of 29.92 inches of Mercury (inHg) or 1013 hectopascals (hPa)."
+    },
+    {
+        q: "Which altimeter sub-scale setting (altimeter setting) corresponds directly to measuring Pressure Altitude?",
+        o: ["QNE", "QNH", "QFE", "Standard Elevation"],
+        a: 0,
+        ts: "00:48",
+        exp: "Setting the altimeter sub-scale to QNE (29.92 inHg / 1013 hPa) allows the altimeter to indicate Pressure Altitude."
+    },
+    {
+        q: "In the International Standard Atmosphere (ISA) model, how is pressure structured at any specific altitude?",
+        o: ["It has a fixed, standardized value", "It fluctuates dynamically based on temperature", "It is always zero", "It equals local station pressure"],
+        a: 0,
+        ts: "01:02",
+        exp: "In the idealized ISA model, the atmospheric pressure at each given altitude level has a fixed theoretical value."
+    },
+    {
+        q: "The theoretical definition of Pressure Altitude is identical to the definition of which aviation parameter?",
+        o: ["Flight Level (FL)", "Density Altitude (DA)", "Absolute Altitude", "True Altitude"],
+        a: 0,
+        ts: "01:16",
+        exp: "Pressure Altitude and Flight Level share identical definitions as both refer to height relative to the standard 29.92 inHg isobaric plane."
+    },
+    {
+        q: "Under standard atmospheric conditions at sea level, how does Pressure Altitude compare to True/Actual Altitude?",
+        o: ["They are exactly equal", "Pressure altitude is higher", "Pressure altitude is lower", "They cannot be compared"],
+        a: 0,
+        ts: "01:31",
+        exp: "Under standard atmosphere conditions, QNH equals QNE, making Pressure Altitude equal to actual elevation/altitude."
+    },
+    {
+        q: "When atmospheric pressure conditions are HIGHER than standard (QNH > QNE), where is the 29.92 inHg isobar located relative to sea level?",
+        o: ["Above sea level", "Below sea level", "Directly at sea level", "At the tropopause"],
+        a: 0,
+        ts: "01:56",
+        exp: "High pressure pushes the standard 29.92 inHg isobar above physical sea level."
+    },
+    {
+        q: "When pressure is higher than standard conditions, how does Pressure Altitude compare to Actual Altitude?",
+        o: ["Pressure Altitude is lower than Actual Altitude", "Pressure Altitude is higher than Actual Altitude", "They are identical", "Pressure Altitude becomes negative"],
+        a: 0,
+        ts: "02:04",
+        exp: "Because the 29.92 inHg reference plane rises above sea level in high pressure, the measured pressure altitude is lower than actual altitude."
+    },
+    {
+        q: "When atmospheric pressure conditions are LOWER than standard (QNH < QNE), where is the 29.92 inHg isobar positioned?",
+        o: ["Below sea level", "Above sea level", "At field elevation", "At the stratosphere"],
+        a: 0,
+        ts: "02:12",
+        exp: "Low pressure depresses the standard 29.92 inHg isobar plane below actual sea level."
+    },
+    {
+        q: "If local barometric pressure is lower than standard, how does Pressure Altitude relate to Actual Altitude?",
+        o: ["Pressure Altitude is higher than Actual Altitude", "Pressure Altitude is lower than Actual Altitude", "Pressure Altitude equals Actual Altitude", "Pressure Altitude remains zero"],
+        a: 0,
+        ts: "02:20",
+        exp: "When the 29.92 datum plane is below sea level due to low pressure, pressure altitude reads higher than actual altitude."
+    },
+    {
+        q: "Which of the following is NOT listed in the video as a valid method for determining Pressure Altitude?",
+        o: ["Radar altimeter echo pinging", "Correction tables based on QNH", "Setting 29.92 on the barometric altimeter", "Using an approximate mathematical formula"],
+        a: 0,
+        ts: "02:36",
+        exp: "Radar altimeters measure height above ground (AGL), not pressure altitude. Pressure altitude is determined via tables, dial setting, or formulas."
+    },
+    {
+        q: "When using the tabular method, what parameter determines the exact correction value to apply to indicated altitude?",
+        o: ["Local QNH setting", "Outside Air Temperature", "Dewpoint depression", "Calibrated Airspeed"],
+        a: 0,
+        ts: "03:05",
+        exp: "Correction tables list altitude adjustments strictly based on the current local QNH."
+    },
+    {
+        q: "To directly measure Pressure Altitude in the cockpit without manual calculations, what must a pilot do?",
+        o: ["Set the altimeter sub-scale to 29.92 inHg / 1013 hPa", "Set the altimeter sub-scale to local station elevation", "Set the altimeter sub-scale to zero", "Turn off the pitot-static system"],
+        a: 0,
+        ts: "03:48",
+        exp: "Dialing 29.92 inHg into the altimeter sub-scale adjusts the instrument directly to read Pressure Altitude."
+    },
+    {
+        q: "The standard rule-of-thumb formula for pressure altitude using inches of Mercury is applicable under what specific unit condition?",
+        o: ["When QNH is expressed in inches of Mercury (inHg)", "When pressure is measured in Hectopascals", "When temperature is measured in Fahrenheit", "When elevation is measured in meters"],
+        a: 0,
+        ts: "04:22",
+        exp: "The standard approximate formula (29.92 - QNH) * 1000 + Elevation is specifically formatted for inches of Mercury."
+    },
+    {
+        q: "If pressure is given in hectopascals (hPa/mb) rather than inHg, what must be done to calculate Pressure Altitude via formula?",
+        o: ["Use a modified formula tailored for hPa (1013 basis)", "Multiply the hPa value by 29.92", "Convert altitude to statute miles first", "The formula remains completely unchanged"],
+        a: 0,
+        ts: "04:28",
+        exp: "A modified formula accounting for 1013 hPa (and ~30 ft per hPa) must be used when pressure is in hectopascals."
+    },
+    {
+        q: "What is the standard abbreviation for Density Altitude?",
+        o: ["DA", "PA", "ISA", "TAS"],
+        a: 0,
+        ts: "04:38",
+        exp: "Density Altitude is standardly abbreviated as DA."
+    },
+    {
+        q: "How is Density Altitude formally defined?",
+        o: ["The altitude in the ISA atmosphere where a given air density is found", "The physical height of an aircraft above ground level", "The height indicated when QNH is set", "The altitude where temperature reaches 0°C"],
+        a: 0,
+        ts: "04:45",
+        exp: "Density Altitude is defined as the specific altitude in the International Standard Atmosphere (ISA) corresponding to a given air density."
+    },
+    {
+        q: "Why does air density naturally decrease with increasing altitude in Earth's atmosphere?",
+        o: ["Due to atmospheric pressure reduction", "Because atmospheric temperature always increases", "Due to higher concentration of oxygen", "Because air speed increases"],
+        a: 0,
+        ts: "05:02",
+        exp: "As altitude increases, the weight of the air column above decreases, reducing atmospheric pressure and causing air density to decrease."
+    },
+    {
+        q: "What atmospheric condition exists at low altitudes regarding air molecules?",
+        o: ["Air molecules are closer together (higher density)", "Air molecules are farther apart (lower density)", "Air molecules are completely static", "Air molecules expand infinitely"],
+        a: 0,
+        ts: "05:06",
+        exp: "At lower altitudes, higher pressure compresses air molecules closer together, producing higher air density."
+    },
+    {
+        q: "Which aircraft performance metrics are directly dependent on air density according to the video?",
+        o: ["Engine thrust and wing lift", "Radio transmission range", "Magnetic compass declination", "Fuel tank capacity"],
+        a: 0,
+        ts: "05:22",
+        exp: "Air density directly governs aerodynamic lift generated by wings and thrust generated by propulsion systems (engines)."
+    },
+    {
+        q: "What is the primary frame of reference used to define density altitude?",
+        o: ["The International Standard Atmosphere (ISA) model", "The US Standard Daily Weather Map", "Local non-standard atmosphere", "The hydrostatic equilibrium zone"],
+        a: 0,
+        ts: "05:38",
+        exp: "The ISA model serves as the universal reference frame for establishing density altitude values."
+    },
+    {
+        q: "What are the standard ISA conditions at sea level for pressure and temperature?",
+        o: ["29.92 inHg and 15°C", "30.00 inHg and 20°C", "1013 hPa and 0°C", "29.92 inHg and 59°F"],
+        a: 0,
+        ts: "05:51",
+        exp: "Standard ISA sea-level conditions are defined as 29.92 inHg (1013.25 hPa) pressure and 15°C (59°F) temperature."
+    },
+    {
+        q: "In the ISA model, what is the standard pressure lapse rate per 1,000 feet of altitude gain?",
+        o: ["1 inHg per 1,000 feet", "2 inHg per 1,000 feet", "0.5 inHg per 1,000 feet", "3 inHg per 1,000 feet"],
+        a: 0,
+        ts: "06:02",
+        exp: "The standard ISA pressure lapse rate is approximately 1 inHg drop per 1,000 feet of altitude."
+    },
+    {
+        q: "In the ISA model, what is the standard temperature lapse rate per 1,000 feet of altitude gain?",
+        o: ["2°C per 1,000 feet", "1°C per 1,000 feet", "3.5°C per 1,000 feet", "0.5°C per 1,000 feet"],
+        a: 0,
+        ts: "06:06",
+        exp: "The standard ISA temperature lapse rate is 2°C (1.98°C) decrease per 1,000 feet of climb."
+    },
+    {
+        q: "What are the main atmospheric variables that determine air density?",
+        o: ["Pressure and temperature (and humidity)", "Wind speed and direction", "Visibility and cloud ceiling", "Latitude and longitude"],
+        a: 0,
+        ts: "06:24",
+        exp: "Air density is predominantly governed by atmospheric pressure and ambient temperature."
+    },
+    {
+        q: "Under standard atmospheric conditions, how does Density Altitude compare to Actual Elevation?",
+        o: ["Density Altitude is equal to Actual Elevation", "Density Altitude is twice actual elevation", "Density Altitude is lower than elevation", "Density Altitude is zero"],
+        a: 0,
+        ts: "08:01",
+        exp: "When ambient conditions perfectly match the ISA model, Density Altitude equals the actual geometric elevation."
+    },
+    {
+        q: "What combination of temperature and pressure shifts will cause air density to decrease?",
+        o: ["Higher than standard temperature & lower than standard pressure", "Lower than standard temperature & higher than standard pressure", "Standard temperature & higher pressure", "Freezing temperature & standard pressure"],
+        a: 0,
+        ts: "08:07",
+        exp: "High temperature expands air molecules while low pressure reduces overall molecule counts, drastically reducing air density."
+    },
+    {
+        q: "If an airport elevation is 2,000 ft but weather conditions cause a low air density corresponding to 3,000 ft in ISA, what is the Density Altitude?",
+        o: ["3,000 feet", "2,000 feet", "5,000 feet", "1,000 feet"],
+        a: 0,
+        ts: "08:28",
+        exp: "Density altitude reflects the ISA altitude matching current air density (3,000 ft), regardless of physical elevation (2,000 ft)."
+    },
+    {
+        q: "When an aircraft operates at a high density altitude airport, how does its performance behave?",
+        o: ["It performs as if it were at the higher density altitude", "It performs better than sea level", "It performs as if it were at ground elevation", "Performance is unaffected"],
+        a: 0,
+        ts: "08:43",
+        exp: "Aerodynamic lift and engine power output are dictated by actual air density; thus, the aircraft performs as if it were operating at the higher altitude."
+    },
+    {
+        q: "What atmospheric conditions cause air density to INCREASE?",
+        o: ["Higher than standard pressure & lower than standard temperature", "Lower than standard pressure & higher than standard temperature", "High humidity & high heat", "Low pressure & high altitude"],
+        a: 0,
+        ts: "08:58",
+        exp: "Cold temperatures compress air while high barometric pressure packs more mass into a given volume, increasing air density."
+    },
+    {
+        q: "A LOW Density Altitude value indicates what state regarding air density?",
+        o: ["High air density", "Low air density", "Zero air density", "Standard pressure only"],
+        a: 0,
+        ts: "09:43",
+        exp: "Density altitude is inversely related to air density quality: low density altitude means high (dense) air density."
+    },
+    {
+        q: "A HIGH Density Altitude value indicates what state regarding air density?",
+        o: ["Low air density", "High air density", "Ideal aircraft performance", "Maximum engine thrust"],
+        a: 0,
+        ts: "09:43",
+        exp: "High density altitude represents thin, low-density air, which degrades aircraft performance."
+    },
+    {
+        q: "Comparing a Density Altitude of 1,000 ft to 8,000 ft, which represents denser air?",
+        o: ["1,000 feet", "8,000 feet", "Both represent equal air density", "Neither"],
+        a: 0,
+        ts: "09:51",
+        exp: "1,000 ft DA represents denser air than 8,000 ft DA because air density decreases as altitude increases in standard atmosphere."
+    },
+    {
+        q: "Airport A has high pressure (30.38 inHg) and cold temperature (0°C). What kind of aircraft performance can be expected?",
+        o: ["Good aircraft performance due to low density altitude", "Poor performance due to high density altitude", "No change in performance", "Severe thrust degradation"],
+        a: 0,
+        ts: "010:32",
+        exp: "High pressure and cold temperatures create dense air (low DA), optimizing wing lift and engine efficiency for good performance."
+    },
+    {
+        q: "Airport B has low pressure (29.80 inHg) and high temperature (30°C). What impact does this have on Density Altitude?",
+        o: ["Significantly increases Density Altitude", "Significantly decreases Density Altitude", "Keeps Density Altitude equal to field elevation", "Eliminates Density Altitude"],
+        a: 0,
+        ts: "010:54",
+        exp: "Warm air combined with low atmospheric pressure lowers density, driving the density altitude up significantly above physical elevation."
+    },
+    {
+        q: "How does high density altitude affect aircraft takeoff distance?",
+        o: ["Increases takeoff distance required", "Decreases takeoff distance required", "Has zero impact on ground roll", "Allows instant liftoff"],
+        a: 0,
+        ts: "011:18",
+        exp: "Reduced air density diminishes wing lift and engine thrust, requiring higher groundspeeds and longer ground roll to achieve liftoff."
+    },
+    {
+        q: "Which of the following is NOT a method mentioned in the video for calculating or finding Density Altitude?",
+        o: ["Using GPS satellite triangulation", "Manual or electronic flight computer (E6B)", "Density altitude chart/graph", "Approximate mathematical formula"],
+        a: 0,
+        ts: "011:27",
+        exp: "GPS measures geometric position, not air density parameters. Flight computers, graphs, formulas, and ATIS broadcasts are the standard tools."
+    },
+    {
+        q: "At some airports, how can pilots receive Density Altitude directly without manual computation?",
+        o: ["Broadcasted via ATIS (Automated Terminal Information Service)", "Calculated by air traffic controllers over radar", "Printed on sectional charts", "Provided by local weather towers via light gun"],
+        a: 0,
+        ts: "011:41",
+        exp: "Automated systems at modern airports calculate real-time DA and broadcast it directly over ATIS frequencies."
+    },
+    {
+        q: "To calculate Density Altitude using a mechanical flight computer (E6B), what two inputs are required first?",
+        o: ["Air temperature and pressure altitude", "Indicated airspeed and altimeter setting", "Field elevation and dewpoint", "Calibrated airspeed and true heading"],
+        a: 0,
+        ts: "012:11",
+        exp: "Setting an E6B flight computer to compute DA requires setting Pressure Altitude opposite Outside Air Temperature."
+    },
+    {
+        q: "On the E6B flight computer window shown in the video, where is the resulting Density Altitude read after alignment?",
+        o: ["In the center window scale", "On the outer miles scale", "On the wind side grid", "On the airspeed correction ring"],
+        a: 0,
+        ts: "012:25",
+        exp: "Once temperature and PA are aligned in the upper scale, Density Altitude is read in the center window scale."
+    },
+    {
+        q: "When using the approximate formula for Density Altitude, what preliminary step must be completed first?",
+        o: ["Calculate the standard ISA temperature for that pressure altitude", "Convert pressure altitude to station pressure", "Determine magnetic variation", "Multiply pressure altitude by 29.92"],
+        a: 0,
+        ts: "013:04",
+        exp: "The DA formula relies on temperature deviation from ISA ($\text{OAT} - \text{ISA Temp}$), requiring calculation of standard ISA temperature at that PA first."
+    },
+    {
+        q: "What is the standard ISA temperature at 5,000 feet Pressure Altitude?",
+        o: ["+5°C", "+15°C", "0°C", "-5°C"],
+        a: 0,
+        ts: "013:35",
+        exp: "Starting from 15°C at sea level and dropping 2°C per 1,000 ft: $15 - (5 \times 2) = +5^\circ\text{C}$."
+    },
+    {
+        q: "When solving for Density Altitude on a standard graphic chart, what is the first step?",
+        o: ["Locate the diagonal line corresponding to Pressure Altitude", "Locate the sea level density line", "Find local QNH on the vertical axis", "Draw a line to local dew point"],
+        a: 0,
+        ts: "013:53",
+        exp: "On a standard DA graph, you first identify the specific diagonal line representing the known Pressure Altitude."
+    },
+    {
+        q: "On a Density Altitude graph, after intersecting the temperature vertical line with the Pressure Altitude line, how do you read DA?",
+        o: ["Project a horizontal line to the left vertical axis", "Project a diagonal line to the top axis", "Follow the temperature line straight down", "Read the number from the legend"],
+        a: 0,
+        ts: "014:14",
+        exp: "From the intersection of the PA line and OAT vertical line, drawing a horizontal line to the left scale yields the Density Altitude."
+    },
+    {
+        q: "What effect does high atmospheric humidity have on air density (as noted in passing in the video)?",
+        o: ["Reduces air density (water vapor is lighter than dry air)", "Increases air density dramatically", "Has no physical effect on air density", "Doubles atmospheric density"],
+        a: 0,
+        ts: "06:24",
+        exp: "Water vapor molecules ($H_2O$) weigh less than diatomic Nitrogen ($N_2$) and Oxygen ($O_2$), making humid air less dense than dry air."
+    },
+    {
+        q: "If an aircraft flies from an area of high pressure into an area of low pressure without updating its altimeter setting, what will happen?",
+        o: ["The altimeter will indicate higher than actual altitude", "The altimeter will indicate lower than actual altitude", "The altimeter will automatically adjust", "The aircraft will climb automatically"],
+        a: 0,
+        ts: "02:12",
+        exp: "High to low pressure without resetting the sub-scale causes the altimeter to read higher than the actual aircraft height ('High to low, look out below')."
+    },
+    {
+        q: "In ISA conditions at sea level, what is the value of Pressure Altitude?",
+        o: ["0 feet", "2,000 feet", "1,013 feet", "-29.92 feet"],
+        a: 0,
+        ts: "01:31",
+        exp: "At sea level under standard pressure (29.92 inHg), Pressure Altitude is zero feet."
+    },
+    {
+        q: "If pressure altitude is 11,740 feet, what is the corresponding Flight Level?",
+        o: ["FL117 (or approx FL117.4)", "FL120", "FL110", "FL100"],
+        a: 0,
+        ts: "01:16",
+        exp: "Flight Levels are Pressure Altitudes expressed in hundreds of feet; 11,740 ft corresponds to Flight Level 117."
+    },
+    {
+        q: "Which environmental factor is NOT a primary direct input parameter for determining Density Altitude on an E6B?",
+        o: ["Wind velocity", "Pressure Altitude", "Outside Air Temperature", "Calibrated Airspeed"],
+        a: 0,
+        ts: "012:11",
+        exp: "Density Altitude calculation depends on atmospheric state variables (Pressure Altitude & OAT), not wind velocity."
+    },
+    {
+        q: "Why is understanding density altitude vital for flight safety during summer months at high-elevation airports?",
+        o: ["High heat drastically increases DA, reducing climb performance and lengthening takeoff roll", "High heat increases air density, causing structural overstress", "Low pressure makes the air too thick to fly through", "It causes altimeters to freeze completely"],
+        a: 0,
+        ts: "05:22",
+        exp: "Warm summer air lowers air density, resulting in high density altitude, severely degraded engine thrust, reduced wing lift, and dangerous performance loss."
+    }
+];
+
+let questions = [];
+let userAnswers = new Array(50).fill(null);
+let currentIdx = 0;
+let timerInterval = null;
+let timeRemaining = 50 * 60; // 50 minutes in seconds
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    // Process and randomize questions
+    questions = rawQuestions.map((q, idx) => {
+        let optionsObj = q.o.map((opt, oIdx) => ({
+            text: opt,
+            isCorrect: oIdx === q.a
+        }));
+        shuffleArray(optionsObj);
+        return {
+            id: idx + 1,
+            question: q.q,
+            options: optionsObj,
+            ts: q.ts,
+            exp: q.exp
+        };
+    });
+
+    renderNavGrid();
+    renderQuestion(0);
+    startTimer();
+}
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        let mins = Math.floor(timeRemaining / 60);
+        let secs = timeRemaining % 60;
+        document.getElementById("timer").innerText = 
+            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            submitQuiz();
+        }
+    }, 1000);
+}
+
+function renderNavGrid() {
+    const grid = document.getElementById("nav-grid");
+    grid.innerHTML = "";
+    questions.forEach((_, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "nav-btn";
+        btn.id = `nav-${idx}`;
+        btn.innerText = idx + 1;
+        btn.onclick = () => jumpToQuestion(idx);
+        grid.appendChild(btn);
+    });
+}
+
+function updateNavGrid() {
+    questions.forEach((_, idx) => {
+        const btn = document.getElementById(`nav-${idx}`);
+        btn.classList.remove("active", "answered");
+        if (idx === currentIdx) {
+            btn.classList.add("active");
+        } else if (userAnswers[idx] !== null) {
+            btn.classList.add("answered");
+        }
+    });
+}
+
+function renderQuestion(idx) {
+    currentIdx = idx;
+    const q = questions[idx];
+
+    document.getElementById("question-number").innerText = `Question ${idx + 1} of 50`;
+    document.getElementById("timestamp-ref").innerText = `Video Ref: ${q.ts}`;
+    document.getElementById("question-text").innerText = q.question;
+
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+
+    q.options.forEach((opt, oIdx) => {
+        const item = document.createElement("label");
+        item.className = "option-item";
+        if (userAnswers[idx] === oIdx) {
+            item.classList.add("selected");
+        }
+
+        item.innerHTML = `
+            <input type="radio" name="option" value="${oIdx}" ${userAnswers[idx] === oIdx ? 'checked' : ''} onchange="selectOption(${oIdx})">
+            <span>${opt.text}</span>
+        `;
+        container.appendChild(item);
+    });
+
+    document.getElementById("prev-btn").disabled = idx === 0;
+    document.getElementById("next-btn").innerText = idx === 49 ? "Skip" : "Next / Skip";
+
+    updateNavGrid();
+}
+
+function selectOption(oIdx) {
+    userAnswers[currentIdx] = oIdx;
+    updateNavGrid();
+    
+    // Refresh options styling
+    const items = document.querySelectorAll(".option-item");
+    items.forEach((item, index) => {
+        if (index === oIdx) {
+            item.classList.add("selected");
+        } else {
+            item.classList.remove("selected");
+        }
+    });
+}
+
+function navigate(direction) {
+    let newIdx = currentIdx + direction;
+    if (newIdx >= 0 && newIdx < 50) {
+        renderQuestion(newIdx);
+    }
+}
+
+function jumpToQuestion(idx) {
+    renderQuestion(idx);
+}
+
+function submitQuiz() {
+    clearInterval(timerInterval);
+
+    document.getElementById("quiz-interface").style.display = "none";
+    document.getElementById("results-interface").style.display = "block";
+
+    let correctCount = 0;
+    let incorrectCount = 0;
+    let skippedCount = 0;
+
+    const reviewList = document.getElementById("review-list");
+    reviewList.innerHTML = "";
+
+    questions.forEach((q, idx) => {
+        const userChoice = userAnswers[idx];
+        const isSkipped = userChoice === null;
+        const isCorrect = !isSkipped && q.options[userChoice].isCorrect;
+
+        if (isCorrect) correctCount++;
+        else if (isSkipped) skippedCount++;
+        else incorrectCount++;
+
+        const correctOption = q.options.find(o => o.isCorrect);
+
+        const reviewItem = document.createElement("div");
+        reviewItem.className = `review-item ${isCorrect ? 'correct' : (isSkipped ? 'skipped' : 'incorrect')}`;
+
+        reviewItem.innerHTML = `
+            <div class="review-q-title">Q${idx + 1}: ${q.question}</div>
+            <div class="review-ans"><strong>Your Answer:</strong> ${isSkipped ? '<span style="color:var(--skipped)">Skipped</span>' : q.options[userChoice].text}</div>
+            <div class="review-ans"><strong>Correct Answer:</strong> <span style="color:var(--correct)">${correctOption.text}</span></div>
+            <div class="explanation"><strong>Explanation (Ref: ${q.ts}):</strong> ${q.exp}</div>
+        `;
+
+        reviewList.appendChild(reviewItem);
+    });
+
+    document.getElementById("score-display").innerText = `${correctCount} / 50`;
+    document.getElementById("correct-count").innerText = `Correct: ${correctCount}`;
+    document.getElementById("incorrect-count").innerText = `Incorrect: ${incorrectCount}`;
+    document.getElementById("skipped-count").innerText = `Skipped: ${skippedCount}`;
+}
+
+window.onload = initQuiz;
+</script>
+</body>
+</html>
