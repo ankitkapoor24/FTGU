@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviation Types of Altitude Exam</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-hover: #0284c7;
+            --correct-green: #22c55e;
+            --incorrect-red: #ef4444;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #090d16;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-blue);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            color: var(--accent-blue);
+        }
+
+        #timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: #1e293b;
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1.5rem;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .quiz-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .q-text {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-btn {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent-blue);
+            background-color: #172554;
+        }
+
+        .option-btn.selected {
+            border-color: var(--accent-blue);
+            background-color: #1e3a8a;
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            background-color: var(--accent-blue);
+            color: #0f172a;
+            font-weight: 600;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-submit {
+            background-color: var(--correct-green);
+            color: white;
+        }
+
+        .sidebar {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .grid-title {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .q-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .grid-num {
+            aspect-ratio: 1;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .grid-num.active {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+
+        .grid-num.answered {
+            background-color: #1e3a8a;
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .review-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            border-left: 4px solid var(--border-color);
+        }
+
+        .review-card.correct { border-left-color: var(--correct-green); }
+        .review-card.incorrect { border-left-color: var(--incorrect-red); }
+
+        .opt-review {
+            padding: 0.5rem 0.75rem;
+            margin: 0.3rem 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .opt-review.user-correct { background-color: #14532d; border: 1px solid var(--correct-green); }
+        .opt-review.user-wrong { background-color: #7f1d1d; border: 1px solid var(--incorrect-red); }
+        .opt-review.actual-correct { background-color: #064e3b; border: 1px dashed var(--correct-green); }
+        
+        .explanation {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            padding-left: 0.5rem;
+        }
+
+        .hidden { display: none !important; }
+
+        .score-box {
+            text-align: center;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .score-val {
+            font-size: 3rem;
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Aviation Theory: Types of Altitude</h1>
+        <div id="timer">50:00</div>
+    </header>
+
+    <div id="quiz-screen" class="container">
+        <div class="quiz-card">
+            <div class="q-header">
+                <span id="q-num-label">Question 1 of 50</span>
+                <span>Topic: Altitude Types</span>
+            </div>
+            <div class="q-text" id="q-text">Loading question...</div>
+            <div class="options-list" id="options-container"></div>
+            <div class="nav-controls">
+                <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()">Previous</button>
+                <button class="btn" id="btn-next" onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="grid-title">Question Navigator</div>
+            <div class="q-grid" id="q-grid"></div>
+            <button class="btn btn-submit" style="width: 100%; margin-top: auto;" onclick="submitQuiz()">Submit Quiz</button>
+        </div>
+    </div>
+
+    <div id="results-screen" class="container hidden" style="grid-template-columns: 1fr;">
+        <div class="score-box">
+            <h2>Exam Completed</h2>
+            <div class="score-val" id="score-text">0%</div>
+            <p id="score-detail">You answered 0 out of 50 questions correctly.</p>
+        </div>
+        <h3 style="margin-bottom: 1rem;">Detailed Question Review</h3>
+        <div id="review-container"></div>
+    </div>
+
+    <script>
+        const questionBank = [
+            {
+                q: "What is indicated altitude defined as?",
+                options: [
+                    "The uncorrected altitude value read directly from the altimeter instrument face.",
+                    "The exact height above mean sea level regardless of atmospheric pressure variances.",
+                    "The vertical height above terrain measured continuously by radar signals.",
+                    "The pressure reading corrected strictly for non-standard atmospheric temperature."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Indicated altitude is simply what the altimeter reads directly from its display.",
+                    "Incorrect: This defines true altitude.",
+                    "Incorrect: This defines absolute altitude.",
+                    "Incorrect: Temperature corrections apply to true/density altitude calculations."
+                ]
+            },
+            {
+                q: "Calibrated altitude is calculated by taking indicated altitude and correcting for which of the following?",
+                options: [
+                    "Instrument error and static pressure positioning error.",
+                    "Variations in local ambient temperature from standard atmosphere.",
+                    "Elevation changes in the local terrain below the aircraft.",
+                    "Variations in barometric pressure setting at sea level."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Calibrated altitude corrects indicated altitude for instrument and installation/position errors.",
+                    "Incorrect: Temperature corrections derive true altitude.",
+                    "Incorrect: Terrain elevation offsets yield absolute altitude.",
+                    "Incorrect: Barometric pressure adjustments are handled via the altimeter subscale setting."
+                ]
+            },
+            {
+                q: "True altitude is best defined as:",
+                options: [
+                    "The exact vertical height of the aircraft above Mean Sea Level (MSL).",
+                    "The exact vertical distance of the aircraft above Ground Level (AGL).",
+                    "The altitude indicated when 29.92 inHg is set in the altimeter window.",
+                    "The altimeter reading corrected for non-standard instrument friction."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: True altitude represents actual physical distance above mean sea level.",
+                    "Incorrect: Distance above ground level is absolute altitude.",
+                    "Incorrect: Setting 29.92 inHg gives pressure altitude.",
+                    "Incorrect: Correcting for instrument friction/installation is calibrated altitude."
+                ]
+            },
+            {
+                q: "When flying from an area of high pressure into an area of low pressure without updating your altimeter setting, what happens to your actual true altitude relative to indicated altitude?",
+                options: [
+                    "True altitude will be lower than indicated altitude.",
+                    "True altitude will be higher than indicated altitude.",
+                    "True altitude will remain identical to indicated altitude.",
+                    "True altitude increases while indicated altitude drops rapidly."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: 'High to low, look out below' — the altimeter registers higher air pressure drop as height, leaving you lower than indicated.",
+                    "Incorrect: This happens when flying low to high pressure without resetting.",
+                    "Incorrect: True and indicated altitudes diverge when local pressure changes.",
+                    "Incorrect: Indicated altitude stays stable if unadjusted, while true altitude decreases."
+                ]
+            },
+            {
+                q: "When flying into air that is significantly colder than ISA standard temperatures without adjusting the altimeter:",
+                options: [
+                    "The aircraft will be lower than the indicated altitude.",
+                    "The aircraft will be higher than the indicated altitude.",
+                    "The altimeter will automatically compensate for air density.",
+                    "The indicated altitude will read zero at MSL."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Cold air is denser and compresses pressure levels, meaning 'High to low, hot to cold, look out below' applies.",
+                    "Incorrect: Warmer-than-standard air causes true altitude to be higher than indicated.",
+                    "Incorrect: Standard pressure altimeters do not automatically correct for non-standard temperatures.",
+                    "Incorrect: The altimeter reads altitude based on static pressure, not dropping to zero automatically."
+                ]
+            },
+            {
+                q: "Which rule of thumb helps pilots remember pressure and temperature effects on indicated vs. true altitude?",
+                options: [
+                    "High to low or hot to cold, look out below.",
+                    "High to low, watch yourself grow.",
+                    "Low to high, stay clear of the sky.",
+                    "Cold to hot, lower the slot."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: This mnemonic warns pilots that flying toward lower pressure/temperature puts the aircraft lower than indicated.",
+                    "Incorrect: Inaccurate phrase.",
+                    "Incorrect: Inaccurate phrase.",
+                    "Incorrect: Inaccurate phrase."
+                ]
+            },
+            {
+                q: "If an altimeter is set to 29.92 inHg at sea level under standard atmospheric conditions, what will it indicate?",
+                options: [
+                    "Both pressure altitude and true altitude.",
+                    "Only absolute altitude.",
+                    "Density altitude corrected for non-standard moisture.",
+                    "Calibrated airspeed."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Under standard ISA conditions, pressure altitude and true altitude are equal.",
+                    "Incorrect: Absolute altitude depends on ground elevation beneath the plane.",
+                    "Incorrect: Density altitude equals pressure altitude under standard temperatures, but moisture is negligible.",
+                    "Incorrect: Airspeed is measured using pitot pressure."
+                ]
+            },
+            {
+                q: "How does static pressure change as an aircraft increases altitude in the atmosphere?",
+                options: [
+                    "Static pressure decreases monotonically.",
+                    "Static pressure increases linearly.",
+                    "Static pressure remains constant.",
+                    "Static pressure fluctuates randomly."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Atmospheric pressure always drops as altitude increases.",
+                    "Incorrect: Pressure decreases, not increases.",
+                    "Incorrect: Pressure is directly dependent on altitude.",
+                    "Incorrect: Pressure follows a predictable hydrostatic decrease."
+                ]
+            },
+            {
+                q: "What is the primary mechanical component inside a traditional pressure altimeter that expands and contracts?",
+                options: [
+                    "A set of sealed aneroid wafer capsules.",
+                    "A Bourdon tube connected to pitot tube.",
+                    "A weighted gyroscopic gimbal.",
+                    "A differential diaphragm linked to static port."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Aneroid capsules expand as ambient pressure drops with altitude.",
+                    "Incorrect: Bourdon tubes are used in engine oil pressure gauges.",
+                    "Incorrect: Gyroscopes are used in attitude/heading indicators.",
+                    "Incorrect: Differential diaphragms are used in Airspeed Indicators."
+                ]
+            },
+            {
+                q: "Position/installation error in an altimeter system is caused primarily by:",
+                options: [
+                    "Disruption of airflow around the static port at different airspeeds and angles of attack.",
+                    "Mechanical friction between internal linkage gears inside the instrument casing.",
+                    "Non-standard ambient temperatures near sea level.",
+                    "Incorrect barometric subscale setting entered by the pilot."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Airflow disturbance around static ports alters sensed pressure, causing installation error.",
+                    "Incorrect: Internal friction is instrument error, not position/installation error.",
+                    "Incorrect: Temperature variations lead to density and true altitude errors.",
+                    "Incorrect: Setting errors are pilot operational errors."
+                ]
+            },
+            {
+                q: "If an altimeter setting is changed from 29.92 to 30.12 inHg while on the ground, what change occurs on the instrument display?",
+                options: [
+                    "Indicated altitude increases by approximately 200 feet.",
+                    "Indicated altitude decreases by approximately 200 feet.",
+                    "Indicated altitude stays identical.",
+                    "Indicated altitude drops by 20 feet."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: A 0.01 inHg increase adds ~10 feet, so +0.20 inHg adds ~200 feet.",
+                    "Incorrect: Increasing the setting raises indicated altitude, not lowers it.",
+                    "Incorrect: Adjusting the knob moves the hands.",
+                    "Incorrect: The rate is ~1000 ft per 1.0 inHg, yielding 200 ft for 0.20 inHg."
+                ]
+            },
+            {
+                q: "What is the standard ISA sea-level temperature standard used in altitude corrections?",
+                options: [
+                    "15°C (59°F)",
+                    "0°C (32°F)",
+                    "20°C (68°F)",
+                    "25°C (77°F)"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: ISA standard sea-level temperature is defined as 15°C.",
+                    "Incorrect: 0°C is freezing point, not standard sea level baseline.",
+                    "Incorrect: 20°C is room temperature standard in some engineering contexts, not ISA aviation baseline.",
+                    "Incorrect: 25°C is hot standard baseline."
+                ]
+            },
+            {
+                q: "What is the standard lapse rate of atmospheric temperature per 1,000 feet in the lower troposphere?",
+                options: [
+                    "2.0°C (3.5°F)",
+                    "1.0°C (1.8°F)",
+                    "4.0°C (7.0°F)",
+                    "0.5°C (0.9°F)"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Standard atmospheric temperature lapse rate is ~1.98°C (usually rounded to 2.0°C) per 1,000 ft.",
+                    "Incorrect: 1°C is too low.",
+                    "Incorrect: 4°C is much higher than standard.",
+                    "Incorrect: 0.5°C is incorrect."
+                ]
+            },
+            {
+                q: "When air temperature is warmer than standard ISA conditions, true altitude will be:",
+                options: [
+                    "Higher than indicated altitude.",
+                    "Lower than indicated altitude.",
+                    "Equal to pressure altitude.",
+                    "Lower than absolute altitude."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Warm air expands, pushing pressure levels higher, placing true altitude above indicated.",
+                    "Incorrect: Cold air makes true altitude lower than indicated.",
+                    "Incorrect: It equals pressure altitude only under ISA conditions.",
+                    "Incorrect: Relation to absolute altitude depends on ground elevation."
+                ]
+            },
+            {
+                q: "Why is calibrated altitude often nearly identical to indicated altitude in modern aircraft?",
+                options: [
+                    "Modern static systems and pitot-static design minimize position errors to negligible levels.",
+                    "Digital altimeters continuously monitor ground elevation using GPS.",
+                    "Calibrated altitude is never used in real-world aviation.",
+                    "Aneroid capsules no longer experience mechanical friction."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Well-placed static ports result in position errors that are typically negligible.",
+                    "Incorrect: Calibrated altitude does not rely on GPS ground monitoring.",
+                    "Incorrect: It is used in precise flight testing and performance documentation.",
+                    "Incorrect: Mechanical sensors still have small tolerances, though minimized."
+                ]
+            },
+            {
+                q: "Under what specific condition will Indicated Altitude equal True Altitude?",
+                options: [
+                    "At sea level under standard pressure and temperature conditions with accurate altimeter setting.",
+                    "At any altitude if local barometric setting is set to 29.92 inHg regardless of temperature.",
+                    "Whenever the aircraft is flying above terrain higher than 10,000 feet MSL.",
+                    "During high-speed level cruise flight in cold polar air."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Indicated equals true when standard pressure and temperature match ISA conditions.",
+                    "Incorrect: 29.92 inHg ensures pressure altitude, which deviates from true altitude if temp/pressure non-standard.",
+                    "Incorrect: Altitude height does not eliminate environmental deviation errors.",
+                    "Incorrect: Cold polar air creates significant true altitude discrepancy."
+                ]
+            },
+            {
+                q: "If an altimeter static port becomes completely blocked by ice in unpressurized level flight, the indicated altitude will:",
+                options: [
+                    "Remain frozen at the altitude where the blockage occurred.",
+                    "Drop instantly to zero feet.",
+                    "Increase continuously as speed increases.",
+                    "Fluctuate rhythmically with engine RPM."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Trapped static pressure keeps the aneroid wafer fixed, freezing indicated altitude.",
+                    "Incorrect: It will not drop to zero unless static pressure rises immensely.",
+                    "Incorrect: Speed changes affect pitot port, not blocked static port in level flight.",
+                    "Incorrect: Engine RPM does not drive static pressure."
+                ]
+            },
+            {
+                q: "What correction converts pressure altitude into density altitude?",
+                options: [
+                    "Correction for non-standard temperature.",
+                    "Correction for instrument installation error.",
+                    "Correction for local terrain elevation.",
+                    "Correction for compass magnetic variation."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Density altitude is pressure altitude corrected for temperature.",
+                    "Incorrect: Corrects indicated altitude to calibrated altitude.",
+                    "Incorrect: Converts true altitude to absolute altitude.",
+                    "Incorrect: Applies to navigation headings."
+                ]
+            },
+            {
+                q: "Why is knowing True Altitude critical when flying over mountainous terrain in winter?",
+                options: [
+                    "Cold air causes the altimeter to overread, making the pilot think they are higher than they actually are.",
+                    "Cold air increases engine performance, causing dangerous climbs.",
+                    "Mountain terrain reduces local sea-level barometric pressure to zero.",
+                    "The altimeter hands reverse direction in cold weather."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: In cold air, true altitude is lower than indicated, creating CFIT risk.",
+                    "Incorrect: Performance increases, but true altitude hazard is barometric.",
+                    "Incorrect: Pressure drops with elevation, but does not become zero.",
+                    "Incorrect: Instrument mechanical direction does not change."
+                ]
+            },
+            {
+                q: "A pilot flying at Indicated Altitude of 5,000 feet over an airport at 2,000 feet MSL with correct barometric setting is maintaining what True Altitude (assuming standard atmospheric conditions)?",
+                options: [
+                    "5,000 feet MSL",
+                    "3,000 feet MSL",
+                    "7,000 feet MSL",
+                    "2,000 feet MSL"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: In standard conditions with local altimeter setting, indicated equals true altitude (5,000 ft MSL).",
+                    "Incorrect: 3,000 ft is absolute altitude (AGL).",
+                    "Incorrect: Incorrect arithmetic addition.",
+                    "Incorrect: Ground elevation."
+                ]
+            },
+            {
+                q: "In the scenario above, what is the aircraft's Absolute Altitude?",
+                options: [
+                    "3,000 feet AGL",
+                    "5,000 feet MSL",
+                    "2,000 feet AGL",
+                    "7,000 feet AGL"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Absolute altitude = True altitude (5,000 ft MSL) - Terrain elevation (2,000 ft MSL) = 3,000 ft AGL.",
+                    "Incorrect: This is true altitude.",
+                    "Incorrect: Airport elevation.",
+                    "Incorrect: Incorrect arithmetic."
+                ]
+            },
+            {
+                q: "What standard lapse rate in pressure corresponds to 1,000 feet of altitude change near sea level?",
+                options: [
+                    "Approximately 1.00 inHg per 1,000 feet.",
+                    "Approximately 0.10 inHg per 1,000 feet.",
+                    "Approximately 2.99 inHg per 1,000 feet.",
+                    "Approximately 5.00 inHg per 1,000 feet."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: The standard barometric lapse rate is ~1.00 inHg per 1,000 ft.",
+                    "Incorrect: 0.10 inHg equals ~100 ft.",
+                    "Incorrect: 2.99 inHg is far too steep.",
+                    "Incorrect: Incorrect magnitude."
+                ]
+            },
+            {
+                q: "Which instrument source provides the static pressure reference required for indicated altitude display?",
+                options: [
+                    "The static port.",
+                    "The pitot tube dynamic orifice.",
+                    "The cabin air intake filter.",
+                    "The vacuum pump discharge line."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: The static port measures ambient atmospheric pressure.",
+                    "Incorrect: Pitot tube measures ram air pressure for airspeed.",
+                    "Incorrect: Cabin pressure varies and is unsuited for external sensing.",
+                    "Incorrect: Vacuum line powers gyroscopic instruments."
+                ]
+            },
+            {
+                q: "If an aircraft flies from warm air into cold air, and the pilot does NOT adjust the altimeter, the altimeter will:",
+                options: [
+                    "Indicate higher than the actual true altitude.",
+                    "Indicate lower than the actual true altitude.",
+                    "Indicate exact true altitude.",
+                    "Drop to zero indicated altitude."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Cold air compresses pressure layers; the altimeter overreads (indicates higher than actual true altitude).",
+                    "Incorrect: Occurs when moving cold to warm.",
+                    "Incorrect: Requires ISA standard conditions.",
+                    "Incorrect: Requires total loss of static pressure."
+                ]
+            },
+            {
+                q: "The Kollsman window on an altimeter allows a pilot to adjust for variations in:",
+                options: [
+                    "Local sea-level barometric pressure.",
+                    "Outside ambient air temperature.",
+                    "Mach number compressed air effects.",
+                    "Instrument gear friction errors."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: The Kollsman window is adjusted to set local sea-level barometric pressure (QNH).",
+                    "Incorrect: Kollsman window does not manually correct for temperature.",
+                    "Incorrect: Compressibility is a high-speed airspeed issue.",
+                    "Incorrect: Mechanical friction is fixed or calibrated."
+                ]
+            },
+            {
+                q: "Why do high-altitude jet aircraft set their altimeters to 29.92 inHg above the transition altitude?",
+                options: [
+                    "To ensure all aircraft use a common reference frame for safe vertical separation.",
+                    "To ensure true altitude matches terrain height exactly.",
+                    "Because barometric pressure stops changing above 18,000 feet.",
+                    "To correct for structural airframe compression at high speeds."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: A unified standard setting guarantees uniform flight levels and safe separation.",
+                    "Incorrect: Pressure altitude setting does not guarantee true terrain clearance.",
+                    "Incorrect: Pressure continues dropping above 18,000 ft.",
+                    "Incorrect: Airframe compression is unrelated."
+                ]
+            },
+            {
+                q: "Calibrated altitude corrects for installation error. What is installation error caused by?",
+                options: [
+                    "Distortion of static pressure sensing caused by airflow patterns around the airframe.",
+                    "Wear in the mechanical gears linking the aneroid capsule to the hands.",
+                    "Solar radiation heating the static lines inside the wings.",
+                    "Error introduced by reading the display from an oblique angle."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Installation/position error results from aerodynamic disturbance around static ports.",
+                    "Incorrect: Gear wear causes instrument error.",
+                    "Incorrect: Thermal expansion of lines is negligible.",
+                    "Incorrect: Angle of reading is parallax error."
+                ]
+            },
+            {
+                q: "What impact does higher-than-standard sea level pressure have on true altitude if altimeter setting is NOT updated?",
+                options: [
+                    "True altitude will be higher than indicated altitude.",
+                    "True altitude will be lower than indicated altitude.",
+                    "True altitude will equal absolute altitude.",
+                    "True altitude will be unaffected."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Higher ambient pressure means higher actual height for a given pressure reading.",
+                    "Incorrect: Lower pressure causes true altitude to drop below indicated.",
+                    "Incorrect: Depends on terrain elevation.",
+                    "Incorrect: True altitude is directly influenced by ambient pressure."
+                ]
+            },
+            {
+                q: "A pilot sets 29.92 inHg on the altimeter while on the runway at an airport with field elevation of 1,500 ft MSL. The current local pressure is 29.92 inHg. What altitude does the altimeter display?",
+                options: [
+                    "1,500 feet",
+                    "0 feet",
+                    "2992 feet",
+                    "-1,500 feet"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Since local pressure matches standard, the altimeter displays the true airport elevation of 1,500 ft.",
+                    "Incorrect: Setting QFE gives 0 ft, not setting 29.92 under standard pressure.",
+                    "Incorrect: Numeric error based on setting value.",
+                    "Incorrect: Incorrect negative calculation."
+                ]
+            },
+            {
+                q: "What formula expresses True Altitude under simplified non-standard temperature conditions?",
+                options: [
+                    "Indicated Altitude + (Temperature Deviation Correction)",
+                    "Indicated Altitude × Barometric Pressure",
+                    "Absolute Altitude - Airport Elevation",
+                    "Pressure Altitude / Density Ratio"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: True altitude is estimated by applying a temperature correction factor to indicated altitude.",
+                    "Incorrect: Multiplying by pressure yields invalid units.",
+                    "Incorrect: True altitude = Absolute altitude + Terrain elevation.",
+                    "Incorrect: Does not yield linear true altitude."
+                ]
+            },
+            {
+                q: "Which type of altitude is referenced directly to the Standard Datum Plane of 29.92 inHg (1013.2 hPa)?",
+                options: [
+                    "Pressure Altitude",
+                    "True Altitude",
+                    "Absolute Altitude",
+                    "Calibrated Altitude"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Pressure altitude is measured above the standard datum plane of 29.92 inHg.",
+                    "Incorrect: True altitude references Mean Sea Level with local QNH.",
+                    "Incorrect: Absolute altitude references local ground level.",
+                    "Incorrect: Calibrated altitude is indicated altitude corrected for position/instrument error."
+                ]
+            },
+            {
+                q: "If an aircraft climbs from 2,000 ft to 12,000 ft, atmospheric pressure surrounding the aneroid capsule will:",
+                options: [
+                    "Decrease, causing the capsule to expand.",
+                    "Increase, causing the capsule to contract.",
+                    "Decrease, causing the capsule to contract.",
+                    "Increase, causing the capsule to expand."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: As ambient pressure decreases with climb, internal pressure inside sealed wafer causes expansion.",
+                    "Incorrect: Pressure decreases during climb, not increases.",
+                    "Incorrect: Wafer expands as external pressure drops, rather than contracting.",
+                    "Incorrect: Ambient pressure decreases in climb."
+                ]
+            },
+            {
+                q: "What error occurs if a pilot forgets to update the altimeter setting when flying into an area of lower barometric pressure?",
+                options: [
+                    "The altimeter indicates a higher altitude than the aircraft's actual true altitude.",
+                    "The altimeter indicates a lower altitude than the aircraft's actual true altitude.",
+                    "The altimeter pointer freezes completely.",
+                    "The altimeter indicates negative altitude."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Low pressure makes the altimeter think the plane is higher than it really is (overreading).",
+                    "Incorrect: Happens when flying into higher pressure.",
+                    "Incorrect: Mechanical freezing requires static port blockage.",
+                    "Incorrect: It overreads higher, not negative."
+                ]
+            },
+            {
+                q: "Which altitude type is used when assessing aircraft takeoff and climb performance in warm weather?",
+                options: [
+                    "Density Altitude",
+                    "Indicated Altitude",
+                    "Absolute Altitude",
+                    "Calibrated Altitude"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Density altitude determines aerodynamic and engine performance.",
+                    "Incorrect: Indicated altitude does not account for air density changes.",
+                    "Incorrect: Absolute altitude is distance to terrain.",
+                    "Incorrect: Calibrated altitude is position-corrected indicated altitude."
+                ]
+            },
+            {
+                q: "When an altimeter is set to local station pressure corrected to sea level (QNH), what altitude does it read on the ground at an airport?",
+                options: [
+                    "Field elevation (MSL).",
+                    "Zero feet (AGL).",
+                    "Pressure altitude.",
+                    "Density altitude."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Setting QNH ensures the altimeter reads official field elevation above MSL.",
+                    "Incorrect: QFE sets altimeter to read zero on the ground.",
+                    "Incorrect: Requires 29.92 setting unless sea level pressure happens to be standard.",
+                    "Incorrect: Density altitude includes temperature correction factor."
+                ]
+            },
+            {
+                q: "What is the result of non-standard warm temperature on atmospheric pressure levels?",
+                options: [
+                    "Pressure levels expand and are spaced further apart vertically.",
+                    "Pressure levels compress and are spaced closer together vertically.",
+                    "Pressure levels remain completely rigid and unchanged.",
+                    "Pressure levels collapse to sea level."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Warm air expands, raising pressure levels and spacing them further apart.",
+                    "Incorrect: Cold air compresses pressure levels.",
+                    "Incorrect: Pressure distribution alters dynamically with temperature.",
+                    "Incorrect: Absurd premise."
+                ]
+            },
+            {
+                q: "In extremely cold air (-30°C), why is cold temperature altitude correction applied to minimum IFR instrument approach altitudes?",
+                options: [
+                    "To prevent CFIT (Controlled Flight Into Terrain) due to altimeter overreading true height.",
+                    "To compensate for pitot tube icing.",
+                    "To reduce engine overspeed risk during approach.",
+                    "To correct for magnetic compass declination error."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: In extreme cold, indicated altitude reads higher than actual true altitude, reducing obstacle clearance.",
+                    "Incorrect: Pitot icing affects airspeed, not altimeter cold corrections.",
+                    "Incorrect: Engine performance is unaffected by altimeter safety buffers.",
+                    "Incorrect: Magnetic compass is separate."
+                ]
+            },
+            {
+                q: "Which altitude is measured using a radar or radio altimeter?",
+                options: [
+                    "Absolute Altitude",
+                    "True Altitude",
+                    "Pressure Altitude",
+                    "Indicated Altitude"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Radar altimeters measure exact height directly above ground (AGL).",
+                    "Incorrect: True altitude is height above MSL.",
+                    "Incorrect: Pressure altitude is height above 29.92 datum.",
+                    "Incorrect: Indicated altitude comes from barometric pressure gauge."
+                ]
+            },
+            {
+                q: "An aircraft flies at Flight Level 200 (FL200). What is the altimeter setting entered in the Kollsman window?",
+                options: [
+                    "29.92 inHg (1013.2 hPa)",
+                    "Local sea-level altimeter setting",
+                    "Field elevation pressure (QFE)",
+                    "0.00 inHg"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: All flight levels operate using standard altimeter setting of 29.92 inHg.",
+                    "Incorrect: Local settings are used below transition altitude.",
+                    "Incorrect: QFE is not used for flight levels.",
+                    "Incorrect: Invalid pressure setting."
+                ]
+            },
+            {
+                q: "If static pressure sensing suffers from scale error within the instrument mechanism, this is classified as:",
+                options: [
+                    "Instrument error",
+                    "Position error",
+                    "Density error",
+                    "Parallax error"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Flaws inside gears, linkages, or manufacturing are instrument errors.",
+                    "Incorrect: Position error stems from airframe airflow disturbance.",
+                    "Incorrect: Density error is atmospheric.",
+                    "Incorrect: Parallax error is visual reading angle error."
+                ]
+            },
+            {
+                q: "What impact does high humidity have on density altitude calculations?",
+                options: [
+                    "High humidity slightly increases density altitude (decreases air density).",
+                    "High humidity significantly decreases density altitude.",
+                    "High humidity has zero effect on air density.",
+                    "High humidity causes pressure altitude to double."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Water vapor is lighter than dry air, reducing air density and slightly increasing density altitude.",
+                    "Incorrect: Humidity decreases air density, which increases density altitude.",
+                    "Incorrect: Humidity does have a minor impact, though small compared to temperature.",
+                    "Incorrect: Pressure altitude is barometric, unaffected by humidity."
+                ]
+            },
+            {
+                q: "If an altimeter setting is adjusted from 30.12 inHg down to 29.92 inHg while parked, what happens to indicated altitude?",
+                options: [
+                    "Indicated altitude decreases by 200 feet.",
+                    "Indicated altitude increases by 200 feet.",
+                    "Indicated altitude increases by 2,000 feet.",
+                    "Indicated altitude remains unchanged."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Decreasing the setting by 0.20 inHg lowers indicated altitude display by ~200 ft.",
+                    "Incorrect: Lowering setting lowers indication.",
+                    "Incorrect: Magnitude is off by factor of 10.",
+                    "Incorrect: Changing subscale rotates hands."
+                ]
+            },
+            {
+                q: "What is the relationship between Indicated Altitude and Calibrated Altitude?",
+                options: [
+                    "Calibrated altitude is indicated altitude corrected for instrument and position errors.",
+                    "Indicated altitude is calibrated altitude corrected for non-standard temperature.",
+                    "They are always separated by exactly 1,000 feet.",
+                    "Indicated altitude is derived from radar while calibrated is barometric."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Calibrated altitude corrects indicated altitude for mechanical and installation errors.",
+                    "Incorrect: True altitude incorporates temperature corrections.",
+                    "Incorrect: Difference varies based on system error and is usually small.",
+                    "Incorrect: Both are barometric measurements."
+                ]
+            },
+            {
+                q: "When an aircraft maintains a constant indicated altitude while flying into warmer air, the aircraft is actually:",
+                options: [
+                    "Climbing relative to true altitude.",
+                    "Descending relative to true altitude.",
+                    "Maintaining constant true altitude.",
+                    "Entering a stall condition immediately."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Warmer air expands pressure levels, so flying constant indicated altitude results in climbing true altitude.",
+                    "Incorrect: Occurs when flying into colder air.",
+                    "Incorrect: True altitude increases as air warms.",
+                    "Incorrect: Aerodynamic stall is speed/angle-of-attack dependent."
+                ]
+            },
+            {
+                q: "Which term describes the pressure altitude corrected for non-standard temperature variations?",
+                options: [
+                    "Density Altitude",
+                    "Calibrated Altitude",
+                    "True Altitude",
+                    "Absolute Altitude"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Density altitude = Pressure altitude corrected for temperature.",
+                    "Incorrect: Calibrated is position-corrected indicated altitude.",
+                    "Incorrect: True altitude is MSL height.",
+                    "Incorrect: Absolute altitude is AGL height."
+                ]
+            },
+            {
+                q: "The international standard atmosphere (ISA) baseline pressure at sea level is:",
+                options: [
+                    "29.92 inHg / 1013.25 hPa",
+                    "30.00 inHg / 1000.0 hPa",
+                    "28.92 inHg / 980.5 hPa",
+                    "31.00 inHg / 1050.0 hPa"
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Standard ISA sea level pressure is 29.92 inHg (1013.25 hPa).",
+                    "Incorrect: Non-standard round number.",
+                    "Incorrect: Low pressure condition.",
+                    "Incorrect: Extremely high pressure condition."
+                ]
+            },
+            {
+                q: "Why is indicated altitude used for vertical separation between aircraft flying in the same general area?",
+                options: [
+                    "Because all aircraft affected by local pressure variations experience identical altimeter errors.",
+                    "Because indicated altitude always matches true altitude perfectly.",
+                    "Because radar altitude cannot be read above 1,000 feet.",
+                    "Because indicated altitude is adjusted automatically by GPS satellites."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: If all local aircraft set the same barometric baseline, their altimeters experience identical error, maintaining relative separation.",
+                    "Incorrect: True altitude varies with temperature/pressure.",
+                    "Incorrect: Radar altimeters operate up to 2,500 ft AGL or higher.",
+                    "Incorrect: Traditional barometric altimeters are mechanical/static based."
+                ]
+            },
+            {
+                q: "What causes an altimeter to read zero feet when on the ground?",
+                options: [
+                    "Setting the altimeter to current local airfield pressure (QFE).",
+                    "Setting the altimeter to sea level pressure (QNH).",
+                    "Setting 29.92 inHg under non-standard conditions.",
+                    "Disconnecting the static port."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: Setting QFE adjusts altimeter to zero at field elevation.",
+                    "Incorrect: QNH sets altimeter to read field elevation above MSL.",
+                    "Incorrect: 29.92 gives pressure altitude.",
+                    "Incorrect: Disconnecting static port freezes or causes cabin pressure readings."
+                ]
+            },
+            {
+                q: "If an altimeter setting is NOT updated and local sea level pressure drops by 0.50 inHg, the indicated altitude will be:",
+                options: [
+                    "500 feet higher than actual true altitude.",
+                    "500 feet lower than actual true altitude.",
+                    "50 feet higher than actual true altitude.",
+                    "5,000 feet lower than actual true altitude."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: A drop of 0.50 inHg (~500 ft drop in pressure) causes altimeter to overread by ~500 ft.",
+                    "Incorrect: Lower local pressure leads to overreading (higher indication).",
+                    "Incorrect: 0.50 inHg corresponds to ~500 ft, not 50 ft.",
+                    "Incorrect: Off by a factor of 10."
+                ]
+            },
+            {
+                q: "Which summary statement correctly differentiates True Altitude from Absolute Altitude?",
+                options: [
+                    "True Altitude is height above Mean Sea Level (MSL), whereas Absolute Altitude is height above Ground Level (AGL).",
+                    "True Altitude is height above Ground Level (AGL), whereas Absolute Altitude is height above 29.92 inHg.",
+                    "True Altitude is corrected for instrument error, whereas Absolute Altitude is corrected for temperature.",
+                    "True Altitude is measured with radar, whereas Absolute Altitude is measured with pitot pressure."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct: True altitude = feet MSL; Absolute altitude = feet AGL.",
+                    "Incorrect: Reverses definitions and confuses pressure altitude datum.",
+                    "Incorrect: Incorrect definitions of calibration and density.",
+                    "Incorrect: Radar measures absolute altitude, true altitude uses barometric static pressure."
+                ]
+            }
+        ];
+
+        // State variables
+        let currentQuestion = 0;
+        let userAnswers = new Array(50).fill(null);
+        let randomizedQuestions = [];
+        let timeRemaining = 50 * 60; // 50 minutes in seconds
+        let timerInterval = null;
+
+        // Shuffle function (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Initialize Quiz with randomized options per question
+        function initQuiz() {
+            randomizedQuestions = questionBank.map((qObj, index) => {
+                // Create indexed options array to track original indices
+                let optionsWithIndices = qObj.options.map((opt, i) => ({
+                    text: opt,
+                    originalIndex: i,
+                    exp: qObj.explanations[i]
+                }));
+
+                // Randomize options order
+                shuffleArray(optionsWithIndices);
+
+                return {
+                    question: qObj.q,
+                    options: optionsWithIndices,
+                    originalCorrectIndex: qObj.correct
+                };
+            });
+
+            renderGrid();
+            loadQuestion(0);
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                let mins = Math.floor(timeRemaining / 60);
+                let secs = timeRemaining % 60;
+                document.getElementById('timer').innerText = 
+                    `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function renderGrid() {
+            const gridContainer = document.getElementById('q-grid');
+            gridContainer.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'grid-num';
+                btn.id = `grid-item-${i}`;
+                btn.innerText = i + 1;
+                btn.onclick = () => jumpToQuestion(i);
+                gridContainer.appendChild(btn);
+            }
+        }
+
+        function updateGridStatus() {
+            for (let i = 0; i < 50; i++) {
+                const item = document.getElementById(`grid-item-${i}`);
+                item.className = 'grid-num';
+                if (i === currentQuestion) item.classList.add('active');
+                if (userAnswers[i] !== null) item.classList.add('answered');
+            }
+        }
+
+        function loadQuestion(index) {
+            currentQuestion = index;
+            const qData = randomizedQuestions[index];
+
+            document.getElementById('q-num-label').innerText = `Question ${index + 1} of 50`;
+            document.getElementById('q-text').innerText = qData.question;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            qData.options.forEach((optObj, optIdx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = 'option-btn';
+                if (userAnswers[index] === optIdx) {
+                    optBtn.classList.add('selected');
+                }
+                optBtn.innerText = optObj.text;
+                optBtn.onclick = () => selectOption(optIdx);
+                container.appendChild(optBtn);
+            });
+
+            // Navigation buttons logic
+            document.getElementById('btn-prev').disabled = (index === 0);
+            if (index === 49) {
+                document.getElementById('btn-next').innerText = 'Finish & Review';
+            } else {
+                document.getElementById('btn-next').innerText = 'Next';
+            }
+
+            updateGridStatus();
+        }
+
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestion] = optionIndex;
+            loadQuestion(currentQuestion);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < 49) {
+                loadQuestion(currentQuestion + 1);
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                loadQuestion(currentQuestion - 1);
+            }
+        }
+
+        function jumpToQuestion(index) {
+            loadQuestion(index);
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+
+            let score = 0;
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+
+            randomizedQuestions.forEach((qData, qIdx) => {
+                const userChoiceIdx = userAnswers[qIdx];
+                let isCorrect = false;
+
+                if (userChoiceIdx !== null) {
+                    const selectedOpt = qData.options[userChoiceIdx];
+                    if (selectedOpt.originalIndex === qData.originalCorrectIndex) {
+                        isCorrect = true;
+                        score++;
+                    }
+                }
+
+                // Create review item UI
+                const card = document.createElement('div');
+                card.className = `review-card ${isCorrect ? 'correct' : 'incorrect'}`;
+
+                let cardHTML = `<div style="font-weight:bold; margin-bottom:0.5rem;">Q${qIdx + 1}: ${qData.question}</div>`;
+
+                qData.options.forEach((optObj, optIdx) => {
+                    let optClass = 'opt-review';
+                    let label = '';
+
+                    const isUserSelected = (userChoiceIdx === optIdx);
+                    const isActualCorrect = (optObj.originalIndex === qData.originalCorrectIndex);
+
+                    if (isUserSelected && isActualCorrect) {
+                        optClass += ' user-correct';
+                        label = ' (Your Correct Answer)';
+                    } else if (isUserSelected && !isActualCorrect) {
+                        optClass += ' user-wrong';
+                        label = ' (Your Choice)';
+                    } else if (!isUserSelected && isActualCorrect) {
+                        optClass += ' actual-correct';
+                        label = ' (Correct Answer)';
+                    }
+
+                    cardHTML += `
+                        <div class="${optClass}">
+                            <strong>${optObj.text}</strong>${label}
+                            <div class="explanation">${optObj.exp}</div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = cardHTML;
+                reviewContainer.appendChild(card);
+            });
+
+            const percentage = Math.round((score / 50) * 100);
+            document.getElementById('score-text').innerText = `${percentage}%`;
+            document.getElementById('score-detail').innerText = `You scored ${score} out of 50 correct answers.`;
+        }
+
+        // Start on load
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
