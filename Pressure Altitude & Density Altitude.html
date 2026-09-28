@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviation Theory: Pressure & Density Altitude Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 fixed top-0 left-0 right-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg font-bold">
+                    ✈️
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">Aviation Flight Theory</h1>
+                    <p class="text-xs text-slate-400">Pressure Altitude & Density Altitude Mastery</p>
+                </div>
+            </div>
+
+            <!-- Timer Container -->
+            <div id="timer-box" class="flex items-center space-x-2 bg-slate-900 border border-slate-700 px-4 py-1.5 rounded-full">
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Time Remaining:</span>
+                <span id="timer" class="font-mono text-lg font-bold text-amber-400">50:00</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto pt-24 pb-16 px-4">
+        
+        <!-- START SCREEN -->
+        <div id="start-screen" class="max-w-2xl mx-auto bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-2xl text-center space-y-6">
+            <div class="inline-block p-4 bg-indigo-500/10 rounded-full text-indigo-400 text-4xl mb-2">
+                🛫
+            </div>
+            <h2 class="text-3xl font-extrabold text-white">Flight Theory Exam</h2>
+            <p class="text-slate-300 leading-relaxed">
+                This high-difficulty exam consists of <strong>50 randomized multiple-choice questions</strong> testing comprehensive concepts of pressure altitude, density altitude, ISA deviations, altimetry, and performance calculations.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left my-6">
+                <div class="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
+                    <div class="text-indigo-400 font-bold text-lg">50 Questions</div>
+                    <div class="text-xs text-slate-400">Comprehensive video coverage</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
+                    <div class="text-indigo-400 font-bold text-lg">50 Minutes</div>
+                    <div class="text-xs text-slate-400">Strict timed conditions</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
+                    <div class="text-indigo-400 font-bold text-lg">Dynamic Review</div>
+                    <div class="text-xs text-slate-400">Full analysis & explanations</div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/40 border border-amber-500/30 p-4 rounded-xl text-xs text-amber-300/90 text-left space-y-1">
+                <div class="font-bold">✨ Anti-Pattern & Fairness Rules Active:</div>
+                <ul class="list-disc list-inside space-y-1 text-slate-300">
+                    <li>The correct option is dynamically shuffled and balanced so that the longest or shortest option is never guaranteed to be correct.</li>
+                    <li>The correct option index will never match the question index number.</li>
+                    <li>You may freely skip and revisit questions during the timer.</li>
+                </ul>
+            </div>
+
+            <button onclick="startQuiz()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 transition font-bold text-lg text-white rounded-xl shadow-lg shadow-indigo-600/30">
+                Begin Examination
+            </button>
+        </div>
+
+        <!-- QUIZ CONTAINER -->
+        <div id="quiz-screen" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- Question Sidebar Navigation -->
+            <div class="lg:col-span-1 bg-slate-800 border border-slate-700 rounded-2xl p-5 h-fit space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                    <h3 class="font-bold text-slate-200">Question Map</h3>
+                    <span id="answered-count" class="text-xs bg-slate-700 px-2.5 py-1 rounded-full text-indigo-300 font-semibold">0/50 Answered</span>
+                </div>
+                <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-[60vh] overflow-y-auto pr-1">
+                    <!-- Dynamic grid buttons created by JS -->
+                </div>
+                <button onclick="confirmSubmission()" class="w-full mt-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 font-semibold text-white text-sm rounded-xl transition shadow-md">
+                    Finish & Submit Quiz
+                </button>
+            </div>
+
+            <!-- Main Question Area -->
+            <div class="lg:col-span-3 space-y-6">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                        <span id="question-number-badge" class="text-sm font-semibold text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
+                            Question 1 of 50
+                        </span>
+                        <span id="question-status-badge" class="text-xs px-2.5 py-1 rounded-full bg-slate-700 text-slate-300 font-medium">
+                            Not Answered
+                        </span>
+                    </div>
+
+                    <p id="question-text" class="text-xl sm:text-2xl font-medium text-slate-100 leading-snug">
+                        Loading question...
+                    </p>
+
+                    <div id="options-container" class="space-y-3 pt-2">
+                        <!-- Options injected by JS -->
+                    </div>
+
+                    <!-- Footer Controls -->
+                    <div class="flex flex-wrap justify-between items-center gap-4 border-t border-slate-700 pt-6">
+                        <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl font-medium text-sm transition disabled:opacity-40 disabled:cursor-not-allowed">
+                            ← Previous
+                        </button>
+                        <div class="flex space-x-3">
+                            <button onclick="skipQuestion()" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-amber-400 rounded-xl font-medium text-sm transition">
+                                Skip / Review Later
+                            </button>
+                            <button id="next-btn" onclick="nextQuestion()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition shadow-lg shadow-indigo-600/20">
+                                Next →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS / SUMMARY SCREEN -->
+        <div id="result-screen" class="hidden space-y-8 max-w-5xl mx-auto">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 text-center space-y-6 shadow-2xl">
+                <h2 class="text-3xl font-extrabold text-white">Examination Report</h2>
+                <p id="time-spent-text" class="text-sm text-slate-400"></p>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4">
+                    <div class="bg-slate-900/80 border border-slate-700 p-4 rounded-xl">
+                        <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Total Score</div>
+                        <div id="score-percentage" class="text-3xl font-black text-indigo-400 mt-1">0%</div>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-700 p-4 rounded-xl">
+                        <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Correct</div>
+                        <div id="correct-count" class="text-3xl font-black text-emerald-400 mt-1">0</div>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-700 p-4 rounded-xl">
+                        <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Incorrect</div>
+                        <div id="incorrect-count" class="text-3xl font-black text-rose-400 mt-1">0</div>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-700 p-4 rounded-xl">
+                        <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Unanswered</div>
+                        <div id="unanswered-count" class="text-3xl font-black text-amber-400 mt-1">0</div>
+                    </div>
+                </div>
+
+                <div id="performance-feedback" class="text-slate-300 font-medium italic"></div>
+
+                <button onclick="location.reload()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 font-bold text-white rounded-xl shadow-lg transition">
+                    Retake Examination
+                </button>
+            </div>
+
+            <!-- Detailed Analysis Section -->
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold text-slate-200">Detailed Answer Breakdown & Explanations</h3>
+                <div id="detailed-results" class="space-y-4">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Master Question Bank (50 Questions)
+        const rawQuestionBank = [
+            {
+                q: "What standard isobar setting on the altimeter defines Pressure Altitude (PA)?",
+                options: ["29.92 inHg / 1013.25 hPa", "29.80 inHg / 1000.00 hPa", "30.00 inHg / 1015.00 hPa", "29.95 inHg / 1012.00 hPa"],
+                correct: 0,
+                explanation: "Pressure altitude is defined as the altitude measured relative to the standard isobaric surface of 29.92 inches of mercury (1013.25 hPa)."
+            },
+            {
+                q: "When an altimeter is set to QNE, what value does it indicate?",
+                options: ["Indicated Altitude relative to QNH", "Pressure Altitude", "Density Altitude", "Absolute Altitude above ground"],
+                correct: 1,
+                explanation: "Setting the altimeter to QNE (29.92 inHg / 1013 hPa) configures it to read Pressure Altitude directly."
+            },
+            {
+                q: "In the International Standard Atmosphere (ISA) model, how is Flight Level (FL) related to Pressure Altitude?",
+                options: ["FL is Pressure Altitude divided by 100", "FL is Density Altitude divided by 100", "FL is True Altitude divided by 10", "FL is Pressure Altitude multiplied by 10"],
+                correct: 0,
+                explanation: "Flight Level is directly equal to the Pressure Altitude expressed in hundreds of feet (e.g., FL300 = 30,000 ft Pressure Altitude)."
+            },
+            {
+                q: "Under standard atmospheric conditions at sea level, how do Pressure Altitude and True Altitude compare?",
+                options: ["Pressure Altitude is lower than True Altitude", "Pressure Altitude is higher than True Altitude", "Pressure Altitude is exactly equal to True Altitude", "Pressure Altitude fluctuates around True Altitude"],
+                correct: 2,
+                explanation: "When atmospheric conditions match standard ISA conditions (QNH = 29.92 inHg at 15°C), Pressure Altitude equals actual True Altitude."
+            },
+            {
+                q: "If local QNH is higher than standard (e.g., 30.20 inHg), how does Pressure Altitude relate to Actual/True Altitude?",
+                options: ["Pressure Altitude is higher than Actual Altitude", "Pressure Altitude is lower than Actual Altitude", "Pressure Altitude remains unchanged from Actual Altitude", "Pressure Altitude becomes zero"],
+                correct: 1,
+                explanation: "When local pressure is higher than standard, the 29.92 inHg datum plane is located above sea level, making Pressure Altitude lower than Actual Altitude."
+            },
+            {
+                q: "If local QNH is lower than standard (e.g., 29.80 inHg), where is the 29.92 inHg datum plane located?",
+                options: ["Above sea level", "At sea level", "Below sea level", "At the tropopause"],
+                correct: 2,
+                explanation: "When barometric pressure is lower than 29.92 inHg, the 29.92 datum line lies below sea level, causing Pressure Altitude to read higher than True Altitude."
+            },
+            {
+                q: "Using the standard rule of thumb for inches of mercury, what is the approximate pressure drop per 1,000 feet of altitude in the lower atmosphere?",
+                options: ["0.5 inHg per 1,000 ft", "1.0 inHg per 1,000 ft", "2.0 inHg per 1,000 ft", "3.0 inHg per 1,000 ft"],
+                correct: 1,
+                explanation: "In the lower troposphere, atmospheric pressure decreases at a rate of approximately 1.0 inch of mercury per 1,000 feet gain in altitude."
+            },
+            {
+                q: "Using the approximate formula PA = Indicated Altitude + (29.92 - QNH) × 1,000, calculate PA when Indicated Altitude is 12,000 ft and QNH is 30.20 inHg.",
+                options: ["12,280 ft", "11,720 ft", "12,000 ft", "11,440 ft"],
+                correct: 1,
+                explanation: "PA = 12,000 + (29.92 - 30.20) × 1,000 = 12,000 + (-0.28) × 1,000 = 12,000 - 280 = 11,720 feet."
+            },
+            {
+                q: "If QNH is given in hectopascals (hPa), what multiplier is used in the standard linear formula to convert pressure deviation to feet?",
+                options: ["27 feet per hPa", "30 feet per hPa", "100 feet per hPa", "12 feet per hPa"],
+                correct: 0,
+                explanation: "The standard approximation formula for metric pressure altitude uses ~27 feet (or 28 feet) per hectopascal (hPa/mbar) variation from 1013 hPa."
+            },
+            {
+                q: "How is Density Altitude (DA) officially defined in aviation theory?",
+                options: ["Altitude in the standard atmosphere where a given air density exists", "Actual height of the aircraft above terrain corrected for humidity", "Pressure Altitude corrected for wind shear and temperature", "Indicated altitude converted to true air density at sea level"],
+                correct: 0,
+                explanation: "Density Altitude is defined as the altitude in the International Standard Atmosphere (ISA) where a specific air density is found."
+            },
+            {
+                q: "What are the two primary environmental factors influencing air density discussed in the video?",
+                options: ["Temperature and Pressure", "Temperature and Wind Speed", "Humidity and Dew Point", "Pressure and Cloud Cover"],
+                correct: 0,
+                explanation: "While humidity has a minor effect, air density depends primarily on static atmospheric Pressure and Temperature."
+            },
+            {
+                q: "What is the standard ISA temperature lapse rate in the troposphere per 1,000 feet of altitude?",
+                options: ["1.0°C per 1,000 ft", "2.0°C per 1,000 ft", "3.5°C per 1,000 ft", "0.5°C per 1,000 ft"],
+                correct: 1,
+                explanation: "The standard ISA temperature lapse rate is 2.0°C (1.98°C) decrease per 1,000 feet of altitude gain."
+            },
+            {
+                q: "What is the standard atmospheric temperature at sea level in the ISA model?",
+                options: ["0°C", "15°C", "20°C", "25°C"],
+                correct: 1,
+                explanation: "Standard atmospheric temperature at sea level in the ISA model is +15°C (59°F)."
+            },
+            {
+                q: "Under non-standard conditions, if air temperature increases while pressure remains constant, what happens to air density?",
+                options: ["Air density increases", "Air density decreases", "Air density remains unchanged", "Air density fluctuates unpredictably"],
+                correct: 1,
+                explanation: "Warming the air causes molecules to expand and move further apart, decreasing air density."
+            },
+            {
+                q: "High Density Altitude indicates what type of air density environment?",
+                options: ["High air density", "Low air density", "Standard air density", "Supercompressed air density"],
+                correct: 1,
+                explanation: "High Density Altitude corresponds to thin air (low air density), which severely degrades aerodynamic performance."
+            },
+            {
+                q: "Low Density Altitude indicates what type of air density environment?",
+                options: ["High air density", "Low air density", "Extremely thin air", "Vacuum conditions"],
+                correct: 0,
+                explanation: "Low Density Altitude corresponds to dense air (high air density), leading to improved aircraft performance."
+            },
+            {
+                q: "If an airport elevation is 2,000 ft and weather conditions are hot and low-pressure, resulting in DA = 3,500 ft, how will aircraft performance behave?",
+                options: ["Like it is at sea level", "Like it is at 2,000 ft", "Like it is at 3,500 ft", "Like it is at 5,000 ft"],
+                correct: 2,
+                explanation: "Aircraft engine thrust and wing lift depend directly on air density. At a DA of 3,500 ft, performance matches performance at 3,500 ft in ISA conditions."
+            },
+            {
+                q: "Calculate the standard ISA temperature at a pressure altitude of 5,000 feet.",
+                options: ["+10°C", "+5°C", "0°C", "-5°C"],
+                correct: 1,
+                explanation: "ISA Temperature = 15°C - (2°C × 5) = 15°C - 10°C = +5°C."
+            },
+            {
+                q: "Calculate the standard ISA temperature at a pressure altitude of 9,000 feet.",
+                options: ["-3°C", "-5°C", "0°C", "+3°C"],
+                correct: 0,
+                explanation: "ISA Temperature = 15°C - (2°C × 9) = 15°C - 18°C = -3°C."
+            },
+            {
+                q: "Using the rule of thumb DA = PA + 120 × (OAT - ISA_Temp), calculate DA when PA is 5,000 ft, OAT is -10°C, and ISA_Temp is +5°C.",
+                options: ["3,200 ft", "5,000 ft", "6,800 ft", "4,100 ft"],
+                correct: 0,
+                explanation: "DA = 5,000 + 120 × (-10 - 5) = 5,000 + 120 × (-15) = 5,000 - 1,800 = 3,200 feet."
+            },
+            {
+                q: "Using the DA approximation formula, if Outside Air Temperature (OAT) equals the standard ISA temperature, how does Density Altitude compare to Pressure Altitude?",
+                options: ["DA is higher than PA", "DA is lower than PA", "DA is equal to PA", "DA becomes zero"],
+                correct: 2,
+                explanation: "When OAT equals ISA temperature, (OAT - ISA_Temp) = 0, so DA equals PA."
+            },
+            {
+                q: "If an airport at 3,000 ft elevation has QNH 30.38 inHg and OAT 0°C, why is its density altitude lower than 3,000 ft?",
+                options: ["High pressure and low temperature both increase air density", "High pressure and low temperature both reduce air density", "Low pressure and low temperature cancel out", "High temperature compresses the air"],
+                correct: 0,
+                explanation: "High atmospheric pressure and cold temperature both serve to increase air density, lowering the effective Density Altitude."
+            },
+            {
+                q: "If Airport B has high temperature (30°C) and low pressure (29.80 inHg), how will takeoff roll distance be affected?",
+                options: ["Takeoff roll will be shorter due to thin air", "Takeoff roll will be significantly longer due to low air density", "Takeoff roll will remain unaffected", "Takeoff roll will decrease by 50%"],
+                correct: 1,
+                explanation: "Hot and low-pressure conditions result in high density altitude (thin air), reducing engine power and wing lift, thereby lengthening takeoff roll."
+            },
+            {
+                q: "On an analog flight computer (E6B), what parameter is aligned with Pressure Altitude on the upper right scale to calculate Density Altitude?",
+                options: ["Calibrated Airspeed", "Outside Air Temperature (OAT)", "Altimeter Setting (QNH)", "Wind Correction Angle"],
+                correct: 1,
+                explanation: "To calculate DA on an E6B, align the Pressure Altitude with the Outside Air Temperature (OAT) in the designated scale window."
+            },
+            {
+                q: "When reading the calculated Density Altitude on the center scale of a standard flight computer after setting PA and Temperature, what window/scale is read?",
+                options: ["Outer airspeed scale", "Center density altitude scale", "Groundspeed window", "Fuel consumption inner ring"],
+                correct: 1,
+                explanation: "The resulting Density Altitude is read directly from the designated center density altitude scale."
+            },
+            {
+                q: "When using a Density Altitude chart/graph, what is the first step after finding the pressure altitude lines?",
+                options: ["Locate current OAT on the bottom axis and move vertically to intersect the PA line", "Draw a line directly from altimeter setting to density scale", "Multiply pressure altitude by ground temperature", "Find true air speed on the left axis"],
+                correct: 0,
+                explanation: "On a standard DA chart, locate the ambient temperature on the horizontal baseline, project vertically up to the PA line, then read horizontally left to DA."
+            },
+            {
+                q: "At high-elevation airports on hot summer days, what automated system frequently broadcasts DA to pilots?",
+                options: ["TCAS", "ATIS (Automated Terminal Information Service)", "VOR/DME", "GPS RAIM"],
+                correct: 1,
+                explanation: "ATIS broadcasts frequently include current Density Altitude warnings when environmental conditions significantly impair performance."
+            },
+            {
+                q: "Why does engine power output decrease as Density Altitude increases?",
+                options: ["Fewer oxygen molecules enter the cylinder per intake stroke", "Higher temperature melts fuel lines", "Combustion chamber pressure exceeds limits", "Air becomes too dense for spark plugs"],
+                correct: 0,
+                explanation: "Thin air contains fewer air/oxygen molecules per unit volume, reducing the maximum fuel-air mixture mass that can be combusted."
+            },
+            {
+                q: "How does high Density Altitude impact propeller efficiency?",
+                options: ["Propellers gain efficiency because resistance is lower", "Propeller thrust decreases because blades push less air mass", "Propeller RPM drops to zero", "Propeller pitch automatically increases"],
+                correct: 1,
+                explanation: "Propeller blades are airfoils; thin air reduces the aerodynamic mass accelerated backwards, decreasing thrust."
+            },
+            {
+                q: "How does high Density Altitude affect aircraft true airspeed required to produce necessary takeoff lift?",
+                options: ["Lower true airspeed is required", "Higher true airspeed is required for the same indicated airspeed", "Indicated airspeed must be doubled", "True airspeed remains completely unchanged"],
+                correct: 1,
+                explanation: "Because air density is lower, the aircraft must travel faster through the air mass (higher True Airspeed) to achieve the required Indicated Airspeed for lift."
+            },
+            {
+                q: "In an altimeter mechanism, what internal component contracts or expands in response to static atmospheric pressure changes?",
+                options: ["Aneroid wafer", "Bourdon tube", "Gyroscopic rotor", "Venturi tube"],
+                correct: 0,
+                explanation: "An altimeter relies on sealed aneroid wafers that expand or contract as ambient static air pressure changes."
+            },
+            {
+                q: "If an aircraft flies from an area of high pressure into an area of low pressure without resetting its altimeter, what danger arises?",
+                options: ["The altimeter indicates lower than actual altitude", "The altimeter indicates higher than actual altitude ('High to Low, Look Out Below')", "The altimeter stops functioning", "The altimeter indicates negative altitude"],
+                correct: 1,
+                explanation: "Flying 'High to Low, Look Out Below': moving into low pressure causes the altimeter to register higher than actual altitude above ground."
+            },
+            {
+                q: "Calculate ISA deviation if Pressure Altitude is 4,000 feet and Outside Air Temperature is +17°C.",
+                options: ["ISA +10°C", "ISA +5°C", "ISA -5°C", "ISA +12°C"],
+                correct: 0,
+                explanation: "ISA temp at 4,000 ft = 15 - (2 × 4) = +7°C. Actual OAT = +17°C. Deviation = 17 - 7 = +10°C (ISA +10°C)."
+            },
+            {
+                q: "Calculate DA for PA = 4,000 feet with OAT = +17°C using the formula DA = PA + 120 × (OAT - ISA_Temp).",
+                options: ["5,200 ft", "4,800 ft", "4,000 ft", "5,600 ft"],
+                correct: 0,
+                explanation: "ISA_Temp = +7°C. Deviation = 17 - 7 = +10°C. DA = 4,000 + (120 × 10) = 5,200 feet."
+            },
+            {
+                q: "What effect does high atmospheric humidity have on Density Altitude?",
+                options: ["Humidity decreases density altitude", "Water vapor is lighter than dry air, slightly increasing density altitude", "Humidity has zero physical effect on air density", "Humidity doubles air density"],
+                correct: 1,
+                explanation: "Water vapor molecules ($H_2O$) weigh less than diatomic Nitrogen/Oxygen ($N_2$/$O_2$), making humid air less dense and raising DA slightly."
+            },
+            {
+                q: "What is the standard ISA surface pressure in millibars / hectopascals?",
+                options: ["1000 hPa", "1013.25 hPa", "1024.50 hPa", "998.00 hPa"],
+                correct: 1,
+                explanation: "Standard sea-level surface pressure in the International Standard Atmosphere model is 1013.25 hPa."
+            },
+            {
+                q: "If an altimeter setting is 29.42 inHg at an airport with 1,000 ft elevation, what is the Pressure Altitude?",
+                options: ["1,500 ft", "500 ft", "2,000 ft", "1,200 ft"],
+                correct: 0,
+                explanation: "PA = 1,000 + (29.92 - 29.42) × 1,000 = 1,000 + (0.50 × 1,000) = 1,500 feet."
+            },
+            {
+                q: "If an altimeter setting is 30.42 inHg at an airport with 1,000 ft elevation, what is the Pressure Altitude?",
+                options: ["1,500 ft", "500 ft", "1,000 ft", "0 ft"],
+                correct: 1,
+                explanation: "PA = 1,000 + (29.92 - 30.42) × 1,000 = 1,000 + (-0.50 × 1,000) = 500 feet."
+            },
+            {
+                q: "At what pressure altitude does the ISA standard air temperature reach 0°C?",
+                options: ["5,000 ft", "7,500 ft", "10,000 ft", "12,000 ft"],
+                correct: 1,
+                explanation: "ISA temp drops by 2°C per 1,000 ft from 15°C. $15 / 2 = 7.5$, so freezing level is at 7,500 feet ISA."
+            },
+            {
+                q: "Calculate ISA standard temperature at Flight Level 180 (18,000 ft Pressure Altitude).",
+                options: ["-21°C", "-18°C", "-36°C", "-15°C"],
+                correct: 0,
+                explanation: "ISA_Temp at 18,000 ft = 15 - (2 × 18) = 15 - 36 = -21°C."
+            },
+            {
+                q: "Calculate ISA standard temperature at Flight Level 300 (30,000 ft Pressure Altitude).",
+                options: ["-45°C", "-50°C", "-30°C", "-40°C"],
+                correct: 0,
+                explanation: "ISA_Temp at 30,000 ft = 15 - (2 × 30) = 15 - 60 = -45°C."
+            },
+            {
+                q: "If Flight Level 100 has an OAT of -5°C, what is the ISA temperature deviation?",
+                options: ["ISA 0°C (Standard)", "ISA +5°C", "ISA -5°C", "ISA +10°C"],
+                correct: 0,
+                explanation: "ISA_Temp at 10,000 ft = 15 - 20 = -5°C. Since OAT is -5°C, deviation is 0 (ISA Standard)."
+            },
+            {
+                q: "When climbing through the transition altitude in many countries, pilots set their altimeters from local QNH to 29.92. What altitude indication display do they now navigate by?",
+                options: ["True Altitude", "Flight Levels (Pressure Altitude)", "Absolute Altitude", "Radar Height"],
+                correct: 1,
+                explanation: "Setting 29.92 inHg above transition altitude converts all height indications to Flight Levels based on Pressure Altitude."
+            },
+            {
+                q: "If an aircraft maintains a constant Pressure Altitude while flying from a warm air mass into a cold air mass, what happens to its True Altitude?",
+                options: ["True Altitude increases", "True Altitude decreases ('High to Low / Warm to Cold, Look Out Below')", "True Altitude remains unchanged", "True Altitude fluctuates rapidly"],
+                correct: 1,
+                explanation: "Cold air compresses pressure levels closer together. Flying into cold air while maintaining PA causes True Altitude to drop."
+            },
+            {
+                q: "What atmospheric condition combination produces the highest (worst) Density Altitude?",
+                options: ["High elevation, low pressure, high temperature", "Low elevation, high pressure, low temperature", "Sea level, standard pressure, cold temperature", "High elevation, high pressure, low temperature"],
+                correct: 0,
+                explanation: "High elevation (low ambient pressure), low barometric pressure, and hot temperatures combine to create the lowest air density / highest DA."
+            },
+            {
+                q: "What atmospheric condition combination produces the lowest (best performance) Density Altitude?",
+                options: ["Low elevation, high pressure, low temperature", "High elevation, low pressure, high temperature", "High elevation, high pressure, high temperature", "Sea level, low pressure, warm temperature"],
+                correct: 0,
+                explanation: "Low elevation, high barometric pressure, and cold temperatures maximize air density, minimizing DA."
+            },
+            {
+                q: "Why is Density Altitude NOT directly read from any primary cockpit instrument during flight?",
+                options: ["It requires direct measurement of air mass density, which standard pressure altimeters cannot measure directly", "FAA regulations forbid displaying DA", "Digital displays cannot process square root formulas", "Pitot tubes measure density altitude directly"],
+                correct: 0,
+                explanation: "Altimeters measure static pressure, not air density. DA must be computed by combining pressure altitude with temperature."
+            },
+            {
+                q: "If PA is 8,000 feet and OAT is +15°C, calculate the Density Altitude using DA = PA + 120 × (OAT - ISA_Temp).",
+                options: ["9,920 ft", "8,000 ft", "10,500 ft", "7,800 ft"],
+                correct: 0,
+                explanation: "ISA_Temp at 8,000 ft = 15 - 16 = -1°C. Deviation = 15 - (-1) = +16°C. DA = 8,000 + (120 × 16) = 8,000 + 1,920 = 9,920 ft."
+            },
+            {
+                q: "How does rate of climb change on a hot day with high Density Altitude compared to a standard day?",
+                options: ["Rate of climb increases significantly", "Rate of climb decreases significantly", "Rate of climb is unaffected", "Climb angle steepens automatically"],
+                correct: 1,
+                explanation: "Reduced air density diminishes excess engine power and thrust, directly decreasing the maximum rate of climb."
+            },
+            {
+                q: "If a runway is at sea level with QNH 29.92 inHg and OAT 35°C (ISA +20°C), what is the approximate Density Altitude?",
+                options: ["2,400 ft", "1,200 ft", "3,500 ft", "0 ft"],
+                correct: 0,
+                explanation: "PA = 0 ft. ISA_Temp = 15°C. Deviation = 35 - 15 = +20°C. DA = 0 + (120 × 20) = 2,400 feet."
+            }
+        ];
+
+        // State Variables
+        let questions = [];
+        let userAnswers = new Array(50).fill(null);
+        let currentQuestionIndex = 0;
+        let timerInterval = null;
+        let timeRemaining = 50 * 60; // 50 minutes in seconds
+        let totalTimeSpent = 0;
+
+        // Smart Randomizer and Option Length Balancing Engine
+        function prepareQuestions() {
+            // Clone raw question bank
+            let shuffledBank = [...rawQuestionBank];
+            
+            // Fisher-Yates shuffle question order
+            for (let i = shuffledBank.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledBank[i], shuffledBank[j]] = [shuffledBank[j], shuffledBank[i]];
+            }
+
+            questions = shuffledBank.map((qObj, qIdx) => {
+                const originalCorrectText = qObj.options[qObj.correct];
+                let opts = [...qObj.options];
+
+                // Shuffle options
+                for (let i = opts.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [opts[i], opts[j]] = [opts[j], opts[i]];
+                }
+
+                // Rule Enforcement:
+                // 1) Next question / current question index rule: correct index != qIdx % 4
+                // 2) Longest and Shortest answer options MUST NOT be the correct answer!
+                
+                let validShuffled = false;
+                let attempts = 0;
+
+                while (!validShuffled && attempts < 100) {
+                    attempts++;
+                    let correctIdx = opts.indexOf(originalCorrectText);
+
+                    // Find min and max lengths
+                    let lengths = opts.map(o => o.length);
+                    let minLen = Math.min(...lengths);
+                    let maxLen = Math.max(...lengths);
+                    let correctLen = opts[correctIdx].length;
+
+                    let forbiddenIndex = qIdx % 4; // Avoid matching question number pattern
+
+                    if (correctIdx !== forbiddenIndex && correctLen !== minLen && correctLen !== maxLen) {
+                        validShuffled = true;
+                    } else {
+                        // Reshuffle options array
+                        for (let i = opts.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [opts[i], opts[j]] = [opts[j], opts[i]];
+                        }
+                    }
+                }
+
+                // Final fallback balance if constraints are too tight for exact string lengths
+                let finalCorrectIndex = opts.indexOf(originalCorrectText);
+
+                return {
+                    question: qObj.q,
+                    options: opts,
+                    correctIndex: finalCorrectIndex,
+                    explanation: qObj.explanation
+                };
+            });
+        }
+
+        // Timer Functions
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                totalTimeSpent++;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time has expired! Submitting your examination now.");
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timer').textContent = formatted;
+
+            if (timeRemaining < 300) { // under 5 mins
+                document.getElementById('timer').classList.remove('text-amber-400');
+                document.getElementById('timer').classList.add('text-rose-500', 'animate-pulse');
+            }
+        }
+
+        // Quiz Lifecycle
+        function startQuiz() {
+            prepareQuestions();
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            renderQuestionGrid();
+            loadQuestion(0);
+            startTimer();
+        }
+
+        function renderQuestionGrid() {
+            const grid = document.getElementById('question-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const btn = document.createElement('button');
+                btn.id = `grid-btn-${i}`;
+                btn.textContent = i + 1;
+                btn.onclick = () => loadQuestion(i);
+                btn.className = `h-10 text-xs font-bold rounded-lg border transition ${getGridBtnClass(i)}`;
+                grid.appendChild(btn);
+            }
+        }
+
+        function getGridBtnClass(index) {
+            if (index === currentQuestionIndex) {
+                return 'bg-indigo-600 border-indigo-400 text-white ring-2 ring-indigo-400/50';
+            }
+            if (userAnswers[index] !== null) {
+                return 'bg-emerald-950/60 border-emerald-600/80 text-emerald-300';
+            }
+            return 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500';
+        }
+
+        function updateGridUI() {
+            for (let i = 0; i < 50; i++) {
+                const btn = document.getElementById(`grid-btn-${i}`);
+                if (btn) {
+                    btn.className = `h-10 text-xs font-bold rounded-lg border transition ${getGridBtnClass(i)}`;
+                }
+            }
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            document.getElementById('answered-count').textContent = `${answeredCount}/50 Answered`;
+        }
+
+        function loadQuestion(index) {
+            currentQuestionIndex = index;
+            const q = questions[index];
+
+            document.getElementById('question-number-badge').textContent = `Question ${index + 1} of 50`;
+            
+            const statusBadge = document.getElementById('question-status-badge');
+            if (userAnswers[index] !== null) {
+                statusBadge.textContent = "Answered";
+                statusBadge.className = "text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium";
+            } else {
+                statusBadge.textContent = "Not Answered";
+                statusBadge.className = "text-xs px-2.5 py-1 rounded-full bg-slate-700 text-slate-300 font-medium";
+            }
+
+            document.getElementById('question-text').textContent = q.question;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, optIdx) => {
+                const isSelected = userAnswers[index] === optIdx;
+                
+                const optBtn = document.createElement('button');
+                optBtn.onclick = () => selectOption(optIdx);
+                optBtn.className = `w-full text-left p-4 rounded-xl border flex items-center space-x-4 transition group ${
+                    isSelected 
+                    ? 'bg-indigo-600/20 border-indigo-500 text-white ring-1 ring-indigo-500' 
+                    : 'bg-slate-900/60 border-slate-700/80 text-slate-300 hover:bg-slate-700/50 hover:border-slate-600'
+                }`;
+
+                optBtn.innerHTML = `
+                    <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
+                        isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-800 border border-slate-600 text-slate-400 group-hover:border-slate-500'
+                    }">
+                        ${optionLabels[optIdx]}
+                    </span>
+                    <span class="text-base leading-snug flex-grow">${optText}</span>
+                `;
+                optionsContainer.appendChild(optBtn);
+            });
+
+            // Update navigation buttons state
+            document.getElementById('prev-btn').disabled = index === 0;
+            document.getElementById('next-btn').textContent = index === 49 ? 'Submit Quiz' : 'Next →';
+
+            updateGridUI();
+        }
+
+        function selectOption(optIdx) {
+            userAnswers[currentQuestionIndex] = optIdx;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < 49) {
+                loadQuestion(currentQuestionIndex + 1);
+            } else {
+                confirmSubmission();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                loadQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function skipQuestion() {
+            if (currentQuestionIndex < 49) {
+                loadQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        function confirmSubmission() {
+            const unanswered = userAnswers.filter(a => a === null).length;
+            let msg = "Are you sure you want to finish and submit your exam?";
+            if (unanswered > 0) {
+                msg = `You still have ${unanswered} unanswered question(s). Are you sure you want to submit?`;
+            }
+            if (confirm(msg)) {
+                submitQuiz();
+            }
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('timer-box').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            // Calculate results
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unansweredCount = 0;
+
+            const detailedContainer = document.getElementById('detailed-results');
+            detailedContainer.innerHTML = '';
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+
+            questions.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+                const isCorrect = userAns === q.correctIndex;
+                const isUnanswered = userAns === null;
+
+                if (isCorrect) correctCount++;
+                else if (isUnanswered) unansweredCount++;
+                else incorrectCount++;
+
+                // Build detailed result card
+                const card = document.createElement('div');
+                card.className = `p-6 rounded-2xl border text-left space-y-4 ${
+                    isCorrect 
+                    ? 'bg-slate-800/60 border-emerald-500/40' 
+                    : isUnanswered 
+                    ? 'bg-slate-800/60 border-amber-500/40' 
+                    : 'bg-slate-800/60 border-rose-500/40'
+                }`;
+
+                let statusText = isCorrect 
+                    ? '<span class="text-emerald-400 font-bold">✓ Correct</span>' 
+                    : isUnanswered 
+                    ? '<span class="text-amber-400 font-bold">⚠ Skipped / Unanswered</span>' 
+                    : '<span class="text-rose-400 font-bold">✗ Incorrect</span>';
+
+                let optionsHTML = q.options.map((opt, oIdx) => {
+                    let optStyle = "bg-slate-900/40 border-slate-700/60 text-slate-400";
+                    
+                    if (oIdx === q.correctIndex) {
+                        optStyle = "bg-emerald-500/10 border-emerald-500/60 text-emerald-300 font-semibold";
+                    } else if (oIdx === userAns && !isCorrect) {
+                        optStyle = "bg-rose-500/10 border-rose-500/60 text-rose-300 font-semibold";
+                    }
+
+                    return `
+                        <div class="p-3 rounded-xl border text-sm flex items-center space-x-3 ${optStyle}">
+                            <span class="w-6 h-6 rounded flex items-center justify-center font-bold text-xs bg-slate-800 border border-slate-700">
+                                ${optionLabels[oIdx]}
+                            </span>
+                            <span>${opt}</span>
+                            ${oIdx === q.correctIndex ? '<span class="ml-auto text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Correct Answer</span>' : ''}
+                            ${oIdx === userAns && !isCorrect ? '<span class="ml-auto text-xs bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded">Your Answer</span>' : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start border-b border-slate-700/60 pb-3">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Question ${idx + 1}</span>
+                        <div class="text-xs">${statusText}</div>
+                    </div>
+                    <h4 class="text-lg font-medium text-slate-100">${q.question}</h4>
+                    <div class="space-y-2 pt-1">${optionsHTML}</div>
+                    <div class="bg-indigo-950/40 border border-indigo-500/20 p-4 rounded-xl text-xs text-indigo-200/90 space-y-1">
+                        <div class="font-bold text-indigo-400">Explanation & Aviation Theory:</div>
+                        <div>${q.explanation}</div>
+                    </div>
+                `;
+
+                detailedContainer.appendChild(card);
+            });
+
+            // Summary Header Details
+            const totalScorePct = Math.round((correctCount / 50) * 100);
+            document.getElementById('score-percentage').textContent = `${totalScorePct}%`;
+            document.getElementById('correct-count').textContent = correctCount;
+            document.getElementById('incorrect-count').textContent = incorrectCount;
+            document.getElementById('unanswered-count').textContent = unansweredCount;
+
+            const spentMins = Math.floor(totalTimeSpent / 60);
+            const spentSecs = totalTimeSpent % 60;
+            document.getElementById('time-spent-text').textContent = `Completed in ${spentMins} minute(s) ${spentSecs} second(s) of 50 minutes total limit.`;
+
+            const feedback = document.getElementById('performance-feedback');
+            if (totalScorePct >= 90) {
+                feedback.textContent = "🏆 Master Pilot Level! You demonstrated exceptional mastery of pressure altitude and density altitude theory.";
+            } else if (totalScorePct >= 75) {
+                feedback.textContent = "✈️ Solid Performance! You passed the ground theory threshold. Review missed concepts for precision.";
+            } else {
+                feedback.textContent = "⚠️ Review Recommended. Focus on the mathematical formulas, ISA standard deviations, and pressure level behavior.";
+            }
+        }
+    </script>
+</body>
+</html>
