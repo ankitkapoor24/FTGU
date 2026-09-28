@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Altimeter Setting Procedures & Altimetry Master Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .question-nav-btn {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        .question-nav-btn.active {
+            ring: 2px;
+            ring-offset: 2px;
+            ring-color: #2563eb;
+            border-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl font-bold text-blue-400">Altimetry & Altimeter Procedures</h1>
+                <p class="text-xs text-slate-400">Based on Aviation Theory Reference Video</p>
+            </div>
+            
+            <div id="quiz-header-info" class="flex items-center gap-6">
+                <!-- Timer -->
+                <div class="flex items-center bg-slate-900 px-4 py-2 rounded-lg border border-slate-700">
+                    <svg class="w-5 h-5 text-amber-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <div class="text-xs text-slate-400">Time Remaining</div>
+                        <div id="timer-display" class="font-mono text-lg font-bold text-amber-400">50:00</div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button id="submit-btn" onclick="confirmSubmit()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-5 py-2 rounded-lg transition shadow-md">
+                    Submit Test
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- Question Grid Navigator (Left Sidebar on Desktop) -->
+        <aside class="lg:col-span-1 bg-slate-800 p-4 rounded-xl border border-slate-700 h-fit">
+            <h2 class="text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Question Overview</h2>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="flex items-center text-xs text-slate-400"><span class="w-3 h-3 bg-slate-700 border border-slate-600 rounded mr-1"></span> Unanswered</span>
+                <span class="flex items-center text-xs text-slate-400"><span class="w-3 h-3 bg-blue-600 rounded mr-1"></span> Answered</span>
+                <span class="flex items-center text-xs text-slate-400"><span class="w-3 h-3 bg-amber-500 rounded mr-1"></span> Flagged</span>
+            </div>
+
+            <div id="question-grid" class="grid grid-cols-5 sm:grid-cols-10 lg:grid-cols-5 gap-2 max-h-[60vh] overflow-y-auto pr-1">
+                <!-- Nav buttons generated via JS -->
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-slate-700 flex justify-between text-xs text-slate-400">
+                <span>Progress: <strong id="progress-text" class="text-slate-200">0 / 50</strong></span>
+                <span>Flagged: <strong id="flagged-text" class="text-amber-400">0</strong></span>
+            </div>
+        </aside>
+
+        <!-- Active Question View Container -->
+        <section id="quiz-body" class="lg:col-span-3 flex flex-col gap-6">
+            
+            <!-- Question Card -->
+            <div id="question-card" class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex-1 flex flex-col justify-between">
+                <div>
+                    <!-- Question Header Bar -->
+                    <div class="flex justify-between items-center mb-4">
+                        <span id="question-number-badge" class="bg-blue-900/60 text-blue-300 border border-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            Question 1 of 50
+                        </span>
+                        <button id="flag-btn" onclick="toggleFlagCurrent()" class="text-slate-400 hover:text-amber-400 text-xs flex items-center gap-1 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+                            <span id="flag-btn-text">Flag for Review</span>
+                        </button>
+                    </div>
+
+                    <!-- Question Text -->
+                    <h2 id="question-text" class="text-lg md:text-xl font-medium text-slate-100 mb-6 leading-relaxed">
+                        Loading question...
+                    </h2>
+
+                    <!-- Answer Options -->
+                    <div id="options-container" class="space-y-3">
+                        <!-- Options generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="mt-8 pt-4 border-t border-slate-700 flex justify-between items-center">
+                    <button id="prev-btn" onclick="navigateQuestion(-1)" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        &larr; Previous
+                    </button>
+                    
+                    <button id="next-btn" onclick="navigateQuestion(1)" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Summary & Results Dashboard (Hidden until submitted) -->
+        <section id="results-screen" class="hidden lg:col-span-4 space-y-6">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 text-center">
+                <h2 class="text-2xl font-bold text-slate-100 mb-2">Quiz Completed!</h2>
+                <p class="text-slate-400 mb-6">Here is your complete performance breakdown.</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                        <div class="text-xs text-slate-400">Score</div>
+                        <div id="final-score" class="text-2xl font-bold text-blue-400">0 / 50</div>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                        <div class="text-xs text-slate-400">Percentage</div>
+                        <div id="final-percent" class="text-2xl font-bold text-emerald-400">0%</div>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                        <div class="text-xs text-slate-400">Time Taken</div>
+                        <div id="final-time" class="text-2xl font-bold text-amber-400">00:00</div>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                        <div class="text-xs text-slate-400">Status</div>
+                        <div id="final-status" class="text-2xl font-bold text-slate-200">PASSED</div>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" class="mt-6 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-medium transition">
+                    Retake Quiz (Randomized Options)
+                </button>
+            </div>
+
+            <!-- Detailed Breakdown Section -->
+            <div id="review-container" class="space-y-4">
+                <!-- Detailed question reviews generated via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Raw Master Question Data Bank (50 Questions)
+        const rawQuestions = [
+            {
+                q: "What vertical distance is measured when determining an aircraft's 'altitude'?",
+                options: [
+                    { text: "The vertical distance between Mean Sea Level (MSL) and the aircraft in flight.", correct: true, rationale: "Altitude is explicitly defined as the vertical distance measured between Mean Sea Level (MSL) and the aircraft." },
+                    { text: "The vertical distance between a specific point on the ground and the aircraft in flight.", correct: false, rationale: "This describes 'height' (QFE reference), not altitude." },
+                    { text: "The vertical distance between Mean Sea Level and a point on the ground surface.", correct: false, rationale: "This describes ground 'elevation', not aircraft altitude." },
+                    { text: "The distance measured above the standard barometric pressure datum of 1013.25 hPa.", correct: false, rationale: "This describes a 'flight level' (QNE reference)." }
+                ]
+            },
+            {
+                q: "How is 'height' defined in aviation altimetry?",
+                options: [
+                    { text: "The vertical distance between a point on the ground and the aircraft in flight.", correct: true, rationale: "Height is defined as the vertical distance measured above a specific point or reference on the ground (e.g., airfield elevation)." },
+                    { text: "The vertical distance between Mean Sea Level (MSL) and the aircraft in flight.", correct: false, rationale: "This is the definition of altitude." },
+                    { text: "The vertical distance between the 29.92 inHg datum and the terrain below.", correct: false, rationale: "Flight levels measure vertical distance above the standard datum." },
+                    { text: "The height of an airfield runway threshold measured directly above Mean Sea Level.", correct: false, rationale: "This defines airfield elevation." }
+                ]
+            },
+            {
+                q: "What does the term 'elevation' refer to in altimetry?",
+                options: [
+                    { text: "The vertical distance between Mean Sea Level and a point on the ground.", correct: true, rationale: "Elevation is defined as the vertical distance between Mean Sea Level (MSL) and a fixed point on the terrain/ground." },
+                    { text: "The height of an aircraft flying directly over an airfield obstacle.", correct: false, rationale: "This is clear height above terrain/obstacle." },
+                    { text: "The vertical distance from a runway threshold to the transition altitude.", correct: false, rationale: "This refers to local vertical airspace boundary boundaries." },
+                    { text: "The pressure height above the 1013 hPa pressure surface.", correct: false, rationale: "This refers to pressure altitude." }
+                ]
+            },
+            {
+                q: "How does a standard barometric altimeter interpret a high static air pressure?",
+                options: [
+                    { text: "It interprets high static pressure as a low altitude indication.", correct: true, rationale: "Static pressure decreases with increasing altitude; therefore, sensing a high pressure implies being at a lower altitude." },
+                    { text: "It interprets high static pressure as a high altitude indication.", correct: false, rationale: "High altitude exhibits lower static air pressure." },
+                    { text: "It interprets high static pressure as an indication of high temperature.", correct: false, rationale: "Altimeters respond directly to ambient pressure, not directly temperature variations." },
+                    { text: "It freezes the reading at zero feet until the pressure drops.", correct: false, rationale: "The diaphragm continuously responds dynamically to ambient static pressure." }
+                ]
+            },
+            {
+                q: "What is the function of the Kollsman window on a barometric altimeter?",
+                options: [
+                    { text: "It permits the pilot to set the desired barometric reference pressure.", correct: true, rationale: "Adjusting the knob alters the reference pressure displayed in the Kollsman window, shifting the altimeter scale." },
+                    { text: "It displays the calibrated true airspeed corrected for ambient density.", correct: false, rationale: "Airspeed indicators or flight computers compute true airspeed." },
+                    { text: "It adjusts the vertical speed indicator to compensate for thermal drafts.", correct: false, rationale: "Vertical speed indicators function independently on rate of pressure change." },
+                    { text: "It measures ambient outside air temperature to compute true altitude.", correct: false, rationale: "Standard pressure altimeters do not automatically adjust for temperature." }
+                ]
+            },
+            {
+                q: "Which barometric reference setting identifies Mean Sea Level (MSL)?",
+                options: [
+                    { text: "QNH", correct: true, rationale: "QNH is defined as the barometric setting that indicates altitude relative to Mean Sea Level." },
+                    { text: "QFE", correct: false, rationale: "QFE sets reference to airport elevation, reading height above the airfield." },
+                    { text: "QNE", correct: false, rationale: "QNE sets standard barometric datum (1013.25 hPa / 29.92 inHg)." },
+                    { text: "QFF", correct: false, rationale: "QFF is meteorological sea level pressure using actual temperature lapse rates, not standard ISA." }
+                ]
+            },
+            {
+                q: "When an altimeter is set to QFE at an airport, what will it indicate on the ground?",
+                options: [
+                    { text: "Zero feet", correct: true, rationale: "QFE adjusts the reference pressure to match airport elevation surface pressure, causing the altimeter to read 0 ft on the ground." },
+                    { text: "The official airport elevation above MSL", correct: false, rationale: "This occurs when the altimeter is set to local QNH." },
+                    { text: "Density altitude", correct: false, rationale: "Density altitude requires temperature adjustments separate from barometric settings." },
+                    { text: "Flight Level 000", correct: false, rationale: "Flight Level 000 corresponds to 1013 hPa / 29.92 inHg surface." }
+                ]
+            },
+            {
+                q: "What numerical value defines the Standard Barometric Pressure (QNE) setting?",
+                options: [
+                    { text: "29.92 inHg or 1013 hectopascals (hPa)", correct: true, rationale: "Standard ISA sea-level pressure is defined universally as 29.92 inHg or 1013.25 hPa (mbar)." },
+                    { text: "29.72 inHg or 1000 hectopascals (hPa)", correct: false, rationale: "Incorrect numerical values." },
+                    { text: "30.00 inHg or 1015 hectopascals (hPa)", correct: false, rationale: "Incorrect non-standard pressure reference." },
+                    { text: "28.92 inHg or 980 hectopascals (hPa)", correct: false, rationale: "Incorrect value." }
+                ]
+            },
+            {
+                q: "Flight levels (FL) are reported as three digits representing hundreds of feet above which datum?",
+                options: [
+                    { text: "The standard pressure setting of 29.92 inHg / 1013 hPa", correct: true, rationale: "Flight Levels are vertical distances measured above the standard pressure datum QNE." },
+                    { text: "The local QNH sea level pressure setting", correct: false, rationale: "Local QNH measures indicated altitude above MSL." },
+                    { text: "The highest obstacle elevation within 50 nautical miles", correct: false, rationale: "This defines Area Minimum Altitude / Grid MORA." },
+                    { text: "The ground level of the departure airfield", correct: false, rationale: "QFE measures height above airfield." }
+                ]
+            },
+            {
+                q: "An altimeter set to QNE indicates 18,000 feet. How is this designated?",
+                options: [
+                    { text: "FL180", correct: true, rationale: "Flight levels represent hundreds of feet (18,000 / 100 = 180), prefixed by FL." },
+                    { text: "18,000 MSL", correct: false, rationale: "MSL altitude implies QNH barometric setting." },
+                    { text: "FL18", correct: false, rationale: "FL digits represent hundreds of feet, so 18 would represent 1,800 feet." },
+                    { text: "FL1800", correct: false, rationale: "Flight levels drop the last two zeros." }
+                ]
+            },
+            {
+                q: "If sea level pressure is standard (29.92 inHg) while on the ground at an airport, what will the altimeter display with QNE set?",
+                options: [
+                    { text: "The official airport elevation", correct: true, rationale: "Under ISA standard sea-level conditions, QNH equals QNE (29.92 inHg). Thus, setting QNE will indicate airport elevation." },
+                    { text: "Zero feet", correct: false, rationale: "Zero feet would only be indicated if QFE were set." },
+                    { text: "Pressure Altitude 0", correct: false, rationale: "Unless the airport is at sea level, it will read airfield elevation." },
+                    { text: "Density Altitude", correct: false, rationale: "Standard altimeters do not measure density altitude directly." }
+                ]
+            },
+            {
+                q: "In an area with lower than standard sea level pressure (e.g., QNH = 29.72 inHg), how does Flight Level compare to Altitude?",
+                options: [
+                    { text: "The Flight Level value is higher than the actual Altitude value.", correct: true, rationale: "Because 29.92 inHg is below sea level when surface pressure is low (29.72), the QNE reference line is lower, making the FL reading higher than true altitude." },
+                    { text: "The Flight Level value is lower than the actual Altitude value.", correct: false, rationale: "This occurs in high pressure conditions where 29.92 inHg is above MSL." },
+                    { text: "Flight Level and Altitude values are identical.", correct: false, rationale: "They are only identical when sea-level pressure equals standard 29.92 inHg." },
+                    { text: "Flight Level becomes zero at ground level regardless of elevation.", correct: false, rationale: "Flight Level depends strictly on static pressure relative to standard pressure." }
+                ]
+            },
+            {
+                q: "In an area with higher than standard sea level pressure (e.g., QNH = 30.42 inHg), where is the standard datum line (29.92 inHg) located?",
+                options: [
+                    { text: "Above Mean Sea Level", correct: true, rationale: "When sea level pressure is high (30.42 inHg), atmospheric pressure drops to 29.92 inHg at a higher elevation, placing the QNE datum line above MSL." },
+                    { text: "Below Mean Sea Level", correct: false, rationale: "The 29.92 inHg datum sits below sea level when surface pressure is low (< 29.92 inHg)." },
+                    { text: "Directly at Mean Sea Level", correct: false, rationale: "This occurs only when surface pressure is exactly standard 29.92 inHg." },
+                    { text: "At the transition level", correct: false, rationale: "Transition level varies dynamically with ambient pressure." }
+                ]
+            },
+            {
+                q: "What are the primary objectives of standardized altimeter setting procedures?",
+                options: [
+                    { text: "To ensure vertical separation from terrain and other aircraft.", correct: true, rationale: "As stated in the video, the twin objectives of altimetry procedures are terrain clearance and traffic vertical separation." },
+                    { text: "To maximize aircraft ground speed and fuel efficiency.", correct: false, rationale: "Altimetry procedures manage vertical positioning and safety, not aerodynamics/fuel." },
+                    { text: "To eliminate airspeed calibration errors across flight sectors.", correct: false, rationale: "Airspeed indicators handle speed measurements, not altimetry." },
+                    { text: "To enable automatic autopilot landing capabilities globally.", correct: false, rationale: "Autoland relies on radio altimeters and ILS guidance, not barometric procedures." }
+                ]
+            },
+            {
+                q: "What requirement must two aircraft meet to guarantee vertical separation from each other?",
+                options: [
+                    { text: "Both aircraft must use the exact same barometric reference setting.", correct: true, rationale: "Regardless of what setting is used (QNH or QNE), if both aircraft use the same reference, vertical separation is preserved." },
+                    { text: "Both aircraft must fly below the local transition altitude.", correct: false, rationale: "Aircraft above transition levels preserve separation using standard QNE." },
+                    { text: "Both aircraft must receive active radar vectoring from ATC.", correct: false, rationale: "Procedural separation applies in non-radar airspace as long as altimeter settings match." },
+                    { text: "Both aircraft must calibrate their altimeters using QFE.", correct: false, rationale: "QFE is rarely used for en-route separation due to vertical confusion across sectors." }
+                ]
+            },
+            {
+                q: "An aircraft at 7,000 ft uses QNH (30.31 inHg) while another nearby aircraft at 7,000 ft uses QNE (29.92 inHg). What is the actual situation?",
+                options: [
+                    { text: "The actual vertical separation is less than indicated, creating a collision risk.", correct: true, rationale: "Because 1 inHg equals ~1,000 ft, the aircraft using QNE is actually flying lower (~6,610 ft true altitude), dangerously close to the lower aircraft." },
+                    { text: "The actual vertical separation is exactly 1,000 feet.", correct: false, rationale: "Differences in reference settings distort true relative spacing." },
+                    { text: "The aircraft using QNE is 1,000 feet higher than the aircraft using QNH.", correct: false, rationale: "Higher altimeter setting = higher aircraft position for same altimeter reading." },
+                    { text: "There is no collision risk because both indicate 7,000 feet.", correct: false, rationale: "Indicated values match, but true altitudes differ drastically." }
+                ]
+            },
+            {
+                q: "Why is QNH required when flying at low altitudes near terrain and obstacles?",
+                options: [
+                    { text: "It measures real altitude relative to sea level, ensuring terrain clearance.", correct: true, rationale: "Because chart obstacle elevations are published relative to MSL, aircraft must use QNH to know true altitude above MSL." },
+                    { text: "It keeps the altimeter setting constant across continents.", correct: false, rationale: "QNH changes from region to region and must be continuously updated." },
+                    { text: "It prevents mountain wave turbulence from disturbing the pitot system.", correct: false, rationale: "Altimeter settings cannot prevent atmospheric wind turbulence." },
+                    { text: "It automatically corrects for high outside air temperatures.", correct: false, rationale: "QNH does not automatically correct for non-standard temperatures." }
+                ]
+            },
+            {
+                q: "Why is QFE rarely used worldwide for terrain clearance during navigation?",
+                options: [
+                    { text: "It can lead to confusion and dangerous errors across varying terrain elevations.", correct: true, rationale: "QFE changes with every specific airport elevation, creating extreme confusion during en-route operations over changing terrain." },
+                    { text: "It is impossible to set on modern digital altimeters.", correct: false, rationale: "Modern altimeters support QFE setting entry, but operational procedures avoid it." },
+                    { text: "It causes static pressure line blockages at low temperatures.", correct: false, rationale: "QFE is a mechanical setting and does not affect physical air lines." },
+                    { text: "It only works when flying above 18,000 feet.", correct: false, rationale: "QFE measures height above airfield level, useless at high cruise altitudes." }
+                ]
+            },
+            {
+                q: "What altimeter setting is standardized for all aircraft operating at high altitudes?",
+                options: [
+                    { text: "QNE (29.92 inHg / 1013.25 hPa)", correct: true, rationale: "At high cruise altitudes, terrain is no longer an immediate obstacle, so all aircraft adopt QNE to ensure uniform separation." },
+                    { text: "Local QNH updated every 30 minutes", correct: false, rationale: "Updating QNH continuously at high jet speeds across stations is impractical and unnecessary." },
+                    { text: "QFE of the nearest destination airport", correct: false, rationale: "Destination QFE has no relevance to en-route vertical separation." },
+                    { text: "Standard Density Pressure (SDP)", correct: false, rationale: "SDP is not a recognized operational altimeter setting." }
+                ]
+            },
+            {
+                q: "Why is QNE suitable for high-altitude flight despite local surface pressure changes?",
+                options: [
+                    { text: "Terrain clearance is not a factor, and a uniform setting guarantees mutual separation.", correct: true, rationale: "High altitude aircraft need mutual traffic separation rather than terrain clearance, which QNE provides universally." },
+                    { text: "Upper atmospheric air pressure remains completely constant worldwide.", correct: false, rationale: "Upper pressure shifts continuously, but standard setting ensures relative aircraft spacing." },
+                    { text: "QNE automatically compensates for non-standard lapse rates.", correct: false, rationale: "QNE is a fixed pressure datum, not a temperature-compensating system." },
+                    { text: "It eliminates the need for air traffic controllers to track flights.", correct: false, rationale: "ATC monitoring remains critical for traffic management." }
+                ]
+            },
+            {
+                q: "Define 'Transition Altitude' (TA).",
+                options: [
+                    { text: "The altitude at or below which vertical position is expressed in altitudes using QNH.", correct: true, rationale: "TA is the boundary altitude below which aircraft operate on local QNH and report altitude in feet." },
+                    { text: "The flight level above which aircraft must always use local QNH.", correct: false, rationale: "Above the transition region, aircraft use QNE (Flight Levels)." },
+                    { text: "The exact altitude where terrain clearance is no longer required.", correct: false, rationale: "Terrain separation depends on geographical location, not a universal TA." },
+                    { text: "The altitude where airspeed limit of 250 knots is removed.", correct: false, rationale: "Speed restrictions are separate airspace rules." }
+                ]
+            },
+            {
+                q: "Define 'Transition Level' (TL or TRL).",
+                options: [
+                    { text: "The lowest flight level available above which vertical position is expressed in flight levels using QNE.", correct: true, rationale: "Transition Level is the lowest usable Flight Level where QNE is used." },
+                    { text: "The ground elevation plus 1,000 feet buffer.", correct: false, rationale: "Incorrect definition." },
+                    { text: "The fixed altitude of 18,000 feet in all ICAO member states.", correct: false, rationale: "TA/TL varies around the world (e.g., 3,000 ft in UK, 18,000 ft in North America)." },
+                    { text: "The pressure surface where QNH equals QFE.", correct: false, rationale: "QNH equals QFE only at sea level." }
+                ]
+            },
+            {
+                q: "What is the 'Transition Layer'?",
+                options: [
+                    { text: "The airspace located between the Transition Altitude and the Transition Level.", correct: true, rationale: "The transition layer is the airspace sandwiched directly between the TA below and TL above." },
+                    { text: "The boundary layer between the troposphere and stratosphere.", correct: false, rationale: "This refers to the tropopause." },
+                    { text: "The vertical distance between QNH and QFE.", correct: false, rationale: "This represents airfield elevation in terms of barometric pressure." },
+                    { text: "The airspace within 10 nautical miles of an airfield control tower.", correct: false, rationale: "This describes terminal control zones." }
+                ]
+            },
+            {
+                q: "What operational restriction applies to leveling off within the Transition Layer?",
+                options: [
+                    { text: "Aircraft are strictly prohibited from flying level within the transition layer.", correct: true, rationale: "Level cruise flight within the transition layer is not permitted; aircraft must be actively climbing or descending through it." },
+                    { text: "Aircraft must maintain a minimum speed of 250 knots.", correct: false, rationale: "No specific speed floor is imposed in the transition layer." },
+                    { text: "Aircraft must hold for at least 5 minutes before climbing further.", correct: false, rationale: "Holding in the transition layer is avoided." },
+                    { text: "Aircraft must request special VFR clearance.", correct: false, rationale: "VFR/IFR rules apply based on meteorological conditions and airspace class." }
+                ]
+            },
+            {
+                q: "When climbing through the transition layer, when does the pilot reset the altimeter from QNH to QNE?",
+                options: [
+                    { text: "When passing/crossing the Transition Altitude (TA).", correct: true, rationale: "On climb, the switch from QNH to standard QNE (29.92/1013) is performed upon passing the Transition Altitude." },
+                    { text: "When passing the Transition Level (TL).", correct: false, rationale: "The switch to QNH on descent occurs at the Transition Level, not on climb." },
+                    { text: "At 1,000 feet above airfield elevation.", correct: false, rationale: "Noise abatement or acceleration heights occur here, not altimeter switching." },
+                    { text: "When entering uncontrolled Class G airspace.", correct: false, rationale: "Airspace class does not dictate the transition altitude boundary point." }
+                ]
+            },
+            {
+                q: "When descending through the transition layer, when does the pilot reset the altimeter from QNE to QNH?",
+                options: [
+                    { text: "When passing/crossing the Transition Level (TL).", correct: true, rationale: "On descent, the switch from standard QNE to local QNH is made upon crossing the Transition Level." },
+                    { text: "When passing the Transition Altitude (TA).", correct: false, rationale: "Climbing aircraft switch at TA." },
+                    { text: "When reaching 500 feet above ground level.", correct: false, rationale: "This is far too low and dangerous for approach planning." },
+                    { text: "When handed off to the ground controller.", correct: false, rationale: "Altimeter settings must be set during descent prior to approach." }
+                ]
+            },
+            {
+                q: "Where can pilots find the published Transition Altitude and Transition Level for an airport?",
+                options: [
+                    { text: "On instrument approach charts and national Aeronautical Information Publications (AIP).", correct: true, rationale: "Airport terminal charts (STARs, IAPs) and AIP documents publish local TA and TL values." },
+                    { text: "On the aircraft weight and balance manifest.", correct: false, rationale: "Manifests deal purely with aircraft loading parameters." },
+                    { text: "In the aircraft flight crew oxygen logbook.", correct: false, rationale: "Irrelevant maintenance log." },
+                    { text: "In the international cloud atlas documentation.", correct: false, rationale: "Irrelevant meteorological reference." }
+                ]
+            },
+            {
+                q: "In the example chart for Cali, Colombia shown in the video, what are the published TA and TL?",
+                options: [
+                    { text: "TA is 18,000 feet and TL is FL190.", correct: true, rationale: "The video explicitly highlights Cali, Colombia chart showing TA = 18,000 ft and TL = FL190." },
+                    { text: "TA is 3,000 feet and TL is FL050.", correct: false, rationale: "Incorrect values (common in UK airspace, not Cali)." },
+                    { text: "TA is 10,000 feet and TL is FL120.", correct: false, rationale: "Incorrect example values." },
+                    { text: "TA is 5,000 feet and TL is FL070.", correct: false, rationale: "Incorrect example values." }
+                ]
+            },
+            {
+                q: "How is the Transition Level determined if it is not fixed in published charts?",
+                options: [
+                    { text: "Air Traffic Control calculates it dynamically based on current local QNH.", correct: true, rationale: "When TL is variable, ATC computes it based on local QNH to maintain adequate buffer above TA." },
+                    { text: "The pilot calculates it by adding 2,000 feet to outside air temperature.", correct: false, rationale: "Temperature is used for cold weather corrections, not setting variable TL." },
+                    { text: "It defaults to 10,000 feet in all tropical flight regions.", correct: false, rationale: "TL is calculated from barometric pressure, not fixed geographical latitude." },
+                    { text: "It is determined by the aircraft operator's flight dispatcher.", correct: false, rationale: "ATC holds authority over airspace transition parameters." }
+                ]
+            },
+            {
+                q: "How is a variable Transition Level broadcast to arriving and departing aircraft?",
+                options: [
+                    { text: "Via Automatic Terminal Information Service (ATIS) or ATC radio frequencies.", correct: true, rationale: "Variable TLs are communicated to flight crews via ATIS broadcasts or direct controller transmissions." },
+                    { text: "Through satellite ACARS weather text messages only.", correct: false, rationale: "ATIS/VHF voice radio is the primary standard method." },
+                    { text: "By visual signal lamps on the control tower.", correct: false, rationale: "Signal lamps are light signals for radio failure emergencies." },
+                    { text: "By NOTAM published 24 hours in advance.", correct: false, rationale: "TL changes dynamically throughout the operational day as pressure fluctuates." }
+                ]
+            },
+            {
+                q: "What procedure must be followed when operating in remote areas without published TA/TL or QNH information?",
+                options: [
+                    { text: "Set QNE (29.92 inHg / 1013 hPa) and report position in Flight Levels.", correct: true, rationale: "Without local QNH or published TA/TL, aircraft standardize on QNE to maintain traffic separation." },
+                    { text: "Maintain QFE from the departure airfield for the entire flight.", correct: false, rationale: "QFE over long distances creates dangerous height miscalculations." },
+                    { text: "Fly at 500 feet AGL using visual reference lines.", correct: false, rationale: "Low-level flying without terrain updates increases CFIT risk." },
+                    { text: "Estimate QNH by deducting 1 inHg for every 100 nautical miles flown.", correct: false, rationale: "Arbitrary estimations of pressure gradients are unapproved and dangerous." }
+                ]
+            },
+            {
+                q: "Why does flying on QNE in remote uncontrolled airspace require extra terrain caution?",
+                options: [
+                    { text: "Because QNE does not account for local surface pressure changes, risking lower true altitude.", correct: true, rationale: "If surface pressure is low, QNE causes the aircraft to fly lower in true altitude than indicated, reducing terrain clearance." },
+                    { text: "Because QNE disables GPWS terrain awareness radar systems.", correct: false, rationale: "GPWS/TAWS relies on radio altimeters and GPS databases, not barometric dials directly." },
+                    { text: "Because altimeter needles oscillate rapidly in uncontrolled airspace.", correct: false, rationale: "Altimeter mechanics are unaffected by airspace boundary classifications." },
+                    { text: "Because air traffic control radar cannot track aircraft on QNE.", correct: false, rationale: "Transponders transmit pressure altitude regardless of Kollsman setting." }
+                ]
+            },
+            {
+                q: "Explain what happens when an aircraft flies from a high-pressure area to a low-pressure area without updating the QNH.",
+                options: [
+                    { text: "The aircraft gradually descends lower than the indicated altitude.", correct: true, rationale: "As ambient pressure drops, the altimeter senses lower pressure and misinterprets it as climbing, causing the pilot/autopilot to descend to maintain indicated altitude." },
+                    { text: "The aircraft climbs higher than the indicated altitude.", correct: false, rationale: "This occurs when flying from low pressure to high pressure." },
+                    { text: "The true altitude remains perfectly constant.", correct: false, rationale: "True altitude varies directly with ambient pressure changes when setting is unadjusted." },
+                    { text: "The altimeter gauge freezes at the departure pressure.", correct: false, rationale: "The gauge continues responding to static pressure changes." }
+                ]
+            },
+            {
+                q: "What rule-of-thumb aviation phrase summarizes the danger of uncorrected pressure drops?",
+                options: [
+                    { text: "'From high to low, look out below.'", correct: true, rationale: "This classic phrase reminds pilots that moving from high to low pressure causes true altitude to be lower than indicated." },
+                    { text: "'From low to high, cleared for the sky.'", correct: false, rationale: "Incorrect rhyming phrase." },
+                    { text: "'High pressure warm, clear of the storm.'", correct: false, rationale: "Irrelevant weather phrase." },
+                    { text: "'When pressure drops, the engine stops.'", correct: false, rationale: "Pressure changes affect altimetry, not engine combustion directly." }
+                ]
+            },
+            {
+                q: "If an aircraft maintains an indicated altitude of 5,000 ft while flying from QNH 30.40 to QNH 29.60 without resetting the altimeter, what happens to true altitude?",
+                options: [
+                    { text: "True altitude drops by approximately 800 feet.", correct: true, rationale: "A pressure difference of 0.80 inHg (30.40 - 29.60) corresponds to ~800 ft lower true altitude (1 inHg ≈ 1,000 ft)." },
+                    { text: "True altitude increases by 800 feet.", correct: false, rationale: "True altitude drops when moving into lower pressure." },
+                    { text: "True altitude remains exactly 5,000 feet.", correct: false, rationale: "Uncorrected pressure drop causes true altitude loss." },
+                    { text: "True altitude drops by 8,000 feet.", correct: false, rationale: "0.80 inHg equals 800 ft, not 8,000 ft." }
+                ]
+            },
+            {
+                q: "How does cold outside air temperature affect atmospheric pressure isobar spacing?",
+                options: [
+                    { text: "Cold air contracts, causing isobars to compress closer together.", correct: true, rationale: "Cold air is denser, causing pressure levels (isobars) to compress vertically closer together." },
+                    { text: "Cold air expands, causing isobars to spread farther apart.", correct: false, rationale: "Warm air causes expansion and wider isobar spacing." },
+                    { text: "Cold air creates horizontal isobars with zero vertical pressure gradient.", correct: false, rationale: "Vertical pressure gradients always exist in planetary atmospheres." },
+                    { text: "Temperature has zero physical effect on isobar spacing.", correct: false, rationale: "Temperature directly dictates air density and pressure lapse rates." }
+                ]
+            },
+            {
+                q: "In air colder than ISA standard conditions, how does true altitude compare to indicated altitude?",
+                options: [
+                    { text: "True altitude is lower than indicated altitude.", correct: true, rationale: "Compressed isobars in cold air mean the aircraft reaches a given pressure level at a lower true height." },
+                    { text: "True altitude is higher than indicated altitude.", correct: false, rationale: "This occurs in warmer-than-standard air." },
+                    { text: "True altitude is identical to indicated altitude.", correct: false, rationale: "Only true under standard ISA conditions." },
+                    { text: "True altitude equals airport elevation plus density altitude.", correct: false, rationale: "Density altitude relates to aircraft performance, not true geometric height." }
+                ]
+            },
+            {
+                q: "What rule-of-thumb phrase describes temperature-induced altimeter errors?",
+                options: [
+                    { text: "'From hot to cold, look out below.'", correct: true, rationale: "Flying from warm air into cold air causes the altimeter to read higher than true altitude, risking terrain strike." },
+                    { text: "'From cold to hot, land on the spot.'", correct: false, rationale: "Incorrect memory phrase." },
+                    { text: "'Warm air low, watch out below.'", correct: false, rationale: "Warm air causes true altitude to be higher than indicated." },
+                    { text: "'Cold air high, touch the sky.'", correct: false, rationale: "Incorrect phrase." }
+                ]
+            },
+            {
+                q: "According to ICAO Document 8168, how much does true altitude change per 10°C deviation from ISA?",
+                options: [
+                    { text: "4% of the height above the reporting station per 10°C ISA deviation.", correct: true, rationale: "ICAO Doc 8168 states a rule of thumb where true altitude changes by 4% per 10°C of temperature deviation from ISA." },
+                    { text: "10% of total altitude per 1°C ISA deviation.", correct: false, rationale: "Grossly exaggerated error rate." },
+                    { text: "100 feet per 1000 feet of climb regardless of temperature.", correct: false, rationale: "Standard lapse rate is 2°C/1000 ft, not an error rule." },
+                    { text: "1% per 5°C ISA deviation.", correct: false, rationale: "Incorrect percentage calculation." }
+                ]
+            },
+            {
+                q: "Down to what temperature limit is the ICAO 4% temperature correction rule-of-thumb considered reliable?",
+                options: [
+                    { text: "Down to -15°C ambient temperature.", correct: true, rationale: "The 4% rule of thumb is valid down to -15°C; below this, published correction tables in ICAO Doc 8168 must be used." },
+                    { text: "Down to 0°C ambient temperature.", correct: false, rationale: "The rule remains usable down to -15°C." },
+                    { text: "Down to -50°C ambient temperature.", correct: false, rationale: "At extreme sub-zero temperatures, linear rules of thumb fail due to non-linear density changes." },
+                    { text: "Down to ISA standard ground temperature (+15°C).", correct: false, rationale: "+15°C is ISA standard sea level temperature." }
+                ]
+            },
+            {
+                q: "What dynamic effect causes localized static pressure drops when high-speed wind blows over mountain ridges?",
+                options: [
+                    { text: "The Bernoulli Effect", correct: true, rationale: "Air accelerating over mountain crests experiences reduced static pressure due to the Bernoulli effect." },
+                    { text: "The Coriolis Effect", correct: false, rationale: "Coriolis effect causes large-scale wind deflection due to Earth's rotation." },
+                    { text: "The Coandă Effect", correct: false, rationale: "Coandă effect describes fluid adherence to curved surfaces." },
+                    { text: "The Magnus Effect", correct: false, rationale: "Magnus effect generates lift on rotating cylinders/spheres." }
+                ]
+            },
+            {
+                q: "How does mountain wave wind acceleration affect altimeter readings near mountain peaks?",
+                options: [
+                    { text: "Localized low static pressure makes the altimeter indicate HIGHER than true altitude.", correct: true, rationale: "Bernoulli acceleration lowers static pressure; the altimeter interprets this as higher altitude, masking true proximity to terrain." },
+                    { text: "Localized high static pressure makes the altimeter indicate LOWER than true altitude.", correct: false, rationale: "Lower static pressure increases indicated altitude." },
+                    { text: "It causes the altimeter to indicate zero feet.", correct: false, rationale: "Static drops cause false high readings, not zero indications." },
+                    { text: "It locks the Kollsman scale setting automatically.", correct: false, rationale: "Kollsman scale is set manually by pilot control." }
+                ]
+            },
+            {
+                q: "Because of mountain wave and temperature errors, what action should pilots take near mountain ranges?",
+                options: [
+                    { text: "Increase terrain safety clearance margins above published minimum altitudes.", correct: true, rationale: "To offset combined pressure drops from temperature and mountain wave Bernoulli effects, safety buffers must be added." },
+                    { text: "Set QFE instead of QNH.", correct: false, rationale: "QFE over mountains provides no valid clearance reference." },
+                    { text: "Fly exclusively at Flight Level 100 on QNE.", correct: false, rationale: "FL100 might be below mountain wave disturbance zones or mountain peaks." },
+                    { text: "Turn off the static port heating elements.", correct: false, rationale: "Static heat prevents icing blockages and must remain on in icing conditions." }
+                ]
+            },
+            {
+                q: "What is the standard acceptable altimeter tolerance limit when checked on the ground against airport elevation?",
+                options: [
+                    { text: "±75 feet", correct: true, rationale: "Industry standards and ICAO guidelines dictate that a serviceable barometric altimeter must agree within ±75 ft of known field elevation." },
+                    { text: "±20 feet", correct: false, rationale: "±20 ft is typical for precision digital RVSM altimeters, but general tolerance standard cited in video is ±75 ft." },
+                    { text: "±150 feet", correct: false, rationale: "±150 ft exceeds safe operational limits for departure." },
+                    { text: "±300 feet", correct: false, rationale: "Unacceptable margin of error." }
+                ]
+            },
+            {
+                q: "An aircraft is parked at an airport with an elevation of 3,000 feet. With current QNH set, what is the acceptable altimeter reading range?",
+                options: [
+                    { text: "2,925 feet to 3,075 feet", correct: true, rationale: "3,000 ft ± 75 ft yields a passable range between 2,925 ft and 3,075 ft." },
+                    { text: "2,900 feet to 3,100 feet", correct: false, rationale: "This represents a ±100 ft tolerance." },
+                    { text: "2,980 feet to 3,020 feet", correct: false, rationale: "This represents a ±20 ft tolerance." },
+                    { text: "3,000 feet to 3,150 feet", correct: false, rationale: "Asymmetric tolerance range." }
+                ]
+            },
+            {
+                q: "What action must be taken if an aircraft altimeter exceeds the ±75 ft tolerance check prior to flight?",
+                options: [
+                    { text: "The altimeter must be inspected and recalibrated by a certified aeronautical workshop.", correct: true, rationale: "An altimeter failing the tolerance check is unserviceable and requires bench inspection/recalibration before flight." },
+                    { text: "The pilot can fly provided they add 100 feet to all approach minimums.", correct: false, rationale: "Unserviceable altimeters cannot be flown legally under IFR." },
+                    { text: "The pilot must reset the Kollsman window until it reads 0 feet.", correct: false, rationale: "Forcing 0 ft creates incorrect barometric setting." },
+                    { text: "The flight can proceed normally if flying below 5,000 feet.", correct: false, rationale: "Tolerance checks are mandatory pre-flight safety requirements." }
+                ]
+            },
+            {
+                q: "Under ISA standard atmospheric conditions, what is the standard temperature at sea level?",
+                options: [
+                    { text: "+15°C (59°F)", correct: true, rationale: "ISA standard atmospheric parameters specify sea level temperature as +15°C (15 degrees Celsius)." },
+                    { text: "0°C (32°F)", correct: false, rationale: "0°C is the freezing point of water, not ISA standard sea level temp." },
+                    { text: "+20°C (68°F)", correct: false, rationale: "Incorrect baseline temperature." },
+                    { text: "-56.5°C (-69.7°F)", correct: false, rationale: "-56.5°C is the ISA standard tropopause temperature." }
+                ]
+            },
+            {
+                q: "What is the standard ISA temperature lapse rate in the troposphere?",
+                options: [
+                    { text: "2°C (1.98°C) decrease per 1,000 feet of altitude climb.", correct: true, rationale: "Standard ISA temperature lapse rate is approximately 2°C drop per 1,000 ft altitude gain." },
+                    { text: "5°C decrease per 1,000 feet of altitude climb.", correct: false, rationale: "This approaches the dry adiabatic lapse rate (~3°C/1000 ft is ~9.8°C/km, 5°C is steep)." },
+                    { text: "1°C decrease per 10,000 feet of altitude climb.", correct: false, rationale: "Incorrect calculation." },
+                    { text: "Temperature remains completely constant up to 36,000 feet.", correct: false, rationale: "Temperature decreases steadily up to the tropopause (~36,089 ft)." }
+                ]
+            },
+            {
+                q: "If an airfield has a QFE of 27.92 inHg and local QNH is 29.92 inHg, what is the approximate airport elevation?",
+                options: [
+                    { text: "2,000 feet MSL", correct: true, rationale: "Pressure difference = 29.92 - 27.92 = 2.00 inHg. At 1 inHg per 1,000 ft, elevation = 2,000 ft MSL." },
+                    { text: "1,000 feet MSL", correct: false, rationale: "1.00 inHg difference equals ~1,000 ft." },
+                    { text: "500 feet MSL", correct: false, rationale: "0.50 inHg difference equals ~500 ft." },
+                    { text: "3,000 feet MSL", correct: false, rationale: "3.00 inHg difference equals ~3,000 ft." }
+                ]
+            },
+            {
+                q: "Why does an altimeter experience lag during rapid climbs or descents?",
+                options: [
+                    { text: "Air takes time to flow through the narrow static line system into the capsule chamber.", correct: true, rationale: "Mechanical friction and air flow resistance through static ports cause minor physical lag during rapid vertical movements." },
+                    { text: "The electronic digital display takes time to compute satellite GPS telemetry.", correct: false, rationale: "Pure barometric altimeters function pneumatically without satellite inputs." },
+                    { text: "The Kollsman gear mechanism slips at high vertical rates.", correct: false, rationale: "The Kollsman gearing is locked unless manually turned." },
+                    { text: "Temperature change freezes the aneroid wafer instantly.", correct: false, rationale: "Lag is caused by static pressure equalization rates, not thermal freezing." }
+                ]
+            }
+        ];
+
+        // Global State Variables
+        let questions = [];
+        let userAnswers = {}; // questionIndex -> selectedOptionIndex
+        let flaggedQuestions = new Set();
+        let currentQuestionIndex = 0;
+        let timeRemaining = 50 * 60; // 50 minutes in seconds
+        let timerInterval = null;
+        let isSubmitted = false;
+
+        // Initialize and Shuffle Options dynamically to satisfy randomization constraint
+        function initQuiz() {
+            // Deep clone questions & shuffle options dynamically
+            questions = rawQuestions.map((qObj, idx) => {
+                let optionsCopy = [...qObj.options];
+                // Fisher-Yates Shuffle on options
+                for (let i = optionsCopy.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [optionsCopy[i], optionsCopy[j]] = [optionsCopy[j], optionsCopy[i]];
+                }
+                return {
+                    id: idx,
+                    question: qObj.q,
+                    options: optionsCopy
+                };
+            });
+
+            renderGrid();
+            renderQuestion(0);
+            startTimer();
+        }
+
+        // Timer Function
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmit();
+                } else {
+                    timeRemaining--;
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = display;
+        }
+
+        // Render Sidebar Navigation Grid
+        function renderGrid() {
+            const gridContainer = document.getElementById('question-grid');
+            gridContainer.innerHTML = '';
+
+            questions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `question-nav-btn border border-slate-700 ${getNavBtnColor(idx)}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => jumpToQuestion(idx);
+                gridContainer.appendChild(btn);
+            });
+
+            updateProgressStats();
+        }
+
+        function getNavBtnColor(idx) {
+            if (idx === currentQuestionIndex) return 'bg-blue-600 text-white font-bold border-blue-400 active';
+            if (flaggedQuestions.has(idx)) return 'bg-amber-500 text-slate-900 font-bold';
+            if (userAnswers[idx] !== undefined) return 'bg-blue-900/80 text-blue-200 border-blue-700';
+            return 'bg-slate-800 text-slate-300 hover:bg-slate-700';
+        }
+
+        function updateProgressStats() {
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('progress-text').innerText = `${answeredCount} / 50`;
+            document.getElementById('flagged-text').innerText = flaggedQuestions.size;
+        }
+
+        // Render Active Question
+        function renderQuestion(index) {
+            currentQuestionIndex = index;
+            const q = questions[index];
+
+            document.getElementById('question-number-badge').innerText = `Question ${index + 1} of 50`;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Flag state button update
+            const flagBtnText = document.getElementById('flag-btn-text');
+            if (flaggedQuestions.has(index)) {
+                flagBtnText.innerText = "Unflag Question";
+                document.getElementById('flag-btn').classList.add('text-amber-400');
+            } else {
+                flagBtnText.innerText = "Flag for Review";
+                document.getElementById('flag-btn').classList.remove('text-amber-400');
+            }
+
+            // Options rendering
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, optIdx) => {
+                const isSelected = userAnswers[index] === optIdx;
+                const optionDiv = document.createElement('div');
+                
+                optionDiv.className = `p-4 rounded-lg border cursor-pointer transition flex items-start gap-3 ${
+                    isSelected 
+                        ? 'bg-blue-900/40 border-blue-500 text-white' 
+                        : 'bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-700/50'
+                }`;
+
+                optionDiv.onclick = () => selectOption(index, optIdx);
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `option-${index}`;
+                radio.checked = isSelected;
+                radio.className = 'mt-1 text-blue-600 focus:ring-blue-500 h-4 w-4';
+
+                const label = document.createElement('span');
+                label.className = 'text-sm md:text-base leading-snug';
+                label.innerText = opt.text;
+
+                optionDiv.appendChild(radio);
+                optionDiv.appendChild(label);
+                container.appendChild(optionDiv);
+            });
+
+            // Prev / Next button state
+            document.getElementById('prev-btn').disabled = index === 0;
+            const nextBtn = document.getElementById('next-btn');
+            if (index === questions.length - 1) {
+                nextBtn.innerText = "Review / Submit";
+            } else {
+                nextBtn.innerText = "Next \u2192";
+            }
+
+            renderGrid();
+        }
+
+        function selectOption(qIndex, optIndex) {
+            if (isSubmitted) return;
+            userAnswers[qIndex] = optIndex;
+            renderQuestion(qIndex);
+        }
+
+        function navigateQuestion(direction) {
+            const targetIndex = currentQuestionIndex + direction;
+            if (targetIndex >= 0 && targetIndex < questions.length) {
+                renderQuestion(targetIndex);
+            } else if (targetIndex === questions.length) {
+                confirmSubmit();
+            }
+        }
+
+        function jumpToQuestion(index) {
+            renderQuestion(index);
+        }
+
+        function toggleFlagCurrent() {
+            if (flaggedQuestions.has(currentQuestionIndex)) {
+                flaggedQuestions.delete(currentQuestionIndex);
+            } else {
+                flaggedQuestions.add(currentQuestionIndex);
+            }
+            renderQuestion(currentQuestionIndex);
+        }
+
+        function confirmSubmit() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const unanswered = questions.length - answeredCount;
+            
+            let msg = `Are you sure you want to submit your test?`;
+            if (unanswered > 0) {
+                msg += `\n\nYou still have ${unanswered} unanswered question(s).`;
+            }
+
+            if (confirm(msg)) {
+                submitQuiz();
+            }
+        }
+
+        function autoSubmit() {
+            alert("Time has expired! Your quiz is being submitted automatically.");
+            submitQuiz();
+        }
+
+        function submitQuiz() {
+            isSubmitted = true;
+            clearInterval(timerInterval);
+
+            // Hide header controls and active question body
+            document.getElementById('quiz-header-info').classList.add('hidden');
+            document.getElementById('quiz-body').classList.add('hidden');
+            document.querySelector('aside').classList.add('hidden');
+
+            // Show results section
+            const resultsScreen = document.getElementById('results-screen');
+            resultsScreen.classList.remove('hidden');
+
+            // Calculate score
+            let correctCount = 0;
+            questions.forEach((q, idx) => {
+                const selected = userAnswers[idx];
+                if (selected !== undefined && q.options[selected].correct) {
+                    correctCount++;
+                }
+            });
+
+            const percentage = Math.round((correctCount / questions.length) * 100);
+            const timeTakenSecs = (50 * 60) - timeRemaining;
+            const minutesTaken = Math.floor(timeTakenSecs / 60);
+            const secondsTaken = timeTakenSecs % 60;
+
+            document.getElementById('final-score').innerText = `${correctCount} / 50`;
+            document.getElementById('final-percent').innerText = `${percentage}%`;
+            document.getElementById('final-time').innerText = `${String(minutesTaken).padStart(2, '0')}:${String(secondsTaken).padStart(2, '0')}`;
+            
+            const statusEl = document.getElementById('final-status');
+            if (percentage >= 75) {
+                statusEl.innerText = "PASSED";
+                statusEl.className = "text-2xl font-bold text-emerald-400";
+            } else {
+                statusEl.innerText = "NEEDS REVIEW";
+                statusEl.className = "text-2xl font-bold text-rose-400";
+            }
+
+            // Generate detailed question breakdown review
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '<h3 class="text-xl font-bold text-slate-100 mb-4">Detailed Question Analysis</h3>';
+
+            questions.forEach((q, idx) => {
+                const selectedOptIdx = userAnswers[idx];
+                const correctOpt = q.options.find(o => o.correct);
+                const isCorrect = selectedOptIdx !== undefined && q.options[selectedOptIdx].correct;
+
+                const card = document.createElement('div');
+                card.className = `p-6 rounded-xl border ${
+                    isCorrect ? 'bg-slate-800/80 border-emerald-500/50' : 'bg-slate-800/80 border-rose-500/50'
+                }`;
+
+                let optionsHTML = '';
+                q.options.forEach((opt, oIdx) => {
+                    let badge = '';
+                    let itemStyle = 'text-slate-400 border-slate-700 bg-slate-900/40';
+
+                    if (opt.correct) {
+                        badge = '<span class="ml-2 px-2 py-0.5 text-xs bg-emerald-900/80 text-emerald-300 rounded font-semibold border border-emerald-600">Correct Choice</span>';
+                        itemStyle = 'text-emerald-300 border-emerald-600/50 bg-emerald-950/30';
+                    } else if (selectedOptIdx === oIdx && !opt.correct) {
+                        badge = '<span class="ml-2 px-2 py-0.5 text-xs bg-rose-900/80 text-rose-300 rounded font-semibold border border-rose-600">Your Choice (Incorrect)</span>';
+                        itemStyle = 'text-rose-300 border-rose-600/50 bg-rose-950/30';
+                    }
+
+                    optionsHTML += `
+                        <div class="p-3 rounded border text-sm ${itemStyle} my-2">
+                            <div class="font-medium">${opt.text} ${badge}</div>
+                            <div class="text-xs text-slate-400 mt-1 italic">Rationale: ${opt.rationale}</div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Question ${idx + 1}</span>
+                        <span class="text-xs font-bold px-3 py-1 rounded-full ${
+                            isCorrect ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-700' : 'bg-rose-900/60 text-rose-300 border border-rose-700'
+                        }">
+                            ${isCorrect ? 'Correct' : selectedOptIdx === undefined ? 'Unanswered' : 'Incorrect'}
+                        </span>
+                    </div>
+                    <h4 class="text-base font-semibold text-slate-100 mb-3">${q.question}</h4>
+                    <div class="space-y-1">${optionsHTML}</div>
+                `;
+
+                reviewContainer.appendChild(card);
+            });
+        }
+
+        // Launch quiz on page load
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
