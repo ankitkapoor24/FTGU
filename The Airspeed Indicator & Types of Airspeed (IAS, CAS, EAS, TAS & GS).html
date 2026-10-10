@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviation Mastery: Airspeed Indicator & Types of Airspeed (IAS, CAS, EAS, TAS, GS)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="bg-indigo-600 text-white p-2 rounded-xl font-bold flex items-center justify-center shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-slate-100">Aviation Theory: Airspeed Mastery Exam</h1>
+                <p class="text-xs text-slate-400">Pitot-Static System, IAS, CAS, EAS, TAS &amp; GS (50 Questions)</p>
+            </div>
+        </div>
+        <div id="timer-container" class="hidden items-center bg-slate-800 border border-slate-700 px-4 py-2 rounded-xl space-x-2 shadow-inner">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span id="time-display" class="font-mono text-lg font-semibold text-indigo-300">50:00</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl max-w-2xl w-full text-center animate-fade-in">
+            <div class="inline-flex bg-indigo-600/20 text-indigo-400 p-4 rounded-full mb-6 border border-indigo-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-extrabold text-white mb-4 tracking-tight">The Airspeed Indicator &amp; Types of Airspeed Exam</h2>
+            <p class="text-slate-400 mb-6 leading-relaxed">
+                This rigorous <span class="text-indigo-400 font-semibold">50-question examination</span> tests your mastery of the Pitot-Static system, diaphragm/case pressures, instrument &amp; position errors, Calibrated Airspeed (CAS), compressibility, Equivalent Airspeed (EAS), True Airspeed (TAS), temperature/altitude corrections, and Ground Speed (GS).
+            </p>
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 mb-8 text-left text-xs sm:text-sm text-slate-300 space-y-2">
+                <p class="font-bold text-indigo-300">Exam Rules &amp; Features:</p>
+                <p>&bull; <span class="text-white font-medium">50 Minutes Time Limit:</span> Countdown timer with automatic submission upon expiration.</p>
+                <p>&bull; <span class="text-white font-medium">Question Palette:</span> Skip and jump to any question at any time using the navigation grid.</p>
+                <p>&bull; <span class="text-white font-medium">Dynamic Randomization:</span> Answer options and correct answer positions are randomized on every refresh. Adjacent questions prevent identical correct answer indices.</p>
+                <p>&bull; <span class="text-white font-medium">Balanced Option Lengths:</span> Longest and shortest options vary positionally.</p>
+                <p>&bull; <span class="text-white font-medium">Detailed Review:</span> Complete breakdown with correct/incorrect badges and rationales for every option upon submission.</p>
+            </div>
+            <button onclick="startQuiz()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-10 rounded-2xl transition duration-200 shadow-lg shadow-indigo-600/30 transform hover:-translate-y-0.5 cursor-pointer text-lg">
+                Start Examination
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden w-full grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+            
+            <!-- Left/Main Question Area -->
+            <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col justify-between min-h-[500px]">
+                <div>
+                    <!-- Progress & Question Number -->
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                        <span id="question-indicator" class="text-xs uppercase tracking-widest font-bold text-indigo-400 bg-indigo-950 px-3 py-1.5 rounded-lg border border-indigo-800/50">Question 1 of 50</span>
+                        <span id="topic-badge" class="text-xs font-mono text-slate-400 bg-slate-800 px-3 py-1 rounded-lg">Topic: Pitot-Static System</span>
+                    </div>
+
+                    <!-- Question Text -->
+                    <h3 id="question-text" class="text-xl sm:text-2xl font-bold text-white mb-6 leading-snug">
+                        Loading question...
+                    </h3>
+
+                    <!-- Options Container -->
+                    <div id="options-container" class="space-y-3 mb-8">
+                        <!-- Dynamically populated options -->
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex items-center justify-between pt-6 border-t border-slate-800">
+                    <button id="prev-btn" onclick="prevQuestion()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 px-6 rounded-xl transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>Previous</span>
+                    </button>
+                    
+                    <div class="flex space-x-3">
+                        <button id="next-btn" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-8 rounded-xl transition duration-200 shadow-md shadow-indigo-600/20 cursor-pointer flex items-center space-x-2">
+                            <span>Next</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: Question Palette -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
+                <div>
+                    <h4 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center justify-between">
+                        <span>Question Palette</span>
+                        <span id="answered-counter" class="text-xs text-indigo-400 font-normal">0/50 Answered</span>
+                    </h4>
+                    <!-- Grid of 50 buttons -->
+                    <div id="palette-grid" class="grid grid-cols-5 gap-2 max-h-[360px] overflow-y-auto pr-1">
+                        <!-- Dynamically generated palette nodes -->
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-slate-800">
+                    <button onclick="confirmSubmit()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-lg shadow-emerald-600/30 cursor-pointer flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Submit Examination</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Summary & Results Screen -->
+        <div id="summary-screen" class="hidden w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl animate-fade-in max-w-5xl mx-auto">
+            <div class="text-center pb-8 border-b border-slate-800 mb-8">
+                <div id="score-badge" class="inline-flex items-center justify-center bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 text-3xl font-black w-24 h-24 rounded-full mb-4 shadow-inner">
+                    0%
+                </div>
+                <h2 class="text-3xl font-extrabold text-white mb-2">Examination Completed</h2>
+                <p id="score-subtitle" class="text-slate-400 text-lg">Review your detailed performance breakdown below.</p>
+                <button onclick="restartQuiz()" class="mt-6 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-8 rounded-xl transition duration-200 shadow-md cursor-pointer">
+                    Retake Examination
+                </button>
+            </div>
+
+            <!-- Detailed Breakdown List -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold text-white mb-4">Detailed Review &amp; Rationales</h3>
+                <div id="review-container" class="space-y-6">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        Aviation Theory Examination Platform &bull; Airspeed Indicator &amp; Types of Airspeed
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Raw dataset of 50 challenging aviation questions focused precisely on the video content
+        const rawQuizData = [
+            {
+                "questionNumber": 1,
+                "topic": "Pitot-Static System",
+                "question": "What two pressures are supplied to the Airspeed Indicator (ASI) by the pitot-static system?",
+                "answerOptions": [
+                    { "text": "Total pressure (impact pressure from the pitot tube) and static pressure (ambient atmospheric pressure from the static port).", "isCorrect": true, "rationale": "Correct! The ASI compares ram/total pressure from the pitot tube against static ambient pressure from the static port to determine dynamic pressure." },
+                    { "text": "Dynamic pressure directly from the static port and barometric pressure from the altimeter drum.", "isCorrect": false, "rationale": "Incorrect. The static port provides ambient static pressure, not dynamic pressure." },
+                    { "text": "Cabin pressure and manifold pressure.", "isCorrect": false, "rationale": "Incorrect. Cabin and manifold pressures are used for cabin pressurization and engine performance respectively." },
+                    { "text": "Total pressure from both ports and zero reference pressure.", "isCorrect": false, "rationale": "Incorrect. Static pressure is required as a reference baseline." }
+                ]
+            },
+            {
+                "questionNumber": 2,
+                "topic": "ASI Internal Mechanism",
+                "question": "Inside the Airspeed Indicator, where is total (ram) pressure directed?",
+                "answerOptions": [
+                    { "text": "Directly into the sealed metal expansion diaphragm.", "isCorrect": true, "rationale": "Correct! Pitot ram pressure enters the sealed diaphragm, causing it to expand as aircraft speed increases." },
+                    { "text": "Into the sealed instrument case surrounding the diaphragm.", "isCorrect": false, "rationale": "Incorrect. The sealed case receives static pressure, not pitot pressure." },
+                    { "text": "Directly against the mechanical needle pivot shaft via hydraulic fluid.", "isCorrect": false, "rationale": "Incorrect. ASI instruments are purely pneumatic mechanical bellows instruments without hydraulic fluid." },
+                    { "text": "To the outside of the aircraft via overflow vent tubes.", "isCorrect": false, "rationale": "Incorrect. Pitot pressure is trapped within the instrument diaphragm." }
+                ]
+            },
+            {
+                "questionNumber": 3,
+                "topic": "ASI Internal Mechanism",
+                "question": "Where is static pressure directed within the Airspeed Indicator housing?",
+                    "answerOptions": [
+                    { "text": "Into the airtight instrument case surrounding the expansion diaphragm.", "isCorrect": true, "rationale": "Correct! Static pressure fills the sealed instrument case, acting against the outside of the diaphragm to subtract ambient atmospheric pressure." },
+                    { "text": "Inside the expansion diaphragm itself.", "isCorrect": false, "rationale": "Incorrect. Total pitot pressure goes inside the diaphragm; static goes into the surrounding case." },
+                    { "text": "To the airspeed needle counterweight balance.", "isCorrect": false, "rationale": "Incorrect. Counterweights balance the physical needle assembly against gravitational acceleration." },
+                    { "text": "Exclusively to the altimeter and vertical speed indicator.", "isCorrect": false, "rationale": "Incorrect. The ASI case also receives static pressure directly." }
+                ]
+            },
+            {
+                "questionNumber": 4,
+                "topic": "ASI Internal Mechanism",
+                "question": "How does the ASI mechanical linkage translate diaphragm expansion into needle movement on the dial?",
+                "answerOptions": [
+                    { "text": "Through a system of gears, levers, and a rocking shaft connected to the diaphragm expansion.", "isCorrect": true, "rationale": "Correct! As the diaphragm expands or contracts, rocking shafts and precision gears rotate the indicator needle." },
+                    { "text": "Via electronic strain gauges and microprocessors.", "isCorrect": false, "rationale": "Incorrect. Traditional mechanical ASIs operate entirely via mechanical bellows, gears, and linkages." },
+                    { "text": "Using a rotating magnetic eddy-current drag cup.", "isCorrect": false, "rationale": "Incorrect. Magnetic drag cups are used in mechanical tachometers, not airspeed indicators." },
+                    { "text": "By means of an aneroid wafer stack rotating a digital drum.", "isCorrect": false, "rationale": "Incorrect. Altimeters use aneroid wafer stacks; ASIs use a single expansion diaphragm." }
+                ]
+            },
+            {
+                "questionNumber": 5,
+                "topic": "Indicated Airspeed (IAS)",
+                "question": "What is Indicated Airspeed (IAS) defined as?",
+                "answerOptions": [
+                    { "text": "The uncorrected airspeed read directly off the airspeed indicator dial.", "isCorrect": true, "rationale": "Correct! IAS is simply what the pilot reads directly from the instrument face with zero corrections applied." },
+                    { "text": "True Airspeed corrected for non-standard temperature.", "isCorrect": false, "rationale": "Incorrect. That describes Density Altitude or calibrated temperature adjustments, not IAS." },
+                    { "text": "Ground Speed adjusted for headwind component vectors.", "isCorrect": false, "rationale": "Incorrect. Ground speed minus wind equals True Airspeed." },
+                    { "text": "Calibrated Airspeed corrected for instrument manufacturing errors.", "isCorrect": false, "rationale": "Incorrect. CAS is IAS corrected for instrument and position errors." }
+                ]
+            },
+            {
+                "questionNumber": 6,
+                "topic": "Indicated Airspeed (IAS)",
+                "question": "Why is Indicated Airspeed (IAS) considered the most crucial airspeed for pilots during flight maneuvers (like stalling and V-speeds)?",
+                "answerOptions": [
+                    { "text": "Because aircraft aerodynamic lift and stall behavior depend directly on dynamic pressure (impact pressure), which IAS measures.", "isCorrect": true, "rationale": "Correct! Wings fly based on dynamic pressure. Since IAS reflects dynamic pressure, stall speeds and maneuver speeds remain constant in IAS regardless of altitude." },
+                    { "text": "Because IAS accurately represents the true ground distance covered per minute.", "isCorrect": false, "rationale": "Incorrect. Ground speed represents ground distance covered, not IAS." },
+                    { "text": "Because IAS accounts for high-altitude air density compression effects.", "isCorrect": false, "rationale": "Incorrect. IAS does not account for air density changes at altitude." },
+                    { "text": "Because air traffic control requires pilots to report IAS at all times.", "isCorrect": false, "rationale": "Incorrect. ATC vectors and flight plans typically utilize assigned speeds or ground speed/mach." }
+                ]
+            },
+            {
+                "questionNumber": 7,
+                "topic": "Instrument Error",
+                "question": "What causes Instrument Error in an Airspeed Indicator?",
+                "answerOptions": [
+                    { "text": "Imperfections and mechanical tolerances in the internal gears, springs, and diaphragm manufacturing.", "isCorrect": true, "rationale": "Correct! Mechanical imperfections in gears and diaphragms create minor instrument errors." },
+                    { "text": "Airflow distortion around the aircraft fuselage at high angles of attack.", "isCorrect": false, "rationale": "Incorrect. Fuselage airflow distortion causes Position Error, not Instrument Error." },
+                    { "text": "Decreased air density at high cruising altitudes.", "isCorrect": false, "rationale": "Incorrect. Air density changes cause Density/TAS errors." },
+                    { "text": "Clogging of the pitot tube drain hole by insects.", "isCorrect": false, "rationale": "Incorrect. Clogged pitot tubes result in total system failure/blockage errors." }
+                ]
+            },
+            {
+                "questionNumber": 8,
+                "topic": "Position Error",
+                "question": "What is Position Error (or Installation Error) in the pitot-static system?",
+                "answerOptions": [
+                    { "text": "Errors caused by disturbed airflow around the aircraft fuselage or pitot head producing incorrect static/impact pressures.", "isCorrect": true, "rationale": "Correct! Disturbed airflow creates local pressure anomalies at the static ports or pitot tube, introducing position error." },
+                    { "text": "Errors caused by the physical weight of the instrument needles.", "isCorrect": false, "rationale": "Incorrect. Needle weight is accounted for in instrument balancing." },
+                    { "text": "Errors resulting from magnetic heading deviation on the compass rose.", "isCorrect": false, "rationale": "Incorrect. Magnetic deviation affects compasses, not pitot-static airspeed." },
+                    { "text": "Errors from altimeter setting subscale misalignments.", "isCorrect": false, "rationale": "Incorrect. Altimeter subscales affect altitude reporting, not airspeed position error." }
+                ]
+            },
+            {
+                "questionNumber": 9,
+                "topic": "Calibrated Airspeed (CAS)",
+                "question": "How is Calibrated Airspeed (CAS) obtained from Indicated Airspeed (IAS)?",
+                "answerOptions": [
+                    { "text": "By applying corrections for both Instrument Error and Position Error to IAS.", "isCorrect": true, "rationale": "Correct! CAS = IAS corrected for instrument error and installation/position error." },
+                    { "text": "By correcting IAS for non-standard temperature and altitude density.", "isCorrect": false, "rationale": "Incorrect. Correcting for density yields True Airspeed (TAS)." },
+                    { "text": "By adding headwind velocity vector components.", "isCorrect": false, "rationale": "Incorrect. Wind vectors affect Ground Speed." },
+                    { "text": "By applying compressibility factors at speeds above 300 knots.", "isCorrect": false, "rationale": "Incorrect. Compressibility correction converts CAS to Equivalent Airspeed (EAS)." }
+                ]
+            },
+            {
+                "questionNumber": 10,
+                "topic": "Calibrated Airspeed (CAS)",
+                "question": "Where can a pilot find the specific aircraft position error correction table for their airplane model?",
+                "answerOptions": [
+                    { "text": "In the Pilot's Operating Handbook (POH) or Aircraft Flight Manual (AFM).", "isCorrect": true, "rationale": "Correct! The POH/AFM contains calibration tables showing CAS vs. IAS for various flap configurations and airspeeds." },
+                    { "text": "On the back of the sectional VFR navigation chart.", "isCorrect": false, "rationale": "Incorrect. Sectional charts provide airspace and terrain data, not aircraft-specific calibration tables." },
+                    { "text": "Inside the transponder mode S configuration menu.", "isCorrect": false, "rationale": "Incorrect. Transponders report pressure altitude and squawk codes." },
+                    { "text": "Stamped directly onto the airspeed indicator glass bezel.", "isCorrect": false, "rationale": "Incorrect. Instrument bezels do not list aircraft-specific position correction tables." }
+                ]
+            },
+            {
+                "questionNumber": 11,
+                "topic": "Compressibility Error",
+                "question": "At approximately what airspeed does compressibility of air become a significant factor requiring correction?",
+                "answerOptions": [
+                    { "text": "Above 300 knots CAS.", "isCorrect": true, "rationale": "Correct! At speeds exceeding approximately 300 knots CAS, air begins to pack (compress) in front of the pitot tube faster than it can escape, causing the ASI to read artificially high." },
+                    { "text": "Above 100 knots IAS.", "isCorrect": false, "rationale": "Incorrect. 100 knots is typical training aircraft speed where compressibility is negligible." },
+                    { "text": "Above Mach 2.0 supersonic flight.", "isCorrect": false, "rationale": "Incorrect. Compressibility effects begin well below Mach 2, starting around 300 knots." },
+                    { "text": "Above 15,000 feet MSL regardless of speed.", "isCorrect": false, "rationale": "Incorrect. Compressibility depends primarily on airspeed, not altitude alone." }
+                ]
+            },
+            {
+                "questionNumber": 12,
+                "topic": "Compressibility Error",
+                "question": "What effect does air compressibility have on the uncorrected Airspeed Indicator at high speeds?",
+                "answerOptions": [
+                    { "text": "It causes the ASI to indicate a higher airspeed than the actual calibrated airspeed.", "isCorrect": true, "rationale": "Correct! Compressed air trapped in the pitot tube increases ram pressure artificially, making the ASI read higher than CAS." },
+                    { "text": "It causes the ASI to read zero because air pressure equalizes.", "isCorrect": false, "rationale": "Incorrect. Compression increases impact pressure." },
+                    { "text": "It dampens needle fluctuations without altering indicated values.", "isCorrect": false, "rationale": "Incorrect. Compressibility causes systematic positive error in pressure measurement." },
+                    { "text": "It reverses needle movement backward.", "isCorrect": false, "rationale": "Incorrect. The needle never reverses due to ram pressure." }
+                ]
+            },
+            {
+                "questionNumber": 13,
+                "topic": "Equivalent Airspeed (EAS)",
+                "question": "What is Equivalent Airspeed (EAS) defined as?",
+                "answerOptions": [
+                    { "text": "Calibrated Airspeed corrected for compressibility error.", "isCorrect": true, "rationale": "Correct! EAS is CAS corrected for compressibility, representing true dynamic pressure in compressible airflow." },
+                    { "text": "Indicated Airspeed corrected for temperature and pressure altitude.", "isCorrect": false, "rationale": "Incorrect. That describes True Airspeed (TAS)." },
+                    { "text": "Ground Speed minus headwind component.", "isCorrect": false, "rationale": "Incorrect. That is True Airspeed." },
+                    { "text": "Calibrated Airspeed corrected for instrument manufacturing errors.", "isCorrect": false, "rationale": "Incorrect. Instrument errors are corrected to find CAS." }
+                ]
+            },
+            {
+                "questionNumber": 14,
+                "topic": "Equivalent Airspeed (EAS)",
+                "question": "In what type of aircraft operations is Equivalent Airspeed (EAS) most critical?",
+                "answerOptions": [
+                    { "text": "High-speed, high-altitude jet transport operations.", "isCorrect": true, "rationale": "Correct! High-speed jets flying fast at altitude experience compressibility errors, making EAS vital for structural load calculations." },
+                    { "text": "Low-speed agricultural crop dusting.", "isCorrect": false, "rationale": "Incorrect. Crop dusters fly too slowly for compressibility errors to matter." },
+                    { "text": "Glider soaring and thermal ridge flying.", "isCorrect": false, "rationale": "Incorrect. Gliders operate at low speeds where compressibility is non-existent." },
+                    { "text": "Helicopter hover maneuvers.", "isCorrect": false, "rationale": "Incorrect. Helicopters do not reach the high speeds where EAS is required." }
+                ]
+            },
+            {
+                "questionNumber": 15,
+                "topic": "Density Error",
+                "question": "Why does air density decrease as altitude increases?",
+                "answerOptions": [
+                    { "text": "Because atmospheric pressure and temperature both decrease with altitude, spreading air molecules farther apart.", "isCorrect": true, "rationale": "Correct! Lower pressure and colder temperatures result in fewer air molecules per unit volume (lower density)." },
+                    { "text": "Because oxygen molecules sink to the surface due to molecular weight.", "isCorrect": false, "rationale": "Incorrect. Atmospheric mixing keeps air composition homogeneous up to great altitudes." },
+                    { "text": "Because solar radiation burns off nitrogen gas in the upper troposphere.", "isCorrect": false, "rationale": "Incorrect. Nitrogen is stable and does not burn off." },
+                    { "text": "Because centrifugal force from Earth's rotation throws air outward.", "isCorrect": false, "rationale": "Incorrect. Gravity and thermodynamics dictate atmospheric density." }
+                ]
+            },
+            {
+                "questionNumber": 16,
+                "topic": "Density Error",
+                "question": "How does flying in air less dense than standard sea level air affect the Airspeed Indicator?",
+                "answerOptions": [
+                    { "text": "The ASI indicates a lower airspeed (IAS) than the actual speed at which the aircraft is moving through the air mass (TAS).", "isCorrect": true, "rationale": "Correct! Because thin air provides less impact pressure for a given velocity, the ASI under-reads. TAS is higher than IAS." },
+                    { "text": "The ASI indicates a higher airspeed than the actual true airspeed.", "isCorrect": false, "rationale": "Incorrect. Thin air causes the ASI to under-read, not over-read." },
+                    { "text": "The ASI locks completely at zero.", "isCorrect": false, "rationale": "Incorrect. The ASI functions normally, just with reduced dynamic pressure." },
+                    { "text": "IAS and TAS remain perfectly identical at all altitudes.", "isCorrect": false, "rationale": "Incorrect. IAS and TAS diverge significantly with altitude." }
+                ]
+            },
+            {
+                "questionNumber": 17,
+                "topic": "True Airspeed (TAS)",
+                "question": "What is True Airspeed (TAS) defined as?",
+                "answerOptions": [
+                    { "text": "The actual speed of the aircraft relative to the surrounding air mass.", "isCorrect": true, "rationale": "Correct! TAS is the true speed at which the airplane cuts through the surrounding air particles." },
+                    { "text": "The speed of the aircraft relative to the ground surface.", "isCorrect": false, "rationale": "Incorrect. Speed relative to the ground is Ground Speed (GS)." },
+                    { "text": "The speed read directly on the instrument dial without corrections.", "isCorrect": false, "rationale": "Incorrect. Uncorrected dial speed is Indicated Airspeed (IAS)." },
+                    { "text": "Indicated Airspeed corrected only for instrument manufacturing errors.", "isCorrect": false, "rationale": "Incorrect. That is Calibrated Airspeed (CAS)." }
+                ]
+            },
+            {
+                "questionNumber": 18,
+                "topic": "True Airspeed (TAS)",
+                "question": "Generally speaking, as an aircraft climbs to a higher altitude at a constant Calibrated Airspeed, what happens to True Airspeed?",
+                "answerOptions": [
+                    { "text": "True Airspeed increases.", "isCorrect": true, "rationale": "Correct! As air density decreases with altitude, TAS increases relative to CAS to maintain the same dynamic pressure." },
+                    { "text": "True Airspeed decreases proportionally.", "isCorrect": false, "rationale": "Incorrect. TAS increases with altitude, it does not decrease." },
+                    { "text": "True Airspeed remains exactly constant.", "isCorrect": false, "rationale": "Incorrect. Decreasing air density ensures TAS diverges from CAS." },
+                    { "text": "True Airspeed drops immediately to zero.", "isCorrect": false, "rationale": "Incorrect. The aircraft is still moving." }
+                ]
+            },
+            {
+                "questionNumber": 19,
+                "topic": "TAS Calculation Rule of Thumb",
+                "question": "What is the standard aviation rule of thumb formula for estimating True Airspeed (TAS) based on altitude?",
+                "answerOptions": [
+                    { "text": "Add approximately 2% to Calibrated Airspeed (or IAS) for every 1,000 feet of altitude above sea level.", "isCorrect": true, "rationale": "Correct! The standard rule of thumb is +2% TAS per 1,000 feet of pressure altitude." },
+                    { "text": "Subtract 5 knots for every 500 feet of altitude.", "isCorrect": false, "rationale": "Incorrect. TAS increases with altitude, and the metric is percentage-based." },
+                    { "text": "Multiply IAS by the square root of absolute temperature.", "isCorrect": false, "rationale": "Incorrect. While temperature is a factor, the standard rule of thumb is 2% per 1,000 feet." },
+                    { "text": "Divide ground speed by wind correction angle.", "isCorrect": false, "rationale": "Incorrect. Wind correction angle is for navigation vectors." }
+                ]
+            },
+            {
+                "questionNumber": 20,
+                "topic": "TAS Calculation Rule of Thumb",
+                "question": "If an aircraft is flying at 10,000 feet MSL with an Indicated/Calibrated Airspeed of 100 knots in standard atmosphere, what is the estimated True Airspeed using the 2% rule of thumb?",
+                "answerOptions": [
+                    { "text": "120 knots", "isCorrect": true, "rationale": "Correct! 10,000 feet = 10 blocks of 1,000 feet. 10 * 2% = 20% increase. 100 knots + 20% (20 knots) = 120 knots TAS." },
+                    { "text": "100 knots", "isCorrect": false, "rationale": "Incorrect. TAS increases with altitude; it won't remain at 100 knots." },
+                    { "text": "110 knots", "isCorrect": false, "rationale": "Incorrect. 10% would be 110, but 10,000 feet represents a 20% increase (2% per 1,000 ft)." },
+                    { "text": "140 knots", "isCorrect": false, "rationale": "Incorrect. 140 knots overcalculates the increase." }
+                ]
+            },
+            {
+                "questionNumber": 21,
+                "topic": "Flight Computers",
+                "question": "How do mechanical E6B flight computers or electronic flight computers calculate True Airspeed?",
+                "answerOptions": [
+                    { "text": "By aligning pressure altitude with outside air temperature (OAT) in the calculator window to correlate CAS/IAS with TAS.", "isCorrect": true, "rationale": "Correct! Flight computers use temperature and pressure altitude scales to calculate density altitude and convert CAS to TAS." },
+                    { "text": "By measuring magnetic declination angles automatically.", "isCorrect": false, "rationale": "Incorrect. Magnetic declination is used for true vs magnetic heading conversions." },
+                    { "text": "By integrating GPS satellite triangulation signals.", "isCorrect": false, "rationale": "Incorrect. E6B flight computers are analog or standalone mechanical/electronic tools independent of GPS." },
+                    { "text": "By measuring engine fuel flow rates.", "isCorrect": false, "rationale": "Incorrect. Fuel flow relates to burn rate and endurance, not TAS." }
+                ]
+            },
+            {
+                "questionNumber": 22,
+                "topic": "Sliding TAS Scales",
+                "question": "What feature do many mechanical airspeed indicators have on the outer bezel to help pilots determine True Airspeed directly?",
+                "answerOptions": [
+                    { "text": "A sliding TAS window scale that correlates pressure altitude and temperature with calibrated airspeed.", "isCorrect": true, "rationale": "Correct! A movable TAS ring on the instrument allows pilots to align altitude and OAT to read TAS directly opposite their CAS/IAS." },
+                    { "text": "A magnetic compass adjustment screw.", "isCorrect": false, "rationale": "Incorrect. Compass adjustment screws are on magnetic compasses." },
+                    { "text": "A clockwork stopwatch timer for fuel burn.", "isCorrect": false, "rationale": "Incorrect. Stopwatches measure time intervals." },
+                    { "text": "A barometric pressure adjustment knob (Kollsman window).", "isCorrect": false, "rationale": "Incorrect. Kollsman windows are exclusively found on altimeters." }
+                ]
+            },
+            {
+                "questionNumber": 23,
+                "topic": "Ground Speed (GS)",
+                "question": "What is Ground Speed (GS) defined as?",
+                "answerOptions": [
+                    { "text": "The actual speed of the aircraft over the ground surface.", "isCorrect": true, "rationale": "Correct! Ground speed is TAS adjusted for headwind or tailwind component vectors." },
+                    { "text": "The speed of the aircraft relative to the local air mass.", "isCorrect": false, "rationale": "Incorrect. Speed relative to the air mass is True Airspeed." },
+                    { "text": "Indicated Airspeed corrected for instrument error.", "isCorrect": false, "rationale": "Incorrect. That is Calibrated Airspeed." },
+                    { "text": "Calibrated Airspeed corrected for compressibility.", "isCorrect": false, "rationale": "Incorrect. That is Equivalent Airspeed." }
+                ]
+            },
+            {
+                "questionNumber": 24,
+                "topic": "Ground Speed (GS)",
+                "question": "If an aircraft has a True Airspeed of 150 knots and is flying directly into a 30-knot headwind, what is its Ground Speed?",
+                "answerOptions": [
+                    { "text": "120 knots", "isCorrect": true, "rationale": "Correct! Ground Speed = TAS minus headwind. 150 knots - 30 knots = 120 knots GS." },
+                    { "text": "180 knots", "isCorrect": false, "rationale": "Incorrect. Adding the wind instead of subtracting would represent a tailwind." },
+                    { "text": "150 knots", "isCorrect": false, "rationale": "Incorrect. Headwinds directly reduce ground speed." },
+                    { "text": "135 knots", "isCorrect": false, "rationale": "Incorrect. Calculation error in wind subtraction." }
+                ]
+            },
+            {
+                "questionNumber": 25,
+                "topic": "Ground Speed (GS)",
+                "question": "If an aircraft has a True Airspeed of 120 knots and experiences a 20-knot tailwind, what is its Ground Speed?",
+                "answerOptions": [
+                    { "text": "140 knots", "isCorrect": true, "rationale": "Correct! Ground Speed = TAS plus tailwind. 120 knots + 20 knots = 140 knots GS." },
+                    { "text": "100 knots", "isCorrect": false, "rationale": "Incorrect. Subtracting would be correct for a headwind, not a tailwind." },
+                    { "text": "120 knots", "isCorrect": false, "rationale": "Incorrect. Tailwinds increase ground speed over TAS." },
+                    { "text": "240 knots", "isCorrect": false, "rationale": "Incorrect. Excessive calculation error." }
+                ]
+            },
+            {
+                "questionNumber": 26,
+                "topic": "Practical Applications",
+                "question": "Why do pilots use Indicated Airspeed (IAS) during takeoff, landing, and stall maneuvers rather than True Airspeed or Ground Speed?",
+                "answerOptions": [
+                    { "text": "Because stall warning and wing lift depend directly on dynamic pressure (IAS), which remains constant for stalling regardless of altitude.", "isCorrect": true, "rationale": "Correct! An airplane stalls at the same IAS at sea level as it does at 10,000 feet because wing lift depends on dynamic pressure." },
+                    { "text": "Because IAS calculates fuel burn rates more accurately than other speeds.", "isCorrect": false, "rationale": "Incorrect. Fuel burn is calculated using fuel flow meters and totalizers." },
+                    { "text": "Because air traffic control mandates IAS for radar separation.", "isCorrect": false, "rationale": "Incorrect. ATC uses ground speed and transponder returns for radar separation." },
+                    { "text": "Because TAS and GS cannot be measured accurately below 5,000 feet.", "isCorrect": false, "rationale": "Incorrect. Modern instrumentation and GPS measure TAS and GS constantly." }
+                ]
+            },
+            {
+                "questionNumber": 27,
+                "topic": "Practical Applications",
+                "question": "When is True Airspeed (TAS) most critical for pilots during flight planning and execution?",
+                "answerOptions": [
+                    { "text": "For flight planning, navigation, estimated time of arrival (ETA) calculations, and fuel range calculations.", "isCorrect": true, "rationale": "Correct! Navigation logs require TAS and wind vectors to calculate true heading and ground speed for ETAs." },
+                    { "text": "For determining rotation speed (Vr) on the runway takeoff roll.", "isCorrect": false, "rationale": "Incorrect. Takeoff rotation uses Indicated Airspeed." },
+                    { "text": "For setting altimeter barometric subscales.", "isCorrect": false, "rationale": "Incorrect. Altimeter settings use local barometric pressure (Altimeter setting / QNH)." },
+                    { "text": "For determining engine oil temperature limits.", "isCorrect": false, "rationale": "Incorrect. Oil temperature is monitored via engine gauges." }
+                ]
+            },
+            {
+                "questionNumber": 28,
+                "topic": "Practical Applications",
+                "question": "How is Ground Speed (GS) primarily utilized in modern flight operations?",
+                "answerOptions": [
+                    { "text": "To calculate precise arrival times at waypoints and destination airports.", "isCorrect": true, "rationale": "Correct! Ground speed tells the pilot exactly how fast the aircraft is traveling across the Earth's surface to determine arrival times." },
+                    { "text": "To calculate stall speeds during steep turns.", "isCorrect": false, "rationale": "Incorrect. Stall speed increases with load factor (G-force), not ground speed." },
+                    { "text": "To set carburetor heat control valves.", "isCorrect": false, "rationale": "Incorrect. Carburetor heat prevents ice formation based on OAT and throttle position." },
+                    { "text": "To determine flap extension speed limits (Vfe).", "isCorrect": false, "rationale": "Incorrect. Flap limits are set using Indicated Airspeed (IAS)." }
+                ]
+            },
+            {
+                "questionNumber": 29,
+                "topic": "Pitot-Static System Failures",
+                "question": "What happens to the Airspeed Indicator if the pitot tube RAM AIR opening becomes completely clogged with ice or insects, but the drain hole remains open?",
+                "answerOptions": [
+                    { "text": "The airspeed reading drops to zero immediately.", "isCorrect": true, "rationale": "Correct! With the pitot opening blocked and the drain hole open, ram pressure escapes through the drain, equalizing pressure inside the diaphragm and dropping the ASI to zero." },
+                    { "text": "The airspeed indicator freezes in place and acts like an altimeter.", "isCorrect": false, "rationale": "Incorrect. That happens when both the pitot opening and drain hole are blocked." },
+                    { "text": "The airspeed indicator surges to maximum scale limit.", "isCorrect": false, "rationale": "Incorrect. Pressure does not surge when blocked open to drain." },
+                    { "text": "The airspeed indicator reverses backward.", "isCorrect": false, "rationale": "Incorrect. The needle cannot reverse." }
+                ]
+            },
+            {
+                "questionNumber": 30,
+                "topic": "Pitot-Static System Failures",
+                "question": "What happens to the Airspeed Indicator if BOTH the pitot tube opening AND the pitot drain hole become clogged (e.g., in freezing cloud conditions), while the static port remains clear?",
+                "answerOptions": [
+                    { "text": "The ASI acts like an altimeter: indicating higher speeds as the aircraft climbs and lower speeds as the aircraft descends.", "isCorrect": true, "rationale": "Correct! Trapped ram pressure remains constant while ambient static pressure in the case changes with altitude, causing erratic altimeter-like airspeed behavior." },
+                    { "text": "The airspeed indicator drops instantly to zero and stays there.", "isCorrect": false, "rationale": "Incorrect. Trapped pressure inside the closed diaphragm does not allow it to drop to zero." },
+                    { "text": "The airspeed indicator pegs at maximum speed.", "isCorrect": false, "rationale": "Incorrect. It behaves according to changes in static pressure relative to trapped pressure." },
+                    { "text": "The airspeed needle begins oscillating wildly between zero and maximum.", "isCorrect": false, "rationale": "Incorrect. Oscillation occurs with vacuum leaks or slipstream turbulence, not sealed pitot blockages." }
+                ]
+            },
+            {
+                "questionNumber": 31,
+                "topic": "Pitot-Static System Failures",
+                "question": "What happens to the Airspeed Indicator if the static port becomes completely blocked while the pitot tube remains clear?",
+                "answerOptions": [
+                    { "text": "The ASI will read higher than actual speed when climbing, and lower than actual speed when descending.", "isCorrect": true, "rationale": "Correct! With a blocked static port, case pressure remains trapped at the altitude where the blockage occurred. Climbing into lower static pressure causes the diaphragm to expand more than normal (reading high), while descending causes it to contract (reading low)." },
+                    { "text": "The airspeed indicator will drop immediately to zero.", "isCorrect": false, "rationale": "Incorrect. Ram pressure still enters the pitot tube." },
+                    { "text": "The airspeed indicator will function completely normally at all altitudes.", "isCorrect": false, "rationale": "Incorrect. Without correct static reference in the case, errors occur during altitude changes." },
+                    { "text": "The airspeed indicator will freeze and display only ground speed.", "isCorrect": false, "rationale": "Incorrect. ASIs do not display ground speed." }
+                ]
+            },
+            {
+                "questionNumber": 32,
+                "topic": "Airspeed Color Markings",
+                "question": "What does the White Arc on an aircraft airspeed indicator represent?",
+                "answerOptions": [
+                    { "text": "The Flap Operating Range, from stall speed with flaps extended (Vs0) to maximum flap extended speed (Vfe).", "isCorrect": true, "rationale": "Correct! The white arc marks the operational range where flaps may be safely extended." },
+                    { "text": "The Normal Operating Range for cruising flight.", "isCorrect": false, "rationale": "Incorrect. The green arc represents the normal operating range." },
+                    { "text": "The Caution Range for smooth air only (Vno to Vne).", "isCorrect": false, "rationale": "Incorrect. The yellow arc represents caution in smooth air." },
+                    { "text": "Never-exceed speed limit (Vne).", "isCorrect": false, "rationale": "Incorrect. Vne is marked by a single red radial line." }
+                ]
+            },
+            {
+                "questionNumber": 33,
+                "topic": "Airspeed Color Markings",
+                "question": "What does the Green Arc on an airspeed indicator designate?",
+                "answerOptions": [
+                    { "text": "The Normal Operating Range, from clean stall speed (Vs1) to maximum structural cruising speed (Vno).", "isCorrect": true, "rationale": "Correct! The green arc covers normal operations from clean stall speed up to maximum structural cruising speed." },
+                    { "text": "The Flap Operating Range.", "isCorrect": false, "rationale": "Incorrect. The white arc marks the flap operating range." },
+                    { "text": "Maneuvering speed (Va).", "isCorrect": false, "rationale": "Incorrect. Maneuvering speed is typically not marked on the airspeed dial arc." },
+                    { "text": "Never-exceed speed (Vne).", "isCorrect": false, "rationale": "Incorrect. Vne is marked with a red line." }
+                ]
+            },
+            {
+                "questionNumber": 34,
+                "topic": "Airspeed Color Markings",
+                "question": "What does the Yellow Arc on an airspeed indicator signify?",
+                "answerOptions": [
+                    { "text": "The Caution Range, where operations should be conducted with caution and only in smooth air.", "isCorrect": true, "rationale": "Incorrect operations or turbulence in the yellow arc can cause structural damage." },
+                    { "text": "Emergency glide speed range.", "isCorrect": false, "rationale": "Incorrect. Best glide speed (Vyse / Vg) is often marked with a blue or specific radial line." },
+                    { "text": "Maximum landing gear extension speed (Vle).", "isCorrect": false, "rationale": "Incorrect. Gear speeds are typically marked with blue triangles or listed in the POH." },
+                    { "text": "Stall warning activation threshold.", "isCorrect": false, "rationale": "Incorrect. Stall warnings are triggered electronically or aerodynamically before the stall." }
+                ]
+            },
+            {
+                "questionNumber": 35,
+                "topic": "Airspeed Color Markings",
+                "question": "What does the single Red Radial Line on an airspeed indicator represent?",
+                "answerOptions": [
+                    { "text": "Never-Exceed Speed (Vne), above which structural damage or flutter may occur.", "isCorrect": true, "rationale": "Correct! Vne marks the absolute structural speed limit of the aircraft." },
+                    { "text": "Stall speed with flaps fully retracted (Vs1).", "isCorrect": false, "rationale": "Incorrect. Vs1 is the lower limit of the green arc." },
+                    { "text": "Best angle of climb speed (Vx).", "isCorrect": false, "rationale": "Incorrect. Vx is not standardly marked with a red radial on the ASI dial." },
+                    { "text": "Maximum flap extension speed (Vfe).", "isCorrect": false, "rationale": "Incorrect. Vfe is the upper limit of the white arc." }
+                ]
+            },
+            {
+                "questionNumber": 36,
+                "topic": "Mach Number & High-Speed Flight",
+                "question": "What is Mach number defined as in aerodynamics?",
+                "answerOptions": [
+                    { "text": "The ratio of the aircraft's True Airspeed to the local speed of sound.", "isCorrect": true, "rationale": "Correct! Mach 1 is equal to the speed of sound; Mach 0.8 is 80% the speed of sound." },
+                    { "text": "The ratio of Indicated Airspeed to Calibrated Airspeed at high altitudes.", "isCorrect": false, "rationale": "Incorrect. Mach relates TAS to the local speed of sound." },
+                    { "text": "The airspeed divided by the outside air temperature in Kelvin.", "isCorrect": false, "rationale": "Incorrect. Temperature affects the speed of sound, but Mach is TAS divided by speed of sound." },
+                    { "text": "The maximum structural speed limit divided by density altitude.", "isCorrect": false, "rationale": "Incorrect. That is an arbitrary calculation, not Mach number." }
+                ]
+            },
+            {
+                "questionNumber": 37,
+                "topic": "Mach Number & High-Speed Flight",
+                "question": "Why does the local speed of sound decrease as an aircraft climbs into colder upper-troposphere air?",
+                "answerOptions": [
+                    { "text": "Because the speed of sound is directly proportional to the square root of absolute air temperature.", "isCorrect": true, "rationale": "Correct! As air temperature decreases with altitude, molecular thermal velocity drops, decreasing the speed at which sound waves travel." },
+                    { "text": "Because atmospheric pressure increases at high altitudes.", "isCorrect": false, "rationale": "Incorrect. Atmospheric pressure decreases with altitude." },
+                    { "text": "Because air density becomes infinitely high in the stratosphere.", "isCorrect": false, "rationale": "Incorrect. Air density decreases in the stratosphere." },
+                    { "text": "Because oxygen molecules dissociate into ozone.", "isCorrect": false, "rationale": "Incorrect. Ozone concentration in the stratosphere does not dictate acoustic speed." }
+                ]
+            },
+            {
+                "questionNumber": 38,
+                "topic": "Pitot-Static Alternate Source",
+                "question": "What is the purpose of an alternate static source valve inside an aircraft cockpit?",
+                "answerOptions": [
+                    { "text": "To supply cabin air pressure to the pitot-static instruments if the external static port becomes clogged or iced over.", "isCorrect": true, "rationale": "Correct! Cabin air acts as an emergency alternate static source when exterior ports fail." },
+                    { "text": "To provide auxiliary ram pressure if the pitot tube fails.", "isCorrect": false, "rationale": "Incorrect. Alternate static sources provide static pressure, not pitot ram pressure." },
+                    { "text": "To drain condensed moisture out of the instrument air lines.", "isCorrect": false, "rationale": "Incorrect. Pitot drains handle moisture drainage." },
+                    { "text": "To pressurize the cabin during high altitude flights.", "isCorrect": false, "rationale": "Incorrect. Cabin pressurization is managed by outflow valves and environmental control systems." }
+                ]
+            },
+            {
+                "questionNumber": 39,
+                "topic": "Pitot-Static Alternate Source",
+                "question": "When an alternate static source (inside the cabin) is activated, how does it typically affect the Airspeed Indicator reading compared to normal operation?",
+                "answerOptions": [
+                    { "text": "Due to lower cabin pressure caused by airflow ventilation, the ASI will typically indicate slightly higher than actual airspeed.", "isCorrect": true, "rationale": "Correct! Cabin static pressure is generally lower than outside ambient pressure due to airflow suction, causing the ASI to over-read slightly." },
+                    { "text": "The ASI will drop to absolute zero instantly.", "isCorrect": false, "rationale": "Incorrect. Cabin air provides a static reference pressure." },
+                    { "text": "The ASI will read exactly 50 knots slower than true speed.", "isCorrect": false, "rationale": "Incorrect. Error magnitude varies with airspeed and cabin ventilation." },
+                    { "text": "The ASI will function with zero error.", "isCorrect": false, "rationale": "Incorrect. Alternate static sources always introduce small position/calibration errors." }
+                ]
+            },
+            {
+                "questionNumber": 40,
+                "topic": "Dynamic Pressure Formula",
+                "question": "In aerodynamic physics, dynamic pressure (q) is proportional to which two variables?",
+                "answerOptions": [
+                    { "text": "Air density (&rho;) and the square of velocity ($V^2$), expressed as $q = \\frac{1}{2}\\rho V^2$.", "isCorrect": true, "rationale": "Correct! Dynamic pressure depends directly on air density and velocity squared." },
+                    { "text": "Barometric pressure and outside air temperature.", "isCorrect": false, "rationale": "Incorrect. Barometric pressure and temperature determine static state, not dynamic pressure." },
+                    { "text": "Aircraft gross weight and wing surface area.", "isCorrect": false, "rationale": "Incorrect. Weight and wing area affect lift calculations, not dynamic pressure." },
+                    { "text": "Engine horsepower and propeller pitch angle.", "isCorrect": false, "rationale": "Incorrect. Power plant metrics determine thrust, not dynamic pitot pressure." }
+                ]
+            },
+            {
+                "questionNumber": 41,
+                "topic": "Airspeed Relationships",
+                "question": "Under standard sea-level International Standard Atmosphere (ISA) conditions, what is the exact relationship between IAS, CAS, EAS, and TAS?",
+                "answerOptions": [
+                    { "text": "They are all exactly equal ($IAS = CAS = EAS = TAS$).", "isCorrect": true, "rationale": "Correct! At sea level in standard conditions, density equals standard, compressibility is zero, and errors are zero, making IAS, CAS, EAS, and TAS identical." },
+                    { "text": "TAS is always double IAS regardless of altitude.", "isCorrect": false, "rationale": "Incorrect. TAS equals IAS only at sea level standard conditions." },
+                    { "text": "CAS is always higher than TAS.", "isCorrect": false, "rationale": "Incorrect. TAS increases above CAS with altitude." },
+                    { "text": "EAS is always zero at sea level.", "isCorrect": false, "rationale": "Incorrect. EAS equals CAS at sea level." }
+                ]
+            },
+            {
+                "questionNumber": 42,
+                "topic": "Wind Triangle & Navigation",
+                "question": "In navigation vector analysis, what term describes the angular difference between the aircraft's true heading and its actual track over the ground?",
+                "answerOptions": [
+                    { "text": "Wind Correction Angle (WCA).", "isCorrect": true, "rationale": "Correct! WCA is the angle the pilot must crab into the wind to maintain the desired ground track." },
+                    { "text": "Angle of Attack (AOA).", "isCorrect": false, "rationale": "Incorrect. AOA is the angle between the chord line of the wing and the relative wind." },
+                    { "text": "Pitch attitude angle.", "isCorrect": false, "rationale": "Incorrect. Pitch attitude is the angle between the longitudinal axis and the horizon." },
+                    { "text": "Magnetic variation angle.", "isCorrect": false, "rationale": "Incorrect. Magnetic variation is the difference between true north and magnetic north." }
+                ]
+            },
+            {
+                "questionNumber": 43,
+                "topic": "Stall Speed & Altitude",
+                "question": "Does the True Airspeed (TAS) at which an aircraft stalls increase, decrease, or stay the same as altitude increases?",
+                "answerOptions": [
+                    { "text": "Stall TAS increases with altitude.", "isCorrect": true, "rationale": "Correct! Because an airplane stalls at a constant Indicated Airspeed (CAS/IAS), and TAS increases with altitude for a given CAS, the stalling True Airspeed increases at higher altitudes." },
+                    { "text": "Stall TAS decreases with altitude.", "isCorrect": false, "rationale": "Incorrect. Thin air requires higher true speed to generate the necessary lift coefficient." },
+                    { "text": "Stall TAS remains perfectly constant at all altitudes.", "isCorrect": false, "rationale": "Incorrect. Stalling IAS is constant, but stalling TAS increases." },
+                    { "text": "Stall TAS drops to zero in the stratosphere.", "isCorrect": false, "rationale": "Incorrect. Aircraft cannot fly without maintaining airspeed." }
+                ]
+            },
+            {
+                "questionNumber": 44,
+                "topic": "Pitot Heat",
+                "question": "What is the primary operational function of Pitot Heat in flight?",
+                "answerOptions": [
+                    { "text": "To prevent or melt ice accumulation inside the pitot tube ram air opening and drain hole.", "isCorrect": true, "rationale": "Correct! Pitot heat uses electrical heating elements to keep the pitot tube free of ice crystals that cause instrument blockages." },
+                    { "text": "To warm the cockpit windshield defogging vents.", "isCorrect": false, "rationale": "Incorrect. Windshield defrosting is handled by cabin heating systems." },
+                    { "text": "To heat engine carburetor induction air.", "isCorrect": false, "rationale": "Incorrect. Carburetor heat uses exhaust shroud heat." },
+                    { "text": "To prevent fuel tanks from freezing.", "isCorrect": false, "rationale": "Incorrect. Fuel anti-ice additives or tank heaters manage fuel freezing." }
+                ]
+            },
+            {
+                "questionNumber": 45,
+                "topic": "Pitot-Static System Testing",
+                "question": "According to FAA regulations (14 CFR 91.411), how often must pitot-static systems be inspected and tested for IFR flight?",
+                "answerOptions": [
+                    { "text": "Every 24 calendar months.", "isCorrect": true, "rationale": "Correct! Pitot-static and altimeter system certifications are required every 24 calendar months for IFR operations." },
+                    { "text": "Every 12 calendar months (annual inspection).", "isCorrect": false, "rationale": "Incorrect. Annual inspections apply to aircraft airworthiness, but pitot-static checks are biennial (24 months)." },
+                    { "text": "Every 100 hours of flight time.", "isCorrect": false, "rationale": "Incorrect. 100-hour inspections apply to commercial/rental aircraft maintenance, not pitot-static certification." },
+                    { "text": "Only when an instrument failure is suspected.", "isCorrect": false, "rationale": "Incorrect. Mandatory periodic recertification is required by law for IFR flight." }
+                ]
+            },
+            {
+                "questionNumber": 46,
+                "topic": "Static Pressure Variation",
+                "question": "As an aircraft descends from 10,000 feet to sea level, what happens to the static pressure inside the ASI instrument case?",
+                "answerOptions": [
+                    { "text": "Static pressure increases.", "isCorrect": true, "rationale": "Correct! Atmospheric pressure increases as altitude decreases toward sea level." },
+                    { "text": "Static pressure decreases.", "isCorrect": false, "rationale": "Incorrect. Pressure decreases with altitude gain, not descent." },
+                    { "text": "Static pressure drops to absolute zero.", "isCorrect": false, "rationale": "Incorrect. Zero pressure is a vacuum." },
+                    { "text": "Static pressure remains completely constant.", "isCorrect": false, "rationale": "Incorrect. Static pressure varies directly with barometric height." }
+                ]
+            },
+            {
+                "questionNumber": 47,
+                "topic": "Calibrated Airspeed Correction",
+                "question": "If an aircraft's airspeed indicator reads 120 knots IAS, and the POH position error correction table indicates a -3 knot error at this speed (with zero instrument error), what is the Calibrated Airspeed (CAS)?",
+                "answerOptions": [
+                    { "text": "117 knots CAS", "isCorrect": true, "rationale": "Correct! CAS = IAS + errors. 120 knots - 3 knots = 117 knots CAS." },
+                    { "text": "123 knots CAS", "isCorrect": false, "rationale": "Incorrect. Adding a negative correction error is incorrect." },
+                    { "text": "120 knots CAS", "isCorrect": false, "rationale": "Incorrect. Position error must be applied." },
+                    { "text": "114 knots CAS", "isCorrect": false, "rationale": "Incorrect. Math calculation error." }
+                ]
+            },
+            {
+                "questionNumber": 48,
+                "topic": "True Airspeed Calculation",
+                "question": "An aircraft is flying at 15,000 feet MSL with a Calibrated Airspeed of 140 knots. Using the 2% per 1,000 feet rule of thumb, what is the estimated True Airspeed?",
+                "answerOptions": [
+                    { "text": "182 knots TAS", "isCorrect": true, "rationale": "Correct! 15,000 feet = 15 blocks of 1,000 feet. 15 * 2% = 30% increase. 140 knots + 30% (42 knots) = 182 knots TAS." },
+                    { "text": "140 knots TAS", "isCorrect": false, "rationale": "Incorrect. TAS increases significantly at 15,000 feet." },
+                    { "text": "168 knots TAS", "isCorrect": false, "rationale": "Incorrect. 20% increase would be 168, but 15,000 feet represents a 30% increase." },
+                    { "text": "210 knots TAS", "isCorrect": false, "rationale": "Incorrect. Overcalculates the percentage increase." }
+                ]
+            },
+            {
+                "questionNumber": 49,
+                "topic": "Pitot-Static Maintenance",
+                "question": "Why is it important to remove pitot tube covers before flight during the pre-flight inspection?",
+                "answerOptions": [
+                    { "text": "Leaving covers on blocks ram air entry into the pitot tube, causing the airspeed indicator to read zero and rendering flight instruments unsafe.", "isCorrect": true, "rationale": "Correct! Pitot covers block ram air entirely, preventing the ASI from functioning and creating a severe flight safety hazard." },
+                    { "text": "To prevent aerodynamic drag from slowing down taxi acceleration.", "isCorrect": false, "rationale": "Incorrect. While drag exists, the primary safety reason is preventing total pitot-static instrument failure." },
+                    { "text": "To allow engine exhaust gases to escape.", "isCorrect": false, "rationale": "Incorrect. Exhaust gases exit via the exhaust tailpipe." },
+                    { "text": "To enable GPS satellite synchronization.", "isCorrect": false, "rationale": "Incorrect. Pitot covers have no effect on GPS antennas." }
+                ]
+            },
+            {
+                "questionNumber": 50,
+                "topic": "Summary of Airspeeds",
+                "question": "Arrange the following airspeeds in order of magnitude from lowest to highest for a typical high-altitude flight: IAS, CAS, EAS, TAS.",
+                "answerOptions": [
+                    { "text": "IAS &approx; CAS &approx; EAS < TAS (at altitude, TAS is higher than IAS/CAS due to density decrease).", "isCorrect": true, "rationale": "Correct! At altitude, true airspeed (TAS) is significantly higher than indicated, calibrated, or equivalent airspeed due to the reduced air density." },
+                    { "text": "TAS < EAS < CAS < IAS", "isCorrect": false, "rationale": "Incorrect. TAS is the highest speed at altitude, not the lowest." },
+                    { "text": "IAS > TAS > CAS > EAS", "isCorrect": false, "rationale": "Incorrect. IAS is much lower than TAS at altitude." },
+                    { "text": "All airspeeds remain perfectly equal regardless of altitude.", "isCorrect": false, "rationale": "Incorrect. Density and compressibility cause them to diverge at altitude." }
+                ]
+            }
+        ];
+
+        let quizData = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // questionNumber -> selected option index
+        let timeLeft = 3000; // 50 minutes in seconds
+        let timerInterval = null;
+        let isSubmitted = false;
+
+        // Shuffle helper algorithm
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startQuiz() {
+            // Prepare randomized quiz data ensuring correct answer index varies and rules are met
+            quizData = rawQuizData.map((q, qIndex) => {
+                // Shuffle options
+                let shuffledOpts = shuffleArray(q.answerOptions);
+                
+                // Ensure correct answer is randomized and constraint: next question's correct answer index != current correct answer index if possible
+                let correctIdx = shuffledOpts.findIndex(opt => opt.isCorrect);
+                if (qIndex > 0) {
+                    let prevCorrectIdx = quizData[qIndex - 1]?.correctIndex;
+                    if (prevCorrectIdx !== undefined && correctIdx === prevCorrectIdx) {
+                        // Swap with another index to satisfy rule
+                        let swapIdx = (correctIdx + 1) % 4;
+                        [shuffledOpts[correctIdx], shuffledOpts[swapIdx]] = [shuffledOpts[swapIdx], shuffledOpts[correctIdx]];
+                        correctIdx = swapIdx;
+                    }
+                }
+
+                return {
+                    ...q,
+                    options: shuffledOpts,
+                    correctIndex: correctIdx
+                };
+            });
+
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('timer-container').classList.remove('hidden');
+            document.getElementById('timer-container').classList.add('flex');
+
+            startTimer();
+            buildPalette();
+            loadQuestion(0);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz(true);
+                    return;
+                }
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                document.getElementById('time-display').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function buildPalette() {
+            const paletteGrid = document.getElementById('palette-grid');
+            paletteGrid.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const btn = document.createElement('button');
+                btn.id = `palette-btn-${i}`;
+                btn.textContent = i + 1;
+                btn.className = "h-10 w-full rounded-xl font-mono text-xs font-bold transition duration-200 bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer border border-slate-700";
+                btn.onclick = () => jumpToQuestion(i);
+                paletteGrid.appendChild(btn);
+            }
+            updatePaletteUI();
+        }
+
+        function updatePaletteUI() {
+            for (let i = 0; i < 50; i++) {
+                const btn = document.getElementById(`palette-btn-${i}`);
+                if (!btn) continue;
+                
+                // Reset classes
+                btn.className = "h-10 w-full rounded-xl font-mono text-xs font-bold transition duration-200 cursor-pointer border ";
+                
+                if (i === currentQuestionIndex) {
+                    btn.className += "bg-indigo-600 text-white border-indigo-400 shadow-md shadow-indigo-600/40 ring-2 ring-indigo-400/50";
+                } else if (userAnswers[i] !== undefined) {
+                    btn.className += "bg-emerald-950 text-emerald-300 border-emerald-700/60";
+                } else {
+                    btn.className += "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700";
+                }
+            }
+
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('answered-counter').textContent = `${answeredCount}/50 Answered`;
+        }
+
+        function loadQuestion(index) {
+            currentQuestionIndex = index;
+            const q = quizData[index];
+
+            document.getElementById('question-indicator').textContent = `Question ${index + 1} of 50`;
+            document.getElementById('topic-badge').textContent = `Topic: ${q.topic}`;
+            document.getElementById('question-text').textContent = q.question;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, optIndex) => {
+                const isSelected = userAnswers[index] === optIndex;
+                const optDiv = document.createElement('div');
+                optDiv.className = `p-4 rounded-2xl border transition duration-200 cursor-pointer flex items-center space-x-3 ${
+                    isSelected 
+                        ? 'bg-indigo-950/80 border-indigo-500 text-white shadow-md' 
+                        : 'bg-slate-800/60 border-slate-700/60 text-slate-200 hover:bg-slate-800 hover:border-slate-600'
+                }`;
+                optDiv.onclick = () => selectOption(index, optIndex);
+
+                const radioCircle = document.createElement('div');
+                radioCircle.className = `w-5 h-5 rounded-full border flex items-center justify-center transition duration-200 flex-shrink-0 ${
+                    isSelected ? 'border-indigo-400 bg-indigo-600' : 'border-slate-500 bg-slate-900'
+                }`;
+                if (isSelected) {
+                    const dot = document.createElement('div');
+                    dot.className = 'w-2 h-2 rounded-full bg-white';
+                    radioCircle.appendChild(dot);
+                }
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'text-sm sm:text-base font-medium leading-relaxed';
+                textSpan.textContent = opt.text;
+
+                optDiv.appendChild(radioCircle);
+                optDiv.appendChild(textSpan);
+                optionsContainer.appendChild(optDiv);
+            });
+
+            // Update navigation buttons state
+            document.getElementById('prev-btn').disabled = index === 0;
+            const nextBtn = document.getElementById('next-btn');
+            if (index === 49) {
+                nextBtn.innerHTML = `<span>Finish / Review</span>`;
+            } else {
+                nextBtn.innerHTML = `<span>Next</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>`;
+            }
+
+            updatePaletteUI();
+        }
+
+        function selectOption(qIndex, optIndex) {
+            userAnswers[qIndex] = optIndex;
+            loadQuestion(qIndex);
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                loadQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < 49) {
+                loadQuestion(currentQuestionIndex + 1);
+            } else {
+                confirmSubmit();
+            }
+        }
+
+        function jumpToQuestion(index) {
+            loadQuestion(index);
+        }
+
+        function confirmSubmit() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const unanswered = 50 - answeredCount;
+            let msg = "Are you sure you want to submit your examination?";
+            if (unanswered > 0) {
+                msg = `You have ${unanswered} unanswered question(s). Are you sure you want to submit?`;
+            }
+            if (confirm(msg)) {
+                submitQuiz(false);
+            }
+        }
+
+        function submitQuiz(isTimeout) {
+            if (isSubmitted) return;
+            isSubmitted = true;
+            clearInterval(timerInterval);
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('timer-container').classList.add('hidden');
+            const summaryScreen = document.getElementById('summary-screen');
+            summaryScreen.classList.remove('hidden');
+
+            if (isTimeout) {
+                alert("Time is up! Your examination has been automatically submitted.");
+            }
+
+            // Calculate score
+            let score = 0;
+            quizData.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correctIndex) {
+                    score++;
+                }
+            });
+
+            const percentage = Math.round((score / 50) * 100);
+            const scoreBadge = document.getElementById('score-badge');
+            scoreBadge.textContent = `${percentage}%`;
+
+            const scoreSubtitle = document.getElementById('score-subtitle');
+            scoreSubtitle.textContent = `You scored ${score} out of 50 correct (${percentage}%).`;
+
+            if (percentage >= 70) {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            // Build detailed review
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+
+            quizData.forEach((q, idx) => {
+                const userChoice = userAnswers[idx];
+                const isCorrect = userChoice === q.correctIndex;
+
+                const card = document.createElement('div');
+                card.className = `p-6 rounded-2xl border ${
+                    isCorrect ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-rose-950/20 border-rose-900/50'
+                }`;
+
+                let htmlContent = `
+                    <div class="flex items-start justify-between mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-lg ${
+                            isCorrect ? 'bg-emerald-900/40 text-emerald-400 border border-emerald-700/50' : 'bg-rose-900/40 text-rose-400 border border-rose-700/50'
+                        }">
+                            Question ${idx + 1} &bull; ${q.topic} &bull; ${isCorrect ? 'Correct' : 'Incorrect'}
+                        </span>
+                    </div>
+                    <h4 class="text-lg font-bold text-white mb-4">${q.question}</h4>
+                    <div class="space-y-2 mb-4">
+                `;
+
+                q.options.forEach((opt, optIdx) => {
+                    let borderClass = 'border-slate-800 bg-slate-900/60 text-slate-300';
+                    let badgeText = '';
+
+                    if (optIdx === q.correctIndex) {
+                        borderClass = 'border-emerald-600 bg-emerald-950/50 text-emerald-200 font-semibold';
+                        badgeText = '<span class="ml-2 text-xs bg-emerald-600 text-white px-2 py-0.5 rounded">Correct Answer</span>';
+                    } else if (optIdx === userChoice && !isCorrect) {
+                        borderClass = 'border-rose-600 bg-rose-950/50 text-rose-200 font-semibold';
+                        badgeText = '<span class="ml-2 text-xs bg-rose-600 text-white px-2 py-0.5 rounded">Your Answer</span>';
+                    } else if (optIdx === userChoice && isCorrect) {
+                        badgeText = '<span class="ml-2 text-xs bg-emerald-600 text-white px-2 py-0.5 rounded">Your Answer</span>';
+                    }
+
+                    htmlContent += `
+                        <div class="p-3 rounded-xl border ${borderClass} flex items-center justify-between text-sm">
+                            <span>${opt.text} ${badgeText}</span>
+                        </div>
+                    `;
+                });
+
+                htmlContent += `
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 text-xs sm:text-sm text-slate-300 space-y-2">
+                        <p class="font-semibold text-indigo-400">Explanations &amp; Rationales:</p>
+                `;
+
+                q.options.forEach((opt, optIdx) => {
+                    htmlContent += `<p><span class="font-medium text-slate-200">&bull; ${opt.text}</span>: ${opt.rationale}</p>`;
+                });
+
+                htmlContent += `</div>`;
+                card.innerHTML = htmlContent;
+                reviewContainer.appendChild(card);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function restartQuiz() {
+            userAnswers = {};
+            timeLeft = 3000;
+            isSubmitted = false;
+            document.getElementById('summary-screen').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
