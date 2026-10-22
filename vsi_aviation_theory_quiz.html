@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aviation Theory Exam: Vertical Speed Indicator (VSI)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col overflow-x-hidden antialiased selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- TOP HEADER / INSTRUMENT PANEL -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-cyan-400">
+          <i data-lucide="gauge" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            Aviation Theory <span class="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">VSI MASTER CLASS</span>
+          </h1>
+          <p class="text-xs text-slate-400 hidden sm:block">50 Questions • Advanced Pitot-Static & Flight Instrumentation</p>
+        </div>
+      </div>
+
+      <!-- Live Clock & Quick Stats -->
+      <div id="quizHeaderStats" class="flex items-center gap-4 sm:gap-6">
+        <!-- Timer -->
+        <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3.5 py-1.5 rounded-lg shadow-inner">
+          <i data-lucide="clock" class="w-4 h-4 text-cyan-400 animate-pulse"></i>
+          <span id="timerDisplay" class="font-mono text-lg font-bold text-cyan-300 tracking-wider">50:00</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="headerSubmitBtn" onclick="confirmSubmit()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-4 py-1.5 rounded-lg text-sm shadow-lg shadow-emerald-950/40 border border-emerald-400/30 transition-all flex items-center gap-1.5">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Submit Exam</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+    
+    <!-- QUIZ ACTIVE VIEW -->
+    <div id="quizView" class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+      
+      <!-- LEFT COLUMN: QUESTION CARD & NAVIGATION CONTROLS -->
+      <div class="lg:col-span-8 flex flex-col gap-4">
+        
+        <!-- Progress Bar Header -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col gap-2 shadow-sm">
+          <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
+            <span id="progressText">Question 1 of 50</span>
+            <span id="completionPercentage" class="text-cyan-400 font-mono">0% Completed</span>
+          </div>
+          <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+            <div id="progressBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-0 transition-all duration-300 rounded-full"></div>
+          </div>
+        </div>
+
+        <!-- Question Box -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 sm:p-8 flex-1 flex flex-col justify-between shadow-md relative overflow-hidden">
+          <!-- Ambient decorative light -->
+          <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div>
+            <!-- Question Top Info -->
+            <div class="flex justify-between items-start gap-4 mb-4">
+              <span id="questionTag" class="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                SYSTEM OPERATIONAL DYNAMICS
+              </span>
+              <button id="flagBtn" onclick="toggleFlagCurrentQuestion()" class="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-amber-400 transition-colors px-2.5 py-1 rounded-md border border-slate-800 hover:border-amber-500/30">
+                <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
+                <span id="flagBtnText">Mark for Review</span>
+              </button>
+            </div>
+
+            <!-- Question Text -->
+            <h2 id="questionText" class="text-lg sm:text-xl font-bold text-slate-100 leading-relaxed mb-6">
+              Loading question data...
+            </h2>
+
+            <!-- Options Container -->
+            <div id="optionsContainer" class="space-y-3">
+              <!-- Dynamically populated options -->
+            </div>
+          </div>
+
+          <!-- Bottom Action Toolbar -->
+          <div class="flex items-center justify-between gap-3 mt-8 pt-6 border-t border-slate-800/80">
+            <button id="prevBtn" onclick="navigateQuestion(-1)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2 border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              <span>Previous</span>
+            </button>
+
+            <button onclick="skipQuestion()" class="text-slate-400 hover:text-slate-200 text-sm font-medium px-3 py-2 rounded-lg hover:bg-slate-800/50 transition-colors flex items-center gap-1.5">
+              <i data-lucide="skip-forward" class="w-4 h-4"></i>
+              <span>Skip for Now</span>
+            </button>
+
+            <button id="nextBtn" onclick="navigateQuestion(1)" class="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2 shadow-lg shadow-cyan-950/50 border border-cyan-400/30">
+              <span id="nextBtnText">Next Question</span>
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: QUESTION MATRIX NAVIGATOR & SUMMARY -->
+      <div class="lg:col-span-4 flex flex-col gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex flex-col h-full">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="grid" class="w-4 h-4 text-cyan-400"></i>
+              Flight Deck Navigator
+            </h3>
+            <span class="text-xs text-slate-400 font-mono" id="matrixAnsweredCount">0/50 Answered</span>
+          </div>
+
+          <!-- Question Grid -->
+          <div id="questionGrid" class="grid grid-cols-5 sm:grid-cols-10 lg:grid-cols-5 gap-2 overflow-y-auto max-h-[380px] p-1">
+            <!-- Grid Buttons 1 to 50 -->
+          </div>
+
+          <!-- Legend -->
+          <div class="mt-6 pt-4 border-t border-slate-800 grid grid-cols-2 gap-2 text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded bg-cyan-600 border border-cyan-400"></span> Current
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded bg-slate-800 border border-slate-600"></span> Answered
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded bg-slate-950 border border-slate-800"></span> Unanswered
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded bg-amber-500/20 border border-amber-500 text-amber-400 text-[9px] flex items-center justify-center font-bold">★</span> Flagged
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RESULTS & DETAILED EXPLANATIONS VIEW (Hidden Initially) -->
+    <div id="resultsView" class="hidden flex-col gap-6">
+      
+      <!-- Score Banner -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+          <div class="text-center md:text-left">
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-cyan-400 bg-cyan-950 border border-cyan-800 px-3 py-1 rounded-full">
+              Flight Test Debriefing Report
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">
+              Exam Complete
+            </h2>
+            <p id="performanceGradeText" class="text-slate-400 text-sm mt-1 max-w-md">
+              Evaluating results against FAA/EASA Vertical Speed Indicator operational knowledge standards.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-6">
+            <!-- Circular / Large Percentage -->
+            <div class="flex flex-col items-center bg-slate-950 border border-slate-800 px-6 py-4 rounded-2xl">
+              <span id="finalScorePercent" class="font-mono text-4xl sm:text-5xl font-black text-cyan-400">0%</span>
+              <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold mt-1">Final Score</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-center">
+                <span class="block text-xs text-slate-500">Correct</span>
+                <span id="scoreCorrect" class="font-mono text-lg font-bold text-emerald-400">0</span>
+              </div>
+              <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-center">
+                <span class="block text-xs text-slate-500">Incorrect</span>
+                <span id="scoreIncorrect" class="font-mono text-lg font-bold text-rose-400">0</span>
+              </div>
+              <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-center">
+                <span class="block text-xs text-slate-500">Skipped</span>
+                <span id="scoreSkipped" class="font-mono text-lg font-bold text-amber-400">0</span>
+              </div>
+              <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-center">
+                <span class="block text-xs text-slate-500">Time Taken</span>
+                <span id="scoreTime" class="font-mono text-lg font-bold text-slate-200">00:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs & Actions -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
+          <button onclick="filterResults('all')" id="filterAll" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600 text-white border border-cyan-400/30">
+            All Questions (50)
+          </button>
+          <button onclick="filterResults('incorrect')" id="filterIncorrect" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
+            Incorrect Only
+          </button>
+          <button onclick="filterResults('correct')" id="filterCorrect" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
+            Correct Only
+          </button>
+          <button onclick="filterResults('skipped')" id="filterSkipped" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
+            Skipped Only
+          </button>
+        </div>
+
+        <button onclick="restartQuiz()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-bold transition-all border border-slate-700 flex items-center gap-2 w-full sm:w-auto justify-center">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          <span>Retake Quiz (Reshuffled)</span>
+        </button>
+      </div>
+
+      <!-- Detailed Question Analysis List -->
+      <div id="resultsList" class="space-y-6">
+        <!-- Rendered dynamically -->
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- CONFIRMATION MODAL -->
+  <div id="confirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
+      <div class="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-4">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+      </div>
+      <h3 class="text-lg font-bold text-white mb-2">Submit Examination?</h3>
+      <p id="modalWarningText" class="text-sm text-slate-400 mb-6">
+        You have answered all questions. Are you ready to submit for final grading?
+      </p>
+      <div class="flex items-center gap-3 justify-end">
+        <button onclick="closeModal()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+          Continue Test
+        </button>
+        <button onclick="submitExam()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/50">
+          Final Submit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // RAW 50 QUESTION BANK - DEEP AVIATION THEORY & VSI MECHANICS
+    const rawQuestionBank = [
+      {
+        q: "In a standard diaphragm-type Vertical Speed Indicator (VSI), what mechanical component directly creates the differential pressure across the diaphragm during a climb?",
+        category: "MECHANICAL OPERATION",
+        options: [
+          { text: "The calibrated leak or metering orifice which restricts static pressure changes inside the instrument case.", correct: true, explain: "The calibrated leak slows down static pressure equalisation inside the case, creating a differential pressure between the inside of the capsule (direct static) and the case." },
+          { text: "The pitot impact pressure dynamic tube connected to the interior of the aneroid capsule.", correct: false, explain: "The VSI is exclusively connected to the static pressure line, not the pitot tube system." },
+          { text: "The inertial accelerometer piston which pumps air out of the capsule upon rotation.", correct: false, explain: "Accelerometer pistons are only present in Instantaneous VSIs (IVSI), not standard mechanical VSIs." },
+          { text: "The bimetallic temperature compensation strip expanding inside the static chamber.", correct: false, explain: "Bimetallic strips compensate for temperature density changes, but do not create the primary differential pressure for vertical speed sensing." }
+        ]
+      },
+      {
+        q: "During a established steady-state climb at 1,000 feet per minute, how does the pressure inside the VSI diaphragm compare to the pressure inside the instrument case?",
+        category: "PRESSURE DIFFERENTIALS",
+        options: [
+          { text: "Pressure inside the diaphragm is lower than the pressure inside the case.", correct: true, explain: "In a climb, outside ambient (static) pressure decreases. The diaphragm (direct static) drops pressure immediately, while the case (calibrated leak) lags behind at higher pressure. Thus capsule pressure is lower than case pressure." },
+          { text: "Pressure inside the diaphragm is higher than the pressure inside the case.", correct: false, explain: "Diaphragm pressure higher than case pressure occurs during a descent, as static pressure rises." },
+          { text: "Pressure inside the diaphragm and case are exactly equal due to static balance.", correct: false, explain: "If pressures were equal, the VSI would read zero. Equal pressures occur only in level flight or static equilibrium." },
+          { text: "Pressure inside the diaphragm is equal to total pressure while case pressure equals pitot pressure.", correct: false, explain: "Total/pitot pressure is used in airspeed indicators, not vertical speed indicators." }
+        ]
+      },
+      {
+        q: "What defines the typical 'lag time' (trend lag) experienced by a standard mechanical VSI when initiating a climb or descent?",
+        category: "INSTRUMENT ERRORS",
+        options: [
+          { text: "6 to 9 seconds required for the calibrated leak to establish a stable differential pressure.", correct: true, explain: "Standard VSIs require roughly 6 to 9 seconds to establish a stable differential pressure gradient across the diaphragm following a pitch change." },
+          { text: "1 to 2 seconds required for the pitot-static valve to open under air pressure.", correct: false, explain: "There are no valves opening; static airflow is continuous. 1-2 seconds is too fast for standard mechanical VSI trend lag." },
+          { text: "15 to 20 seconds needed for thermal equilibrium inside the instrument housing.", correct: false, explain: "Thermal equilibrium is not the primary cause of mechanical VSI rate response lag." },
+          { text: "Zero lag because static pressure propagates instantaneously across all flight levels.", correct: false, explain: "Air viscosity and restricted orifice diameter guarantee a noticeable time lag in standard VSIs." }
+        ]
+      },
+      {
+        q: "How does an Instantaneous Vertical Speed Indicator (IVSI) overcome the inherent lag of a standard VSI during initial altitude changes?",
+        category: "IVSI MECHANICS",
+        options: [
+          { text: "Incorporates vertically-oriented accelerometer dashpots/pistons with springs to immediately shift capsule air upon acceleration.", correct: true, explain: "IVSI uses damped accelerometers (dashpots) that react immediately to vertical acceleration, instantly pumping air into or out of the diaphragm before static differential pressure develops." },
+          { text: "Uses an electric vacuum pump to bleed the instrument case faster during pitch adjustments.", correct: false, explain: "IVSIs are mechanical instruments connected to static lines, not powered by electric vacuum pumps." },
+          { text: "Connects directly to the total pressure pitot tube to measure vertical dynamic air displacement.", correct: false, explain: "Pitot pressure reflects forward speed, not vertical velocity." },
+          { text: "Employs an electronic digital pressure transducer connected to the flight director.", correct: false, explain: "While modern EFIS uses electronic sensors, a classic mechanical IVSI utilizes mechanical acceleration dashpot pistons." }
+        ]
+      },
+      {
+        q: "What undesirable indication error can occur in an IVSI during a steep bank, high load-factor turn?",
+        category: "IVSI ERRORS",
+        options: [
+          { text: "False climb indication due to centripetal acceleration acting downwards on the dashpot pistons.", correct: true, explain: "Under increased g-load (such as in a steep turn), gravity/centripetal force pulls the accelerometer pistons down, forcing air into the capsule and generating an initial false climb indication." },
+          { text: "False descent indication because the static ports are completely shielded from airflow.", correct: false, explain: "Dashpot downward force under g-load causes air displacement simulating a climb, not a descent." },
+          { text: "The needle locks at zero fpm due to gyroscopic precession inside the instrument case.", correct: false, explain: "IVSI contains no gyroscopes; it uses linear mass accelerometer dashpots." },
+          { text: "Indication reads double the actual rate of descent due to pressure compressibility.", correct: false, explain: "Load factor affects the accelerometer pistons, causing a false climb rate spike initially." }
+        ]
+      },
+      {
+        q: "If an aircraft's primary static port becomes completely blocked by ice in level flight and no alternate static is used, what will the VSI indicate as the aircraft climbs?",
+        category: "STATIC BLOCKAGE",
+        options: [
+          { text: "It will remain at zero feet per minute regardless of climb or descent.", correct: true, explain: "If the static port is completely blocked, static pressure inside both the capsule and case equalizes through the calibrated leak and remains constant, locking the VSI needle at zero." },
+          { text: "It will continuously indicate a high rate of climb due to trapped pressure in the case.", correct: false, explain: "Without pressure changes from outside, case and capsule pressure equalize; needle drops to zero." },
+          { text: "It will peg at maximum rate of descent due to capsule collapse.", correct: false, explain: "Trapped static air means no pressure differential develops between capsule and case." },
+          { text: "It will fluctuate wildly between positive and negative limits depending on airspeed.", correct: false, explain: "Airspeed changes will not affect a trapped, sealed static pressure line." }
+        ]
+      },
+      {
+        q: "What happens to the VSI reading when the pilot selects an Alternate Static Source located inside an unpressurized cockpit during level cruise?",
+        category: "ALTERNATE STATIC",
+        options: [
+          { text: "Momentary climb indication followed by returning to zero, because cockpit static pressure is slightly lower than ambient pressure.", correct: true, explain: "Airflow over the fuselage creates lower pressure inside the cockpit. Opening alternate static causes a sudden drop in sensed static pressure, causing a momentary spike showing a climb before stabilizing back to zero." },
+          { text: "A continuous indication of 1,000 fpm descent due to ram air inside the cabin.", correct: false, explain: "Cockpit pressure is lower than outside ambient pressure, which simulates a higher altitude (drop in pressure), generating a climb kick." },
+          { text: "The needle permanently freezes at its current position due to pressure seal lock.", correct: false, explain: "Alternate static feeds live cockpit ambient pressure to the instrument, allowing rate sensing to continue." },
+          { text: "No change whatsoever because cockpit pressure is mathematically identical to exterior static pressure.", correct: false, explain: "Cockpit suction effects always cause lower pressure inside unpressurized cabins during flight." }
+        ]
+      },
+      {
+        q: "What is the primary function of the calibrated leak (restricted orifice) in the mechanical VSI?",
+        category: "MECHANICAL OPERATION",
+        options: [
+          { text: "To delay the change of static pressure inside the instrument case relative to the direct static pressure in the diaphragm.", correct: true, explain: "The calibrated leak permits static pressure inside the case to change slowly, establishing the pressure differential required to deflect the diaphragm and display rate of climb/descent." },
+          { text: "To bleed off excess pitot dynamic pressure during supersonic airspeed transitions.", correct: false, explain: "The VSI is not connected to pitot dynamic lines." },
+          { text: "To prevent moisture from entering the static lines during flight in heavy precipitation.", correct: false, explain: "Moisture drains are located in static plumbing lines, not the internal calibrated leak orifice." },
+          { text: "To equalize case pressure instantly with outside pressure to prevent case rupture.", correct: false, explain: "The calibrated leak deliberately *delays* pressure equalization; instant equalization would prevent rate measurement." }
+        ]
+      },
+      {
+        q: "When an aircraft levels off after a prolonged climb, why does a standard VSI continue to show a climb for several seconds?",
+        category: "INSTRUMENT ERRORS",
+        options: [
+          { text: "The higher pressure trapped in the case takes several seconds to bleed out through the calibrated leak into the diaphragm.", correct: true, explain: "In a climb, case pressure was higher than diaphragm pressure. Upon leveling off, air must flow through the restricted calibrated leak to equalize pressures, causing the needle to lag before returning to zero." },
+          { text: "The gyro gimbals require time to re-align with the local horizon.", correct: false, explain: "VSI is a pitot-static pressure instrument, containing no directional or attitude gyroscopes." },
+          { text: "Expansion of the aneroid wafer creates a temporary vacuum inside the instrument dial mechanism.", correct: false, explain: "Pressure equalization through the calibrated leak is the physical cause of lag." },
+          { text: "Position error over the static port increases during level acceleration.", correct: false, explain: "While position error exists, the level-off lag is primarily due to calibrated leak pressure bleed timing." }
+        ]
+      },
+      {
+        q: "In modern airliners with an Inertial Reference System (IRS) integrated Glass Cockpit (EFIS), how is vertical speed calculated for the display?",
+        category: "MODERN AVIONICS",
+        options: [
+          { text: "By blending inertial vertical acceleration data from accelerometers with barometric altitude rate data via a Kalman filter.", correct: true, explain: "Modern Air Data Inertial Reference Units (ADIRU) fuse high-frequency vertical acceleration from IRS with low-frequency barometric altitude from ADCs using Kalman filtering for instantaneous, lag-free vertical speed." },
+          { text: "Exclusively by optical laser sensors measuring ground elevation distance.", correct: false, explain: "Radio/laser altimeters measure height above ground (AGL), not overall barometric vertical speed across all flight levels." },
+          { text: "By measuring GPS orbital doppler shift relative to atmospheric pressure levels.", correct: false, explain: "IRS/Baro blending is the primary certified source for primary flight display (PFD) vertical speed." },
+          { text: "Using mechanical diaphragm capsules fitted with optical laser pickoffs inside the static manifold.", correct: false, explain: "Modern systems use solid-state piezo-resistive pressure transducers, not mechanical diaphragm capsules." }
+        ]
+      },
+      {
+        q: "How does rough atmospheric turbulence affect an Instantaneous Vertical Speed Indicator (IVSI)?",
+        category: "IVSI ERRORS",
+        options: [
+          { text: "Causes erratic needle oscillations due to vertical g-forces repeatedly actuating the accelerometer pistons.", correct: true, explain: "Updrafts and downdrafts create vertical accelerations that move the IVSI dashpot pistons, generating momentary erratic rate jumps." },
+          { text: "Causes the instrument calibrated leak to clog permanently due to air compression shockwaves.", correct: false, explain: "Turbulence does not physically clog the microscopic calibrated leak." },
+          { text: "Forces the static pressure selector valve to bypass into pitot tube lines.", correct: false, explain: "There are no automated bypass valves connecting static to pitot under turbulence." },
+          { text: "Dampens needle movements completely, causing under-reading of actual rate of climb.", correct: false, explain: "Turbulence increases needle movement and jitter, rather than dampening it." }
+        ]
+      },
+      {
+        q: "What is the unit of calibration standard on most civil aircraft Vertical Speed Indicators?",
+        category: "INSTRUMENT DISPLAY",
+        options: [
+          { text: "Hundreds of feet per minute (e.g., '10' represents 1,000 fpm).", correct: true, explain: "VSI dials are scaled in 100s of feet per minute (ft/min). The number 5 indicates 500 fpm, 20 indicates 2,000 fpm." },
+          { text: "Tens of meters per second (e.g., '1' represents 10 m/s).", correct: false, explain: "Meters per second is common in metric aviation (e.g. Russia), but civil aircraft standard is hundreds of ft/min." },
+          { text: "Knots of vertical velocity (e.g., '10' represents 10 nautical miles per hour vertical).", correct: false, explain: "Vertical speed in civil aviation is measured in ft/min, not knots." },
+          { text: "Inches of mercury rate change per second.", correct: false, explain: "Inches of mercury is used for altimeter settings and manifold pressure, not the primary VSI scale readout." }
+        ]
+      },
+      {
+        q: "During a rapid descend from 10,000 feet to 2,000 feet, what is the relative pressure condition inside the VSI mechanism?",
+        category: "PRESSURE DIFFERENTIALS",
+        options: [
+          { text: "Pressure inside the diaphragm is higher than pressure inside the case.", correct: true, explain: "Descending into denser air increases static pressure. Higher static pressure enters the diaphragm immediately, while case pressure lags at lower altitude pressure. Thus capsule > case." },
+          { text: "Pressure inside the diaphragm is lower than pressure inside the case.", correct: false, explain: "This condition occurs during a climb, where exterior ambient pressure decreases." },
+          { text: "Pressure inside the diaphragm drops to zero while case pressure equals atmospheric pressure.", correct: false, explain: "Both locations receive static air pressure; diaphragm is direct, case is metered." },
+          { text: "Both diaphragm and case maintain equal pressure due to high descent velocity.", correct: false, explain: "High velocity increases the pressure difference across the calibrated leak orifice." }
+        ]
+      },
+      {
+        q: "What component inside the standard VSI prevents mechanical damage or needle over-range when rate of climb exceeds maximum scale limit?",
+        category: "MECHANICAL OPERATION",
+        options: [
+          { text: "Overpressure stop limiters or capillary relief bypass mechanism.", correct: true, explain: "Mechanical stops and capillary bypass valves prevent the diaphragm from expanding beyond design elasticity limits under extreme vertical rates." },
+          { text: "An automatic pneumatic circuit breaker that disconnects the static port.", correct: false, explain: "Static plumbing is fixed and does not contain pneumatic circuit breakers." },
+          { text: "A magnetic drag cup clutch that slips under excessive needle torque.", correct: false, explain: "Magnetic drag cups are used in tachometers and airspeed indicators, not standard VSI capsule linkages." },
+          { text: "A secondary pitot tube pressure dump valve.", correct: false, explain: "Pitot pressure plays no role in the VSI mechanism." }
+        ]
+      },
+      {
+        q: "If the static port line develops a leak inside a pressurized cabin during high-altitude cruise flight, what will the VSI indicate?",
+        category: "SYSTEM FAILURES",
+        options: [
+          { text: "A momentary high rate of descent indication, then stabilizing at zero.", correct: true, explain: "Cabin pressure is much higher than ambient ambient pressure at high altitude. A leak inside a pressurized cabin floods the static line with higher pressure air, simulating a rapid descent down to cabin altitude." },
+          { text: "A continuous, extreme rate of climb reading off the upper scale.", correct: false, explain: "High cabin pressure entering the static line simulates descending into higher density air, not climbing." },
+          { text: "No change at all because static lines are insulated against cabin pressure differential.", correct: false, explain: "A leak breaks insulation and introduces pressurized cabin air into the instrument line." },
+          { text: "It will mirror airspeed indicator fluctuations proportionally.", correct: false, explain: "Static pressure increase affects VSI specifically based on pressure change rate." }
+        ]
+      },
+      {
+        q: "Which instrument in the standard Pitot-Static system relies ONLY on static pressure, measuring rate of pressure change rather than absolute pressure?",
+        category: "PITOT-STATIC SYSTEM",
+        options: [
+          { text: "Vertical Speed Indicator (VSI).", correct: true, explain: "The VSI utilizes only static pressure and measures the rate of change of pressure (differential across a calibrated leak). The Altimeter measures absolute static pressure." },
+          { text: "Altimeter.", correct: false, explain: "The Altimeter measures absolute static pressure to deduce altitude, not rate of pressure change." },
+          { text: "Airspeed Indicator (ASI).", correct: false, explain: "The ASI requires both static pressure and pitot dynamic pressure." },
+          { text: "Turn Coordinator.", correct: false, explain: "The Turn Coordinator is an electrical/gyroscopic instrument, independent of static pressure." }
+        ]
+      },
+      {
+        q: "What is 'Position Error' (or installation error) as it relates to the VSI during high angle of attack flight?",
+        category: "INSTRUMENT ERRORS",
+        options: [
+          { text: "Distortion of local static airflow around static ports causing incorrect static pressure sensing and temporary false vertical speed readings.", correct: true, explain: "High angle of attack changes local airflow over the static ports, altering sensed pressure and causing the VSI to temporarily indicate a climb or descent when attitude changes." },
+          { text: "Friction error in the mechanical gear teeth connecting the capsule to the indicator pointer.", correct: false, explain: "Gear friction is classified as mechanical/instrument error, not position error." },
+          { text: "Displacement of internal gyro axes when pitching up rapidly.", correct: false, explain: "VSI contains no gyroscopes." },
+          { text: "Lag caused by long plastic tubing runs between static ports and the instrument panel.", correct: false, explain: "Tubing resistance is an internal system design factor, not aerodynamic position error." }
+        ]
+      },
+      {
+        q: "In an IVSI, what restores the accelerometer dashpot pistons to their neutral position once vertical acceleration ceases and a steady climb rate is established?",
+        category: "IVSI MECHANICS",
+        options: [
+          { text: "Restoring springs mounted above and below the accelerometer masses inside the cylinder.", correct: true, explain: "Centered springs push the dashpot pistons back to neutral when acceleration equals zero (1g), leaving calibrated leak differential pressure to maintain steady rate indication." },
+          { text: "Continuous suction from the engine intake manifold.", correct: false, explain: "IVSIs are self-contained mechanical-pneumatic units and do not connect to engine manifolds." },
+          { text: "Centrifugal force from the aircraft propeller slipstream.", correct: false, explain: "Internal springs, not exterior slipstream, center the dashpot masses." },
+          { text: "Magnetic repulsion rings positioned along the piston shaft.", correct: false, explain: "Standard IVSI dashpots utilize calibrated mechanical centering springs." }
+        ]
+      },
+      {
+        q: "Why is the VSI considered a 'rate' instrument rather than a 'quantity' instrument?",
+        category: "INSTRUMENT CLASSIFICATION",
+        options: [
+          { text: "Because it measures time-rate of change of static pressure, rather than absolute atmospheric pressure value.", correct: true, explain: "Altimeters measure absolute pressure quantity (altitude level); VSIs measure rate of pressure change per unit of time (feet per minute)." },
+          { text: "Because it measures fuel flow rate consumed during climbs.", correct: false, explain: "VSI has no connection to aircraft fuel systems." },
+          { text: "Because its needle rotates at a constant angular rate of 360 degrees per minute.", correct: false, explain: "The needle deflects to indicate rate; it does not rotate continuously." },
+          { text: "Because it requires electronic clock pulses to measure airspeed ratios.", correct: false, explain: "VSI operation is purely pressure differential-driven or accelerometer-integrated." }
+        ]
+      },
+      {
+        q: "What design feature inside a standard mechanical VSI compensates for changes in air temperature affecting air density and viscosity through the calibrated leak?",
+        category: "MECHANICAL OPERATION",
+        options: [
+          { text: "A bimetallic needle linkage or temperature-compensated metering valve orifice.", correct: true, explain: "Bimetallic elements alter the metering orifice size or linkage ratio to account for temperature-dependent air viscosity changes, ensuring accuracy across ambient temperatures." },
+          { text: "An electrically heated heating jacket surrounding the instrument casing.", correct: false, explain: "VSI cases are unheated except for cockpit climate control." },
+          { text: "A secondary liquid-filled chamber behind the pressure diaphragm.", correct: false, explain: "VSIs are dry pneumatic differential pressure instruments." },
+          { text: "A variable-pitch suction fan driven by static line suction.", correct: false, explain: "No fans exist inside pitot-static instruments." }
+        ]
+      },
+      {
+        q: "During a steep descent at 3,000 fpm, if the static line freezes solid and blocks, what will the VSI display as the aircraft subsequently climbs back up to 10,000 ft?",
+        category: "STATIC BLOCKAGE",
+        options: [
+          { text: "The VSI will return to zero fpm and remain at zero regardless of the climb.", correct: true, explain: "Once trapped static pressure equalizes inside the instrument case via the calibrated leak, delta pressure becomes zero, locking the needle at 0 fpm." },
+          { text: "It will stay locked at 3,000 fpm descent indefinitely.", correct: false, explain: "Air inside case and diaphragm equalizes through the leak, returning the needle to zero." },
+          { text: "It will show an infinite rate of climb as ambient air thins out.", correct: false, explain: "No outside air enters a completely blocked static system." },
+          { text: "It will mirror the altimeter readings numerical values directly.", correct: false, explain: "Altimeter will also freeze at the altitude where blockage occurred." }
+        ]
+      },
+      {
+        q: "Which statement correctly describes the relationship between 'Trend' and 'Rate' information on a standard VSI display during pitch changes?",
+        category: "OPERATIONAL CONCEPTS",
+        options: [
+          { text: "Trend is the immediate direction of vertical movement (indicated first), while Rate is the stabilized numerical vertical speed.", correct: true, explain: "The initial needle movement indicates pitch trend (climbing vs descending), while the stabilized needle value after 6-9 seconds gives the actual rate of climb/descent." },
+          { text: "Trend represents absolute altitude, while Rate represents airspeed acceleration.", correct: false, explain: "Trend and Rate both refer to vertical speed dynamics on the VSI scale." },
+          { text: "Rate is displayed instantly in 1 second, while Trend lags by 10 seconds.", correct: false, explain: "Trend is detected immediately as pressure starts changing; stabilized rate requires lag equalization." },
+          { text: "Trend is only shown on electronic displays, whereas mechanical VSIs can only show Rate.", correct: false, explain: "Both mechanical and electronic VSIs present initial trend direction before stabilizing on rate." }
+        ]
+      },
+      {
+        q: "If an aircraft initiates a rapid dive, how does air flow within the standard VSI instrument assembly?",
+        category: "MECHANICAL OPERATION",
+        options: [
+          { text: "Air enters the diaphragm instantly, while air enters the case slowly through the calibrated leak.", correct: true, explain: "As aircraft dives, higher pressure air rushes into the open-connected diaphragm immediately. Air enters the case slowly through the restricted leak, compressing the capsule." },
+          { text: "Air flows out of the diaphragm into the case through the total pressure valve.", correct: false, explain: "Air enters the static ports from outside during descent as atmospheric pressure increases." },
+          { text: "Air is sucked out of both case and diaphragm simultaneously by cabin vacuum.", correct: false, explain: "Descent increases ambient static pressure, pushing air into the system." },
+          { text: "Air flows exclusively into the case, compressing air out of the diaphragm through the pitot head.", correct: false, explain: "Static line feeds direct to capsule; case receives metered static flow." }
+        ]
+      },
+      {
+        q: "What is the primary operational advantage of IVSI over a standard VSI during instrument approaches (such as an ILS glideslope)?",
+        category: "FLIGHT OPERATIONS",
+        options: [
+          { text: "Eliminates lag, allowing instantaneous detection and correction of glideslope deviations without over-controlling.", correct: true, explain: "Standard VSI lag causes pilots to chase glideslope indications. IVSI provides immediate feedback on pitch changes, enabling precise descent control." },
+          { text: "Displays ground speed directly on the outer dial perimeter.", correct: false, explain: "IVSI measures vertical speed, not horizontal ground speed." },
+          { text: "Operates independently of static pressure line freezing.", correct: false, explain: "IVSI still relies on static lines for steady-state rate tracking after acceleration stops." },
+          { text: "Automatically adjusts glideslope angle depending on wind shear.", correct: false, explain: "IVSI is a passive indication instrument, not an active flight control computer." }
+        ]
+      },
+      {
+        q: "What calibration check is required on a mechanical VSI prior to takeoff during pre-flight checks?",
+        category: "PRE-FLIGHT CHECKS",
+        options: [
+          { text: "Verify that the needle reads zero fpm (or note offset value if non-adjustable on ground).", correct: true, explain: "On the ground, with no pressure change, VSI must read zero. Some mechanical VSIs have a small zero-adjustment screw to align the needle prior to flight." },
+          { text: "Pressurize the static line manually using the alternate static valve to confirm scale rotation.", correct: false, explain: "Pilots should never manually pressurize static lines during pre-flight without test equipment." },
+          { text: "Ensure the VSI needle aligns with current barometric pressure setting in inches of mercury.", correct: false, explain: "Barometric pressure setting is set on the altimeter scale, not the VSI." },
+          { text: "Spin the needle 360 degrees using the cage knob to test gear friction.", correct: false, explain: "VSIs do not have caging knobs or continuous 360-degree rotating pointers." }
+        ]
+      },
+      {
+        q: "In an unpressurized aircraft, if the glass face of the VSI cracks and breaks in flight, how will the instrument behave?",
+        category: "SYSTEM FAILURES",
+        options: [
+          { text: "It will vent the case directly to cockpit pressure, acting similarly to selecting alternate static for the VSI case.", correct: true, explain: "Breaking the glass vents the case directly to cabin air, bypassing the calibrated leak. The VSI capsule will still respond to static line pressure changes relative to cabin pressure." },
+          { text: "The diaphragm will immediately rupture due to differential vacuum explosion.", correct: false, explain: "Pressure differences between cabin and ambient in unpressurized aircraft are modest and will not explode the capsule." },
+          { text: "The needle will peg at 6,000 fpm climb permanently.", correct: false, explain: "The needle will react to rate of change between static line and cabin pressure." },
+          { text: "The airspeed indicator will simultaneously drop to zero knots.", correct: false, explain: "Cracking the VSI glass does not seal off the pitot or static lines completely for other instruments." }
+        ]
+      },
+      {
+        q: "Which principle of physics governs air flow through the calibrated leak orifice in a VSI?",
+        category: "PHYSICS & MECHANICS",
+        options: [
+          { text: "Differential pressure fluid dynamics (Poiseuille's / Bernoulli's flow through restricted orifices).", correct: true, explain: "Flow rate through the restricted orifice is proportional to the differential pressure between case and capsule, governing needle deflection." },
+          { text: "Gyroscopic momentum conservation laws.", correct: false, explain: "No gyroscopic elements exist inside a mechanical VSI." },
+          { text: "Electromotive induction across static pressure coils.", correct: false, explain: "Mechanical VSIs operate purely pneumatically without electromotive components." },
+          { text: "Boyles Law governing constant temperature hydraulic lock.", correct: false, explain: "Air is a compressible gas flowing across pressure differentials, governed by pneumatic flow restrictions." }
+        ]
+      },
+      {
+        q: "What causes 'Calibrated Leak Friction' or mechanical hysteresis in older VSI instruments?",
+        category: "INSTRUMENT ERRORS",
+        options: [
+          { text: "Friction in gears, levers, and pivot linkages connecting the expanding diaphragm to the pointer spindle.", correct: true, explain: "Mechanical linkages suffer from friction and backlash (hysteresis), which can delay subtle needle movements until sufficient capsule expansion force accumulates." },
+          { text: "Electrostatic charge buildup on the interior glass cover.", correct: false, explain: "Mechanical linkage friction is the primary source of instrument hysteresis." },
+          { text: "Thermal expansion of trapped static water vapor inside the case.", correct: false, explain: "Water vapor contamination causes corrosion/clogging, whereas mechanical friction is structural friction." },
+          { text: "Dampening fluid leakage out of the aneroid capsule.", correct: false, explain: "Standard VSI capsules are filled with static air, not fluid." }
+        ]
+      },
+      {
+        q: "How does high elevation / high density altitude affect the true vertical speed compared to the indicated vertical speed on a mechanical VSI?",
+        category: "DENSITY ALTITUDE EFFECTS",
+        options: [
+          { text: "Indicated vertical speed reads lower than true rate of climb at high density altitudes because air is less dense.", correct: true, explain: "As air density decreases at high altitude, less mass flow passes through the calibrated leak for a given vertical rate, causing the VSI to under-indicate true vertical speed." },
+          { text: "Indicated vertical speed reads higher than true rate of climb because lower density air moves faster through the leak.", correct: false, explain: "Lower air density produces smaller pressure differentials for equivalent true vertical rates." },
+          { text: "There is zero discrepancy; VSI always reads true vertical rate across all altitudes.", correct: false, explain: "VSI measures pressure rate of change, which varies with density altitude compared to true geometric vertical speed." },
+          { text: "The VSI needle reverses direction above 18,000 feet pressure altitude.", correct: false, explain: "Needle direction remains correct, only calibrated density magnitude varies." }
+        ]
+      },
+      {
+        q: "If an aircraft climbs at a constant rate of 500 fpm from sea level to 30,000 feet, what happens to the static pressure differential created across the VSI calibrated leak?",
+        category: "PRESSURE DIFFERENTIALS",
+        options: [
+          { text: "The differential pressure decreases slightly with altitude because atmospheric pressure drop per foot decreases at higher altitudes.", correct: true, explain: "Pressure lapse rate is steep near sea level (~1 inHg/1000ft) and flattens at high altitude. A constant 500 fpm climb produces smaller absolute pressure changes per minute at 30,000 ft." },
+          { text: "The differential pressure increases exponentially due to speed of sound changes.", correct: false, explain: "Pressure rate of change decreases with altitude for a constant geometric climb rate." },
+          { text: "The differential pressure remains mathematically constant across all altitudes.", correct: false, explain: "Atmospheric density and pressure gradients decrease non-linearly with altitude." },
+          { text: "The differential pressure drops to zero above 10,000 ft due to automatic air metering.", correct: false, explain: "Differential pressure decreases gradually, but does not drop to zero." }
+        ]
+      },
+      {
+        q: "What type of vertical speed indicator is required for aircraft equipped with TCAS II (Traffic Alert and Collision Avoidance System)?",
+        category: "AVIONICS INTEGRATION",
+        options: [
+          { text: "An IVSI or digital PFD vertical speed display capable of displaying green/red resolution advisory (RA) rate arcs.", correct: true, explain: "TCAS II requires immediate vertical rate response without lag (IVSI or ADIRU data) and visual vertical speed tape overlays to guide mandatory climb/descent escape maneuvers." },
+          { text: "A standard non-instantaneous diaphragm VSI with manual zero adjustment.", correct: false, explain: "Standard VSI lag (6-9s) makes it unsafe for rapid TCAS collision avoidance maneuvers." },
+          { text: "A purely mechanical gyro-driven rate of climb meter.", correct: false, explain: "VSI is a pneumatic/electronic pressure instrument, not a mechanical gyro." },
+          { text: "A radar altimeter slope indicator.", correct: false, explain: "Radar altimeters measure terrain clearance, not vertical barometric rates for TCAS." }
+        ]
+      },
+      {
+        q: "When establishing a descent using an IVSI, why does the needle move immediately upon pitching down, even before static pressure rate changes reach the case?",
+        category: "IVSI MECHANICS",
+        options: [
+          { text: "Downward acceleration causes an internal accelerometer piston to move upward relative to its cylinder, instantly drawing air out of the diaphragm.", correct: true, explain: "Pitching down creates upward acceleration relative to the instrument frame. The dashpot mass stays down/moves up relative to cylinder, expanding or contracting the capsule instantly." },
+          { text: "The pitot dynamic pressure increases instantly upon pitching down, driving the VSI needle.", correct: false, explain: "IVSI accelerometer dashpots drive immediate movement, not pitot tube pressure." },
+          { text: "An electric servo motor connected to the attitude indicator drives the pointer.", correct: false, explain: "Mechanical IVSI uses purely mechanical mass accelerometers and springs, not electric servos." },
+          { text: "Air inside the instrument case compresses due to forward air speed acceleration.", correct: false, explain: "Static case pressure change lags; dashpot mass inertia drives initial needle motion." }
+        ]
+      },
+      {
+        q: "If both static ports on the exterior fuselage become iced over during a descent, and the pilot opens an alternate static valve inside the cockpit, what immediate needle reaction occurs on the VSI?",
+        category: "ALTERNATE STATIC",
+        options: [
+          { text: "The needle will temporarily jump to show a climb, then stabilize back to zero rate of descent.", correct: true, explain: "Cockpit pressure is lower than outside pressure due to fuselage Bernoulli effects. Switching to alternate static drops line pressure suddenly, causing a temporary false climb indication." },
+          { text: "The needle will drop below the zero mark showing a 3,000 fpm descent rate.", correct: false, explain: "Pressure drop induces a climb kick, not a descent drop." },
+          { text: "The needle will freeze permanently at the exact descent rate prior to opening the valve.", correct: false, explain: "Opening alternate static supplies new static air pressure, unfreezing the system." },
+          { text: "The needle will vibrate rapidly at 60 Hz due to vacuum turbulence.", correct: false, explain: "VSI will kick upward briefly and settle back to true vertical speed once differential equalizes." }
+        ]
+      },
+      {
+        q: "What structural material is typically used to fabricate the flexible capsule (diaphragm) inside a high-precision mechanical VSI?",
+        category: "MECHANICAL OPERATION",
+        options: [
+          { text: "Beryllium copper or phosphor bronze alloy corrugated metal.", correct: true, explain: "Beryllium copper and phosphor bronze offer excellent elastic memory, minimal hysteresis, and corrosion resistance for delicate pressure sensing capsules." },
+          { text: "Vulcanized synthetic rubber reinforced with Kevlar mesh.", correct: false, explain: "Rubber is susceptible to temperature expansion and deterioration; corrugated metal alloys are standard." },
+          { text: "Tempered stainless steel mesh lined with Teflon.", correct: false, explain: "Beryllium copper alloys are preferred due to optimal spring characteristics at low differential pressures." },
+          { text: "Polytetrafluoroethylene (PTFE) thermoformed plastic.", correct: false, explain: "Metals with precise spring constants are required for instrument accuracy." }
+        ]
+      },
+      {
+        q: "What is the primary difference between an Altimeter and a Vertical Speed Indicator regarding their connection to static pressure?",
+        category: "PITOT-STATIC SYSTEM",
+        options: [
+          { text: "The Altimeter capsule is sealed with a internal vacuum; the VSI capsule is vented directly to the static line while its case is vented through a calibrated leak.", correct: true, explain: "Altimeters measure absolute static pressure against an evacuated capsule inside a static case. VSIs measure rate of change between a static capsule and a metered leak case." },
+          { text: "The Altimeter is connected to the static port, while the VSI is connected to the pitot tube.", correct: false, explain: "Both Altimeter and VSI connect exclusively to the static pressure system." },
+          { text: "The Altimeter uses a calibrated leak, while the VSI uses a sealed vacuum capsule.", correct: false, explain: "This is the reverse of actual construction; VSI contains the calibrated leak orifice." },
+          { text: "The Altimeter operates pneumatically while the VSI operates electrically.", correct: false, explain: "Both basic flight instruments operate pneumatically from pitot-static lines." }
+        ]
+      },
+      {
+        q: "Why does an aircraft flying in heavy atmospheric downdrafts show a descent rate on the VSI even if the aircraft pitch attitude is held strictly level?",
+        category: "FLIGHT OPERATIONS",
+        options: [
+          { text: "Because the aircraft is physically moving downward through the airmass, causing increasing static pressure around the static ports.", correct: true, explain: "VSI measures atmospheric pressure rate of change. Descending through air mass increases static pressure, regardless of pitch angle." },
+          { text: "Because downdrafts force ram air into the static ports, increasing total pressure.", correct: false, explain: "Static ports sense ambient static pressure; downdraft displacement changes geometric altitude and thus ambient static pressure." },
+          { text: "Because the IVSI accelerometer masses are compressed downward by wind turbulence.", correct: false, explain: "While turbulence causes needle jitter, persistent descent indication reflects genuine altitude loss in the downdraft." },
+          { text: "Because cold air in downdrafts contracts the VSI aneroid capsule directly.", correct: false, explain: "Temperature changes take time to affect instrument internal cases; pressure change is the driver." }
+        ]
+      },
+      {
+        q: "What specific mechanical defect causes 'VSI pointer oscillations' (needle flutter) during smooth level flight?",
+        category: "MAINTENANCE & TROUBLESHOOTING",
+        options: [
+          { text: "Worn gear teeth or loose linkage pivots in the sector gear mechanism, or water trapped in static lines.", correct: true, explain: "Mechanical play in pointer gears or moisture sloshing in static lines creates pressure fluctuations causing needle oscillation." },
+          { text: "Excessive vacuum suction from the engine engine pump.", correct: false, explain: "VSI is static pressure driven, not powered by engine vacuum pumps." },
+          { text: "Burned out electric dampening resistors behind the instrument dial.", correct: false, explain: "Standard mechanical VSIs contain no electrical dampening resistors." },
+          { text: "Unbalanced gyroscopic rotor bearings inside the unit.", correct: false, explain: "VSI has no gyroscopic components." }
+        ]
+      },
+      {
+        q: "During a ground test of the Pitot-Static system, if a vacuum is applied to the static port to simulate a climb, what should the VSI indicate?",
+        category: "MAINTENANCE & TROUBLESHOOTING",
+        options: [
+          { text: "A rate of climb proportional to the rate of vacuum application, then returning to zero when vacuum pressure is held constant.", correct: true, explain: "Applying vacuum lowers static pressure (simulating climb). As long as pressure is actively dropping, VSI shows climb. When vacuum is held steady at altitude, case and capsule equalize, returning VSI to zero." },
+          { text: "A continuous climb indication for as long as the static line vacuum is held constant.", correct: false, explain: "Holding constant vacuum simulates level flight at altitude; VSI must return to zero." },
+          { text: "A rate of descent indication because vacuum pulls air out of the case before the capsule.", correct: false, explain: "Lowering pressure expands direct static capsule relative to metered case, showing climb." },
+          { text: "The needle will pin at maximum descent rate until static pressure is restored.", correct: false, explain: "Vacuum lowers pressure, causing climb indication, not descent." }
+        ]
+      },
+      {
+        q: "In an Air Data Computer (ADC) system, how is vertical speed information transmitted to the Electronic Flight Instrument System (EFIS)?",
+        category: "MODERN AVIONICS",
+        options: [
+          { text: "Solid-state digital pressure transducers measure static rate of change and send ARINC 429 digital data buses to the PFD.", correct: true, explain: "Modern ADCs convert static pressure to digital signals using piezoresistive sensors, processing rate calculations electronically and outputting digital data to displays." },
+          { text: "Flexible synchro cables physically rotate the electronic glass pointer.", correct: false, explain: "EFIS displays glass software pixels driven by data buses, not mechanical flex shafts." },
+          { text: "Pneumatic tubes run directly from static ports into the backside of the glass PFD screen.", correct: false, explain: "PFD screens are digital displays; pressure lines run to ADCs, not glass monitors." },
+          { text: "Fiber optic cables measure light refraction inside a fluid-filled static chamber.", correct: false, explain: "ADCs use silicon pressure sensors and ARINC digital buses." }
+        ]
+      },
+      {
+        q: "What is the consequence of a partially clogged calibrated leak orifice inside a mechanical VSI?",
+        category: "INSTRUMENT ERRORS",
+        options: [
+          { text: "Increased time lag and exaggerated rate of climb/descent readings during altitude changes.", correct: true, explain: "A clogged leak restricts air flow further, taking much longer for case pressure to catch up. This increases differential pressure across the diaphragm, causing over-reading and severe lag." },
+          { text: "Instantaneous needle response with zero lag time.", correct: false, explain: "Restricting the leak increases pressure buildup delay and increases lag." },
+          { text: "The needle permanently locks at 0 feet per minute regardless of climb.", correct: false, explain: "Complete blockage causes severe trapping, whereas partial clog causes over-reading and prolonged lag." },
+          { text: "The VSI will function exactly like an Airspeed Indicator.", correct: false, explain: "VSI remains connected to static lines only; it cannot read airspeed." }
+        ]
+      },
+      {
+        q: "When accelerating horizontally in level flight at high speed, why might a standard VSI show a brief false descent or climb?",
+        category: "INSTRUMENT ERRORS",
+        options: [
+          { text: "Position error changes static pressure around the static ports as pitch attitude changes during acceleration.", correct: true, explain: "Speed changes alter angle of attack and local airflow over static ports (position error), temporarily changing sensed pressure before stabilized cruise is achieved." },
+          { text: "Pitot dynamic pressure leaks into the static case through the drainage trap.", correct: false, explain: "Pitot and static systems are separated sealed systems." },
+          { text: "The needle spring expands due to centrifugal engine torque.", correct: false, explain: "Engine torque does not mechanically actuate VSI pointer shafts." },
+          { text: "Internal g-meter pistons in standard VSIs actuate upon forward acceleration.", correct: false, explain: "Standard VSIs do not have g-meter pistons; only IVSI has vertical accelerometers (which respond to vertical, not horizontal acceleration)." }
+        ]
+      },
+      {
+        q: "What color coding or scale markings are typically found on civil VSI indicator faces?",
+        category: "INSTRUMENT DISPLAY",
+        options: [
+          { text: "White graduations on a black dial face, separated into UP (climb) and DOWN (descent) sectors starting from a zero mark.", correct: true, explain: "Standard aviation VSI dials use crisp white lettering on matte black backgrounds with 'UP' on the top half and 'DOWN' on the bottom half originating from '0' at 9 o'clock." },
+          { text: "Green for climb, red for descent, and blue for level flight.", correct: false, explain: "Color arcs are generally absent on standard VSI dials unless customized for TCAS advisory zones." },
+          { text: "Yellow warning bands above 500 feet per minute for noise abatement.", correct: false, explain: "VSI scales display raw vertical rate without noise abatement color arcs." },
+          { text: "Red line limits set strictly at 1,000 feet per minute for all general aviation aircraft.", correct: false, explain: "VSI scales range from 2,000 to 6,000+ fpm depending on aircraft performance capabilities." }
+        ]
+      },
+      {
+        q: "If an aircraft climbs from sea level to 5,000 feet at a constant indicated vertical speed of 1,000 fpm, how will the ACTUAL time taken compare to 5 minutes?",
+        category: "DENSITY ALTITUDE EFFECTS",
+        options: [
+          { text: "Actual time taken will be slightly MORE than 5 minutes because true vertical speed is higher than indicated at altitude.", correct: true, explain: "Because air density drops with altitude, indicated vertical speed underestimates true rate of climb as altitude increases, meaning true rate was higher, taking slightly less or varying time depending on density ratio." },
+          { text: "Actual time taken will be EXACTLY 5 minutes because VSI accounts for lapse rate.", correct: false, explain: "Standard mechanical VSIs suffer density errors at high altitudes unless compensated." },
+          { text: "Actual time taken will be 10 minutes due to 50% instrument lag factor.", correct: false, explain: "Lag affects rate changes, but steady climb tracking is bound by air density calibration errors." },
+          { text: "Actual time taken will be 2.5 minutes due to decrease in static pressure.", correct: false, explain: "Density changes cause minor percentage variations, not 50% timing shifts." }
+        ]
+      },
+      {
+        q: "In an IVSI, what prevents turbulence-induced bumps from causing excessive false needle movements during straight and level flight?",
+        category: "IVSI MECHANICS",
+        options: [
+          { text: "Fluid damping (dashpot oil/air cushioning) that smooths out high-frequency accelerations while sensing sustained vertical movement.", correct: true, explain: "IVSI dashpots use viscous damping (oil or air metering around pistons) to filter out brief, high-frequency turbulence vibration while responding to sustained vertical rate changes." },
+          { text: "Electronic low-pass filters wired into the gyro gimbal.", correct: false, explain: "Mechanical IVSIs do not utilize gyros or electrical wiring." },
+          { text: "An automatic needle lockout brake engaged when speed exceeds 100 knots.", correct: false, explain: "There are no mechanical brakes locking needle movement in flight." },
+          { text: "A secondary pitot static equalize spring.", correct: false, explain: "Viscous dashpot cushioning is the primary mechanical filter." }
+        ]
+      },
+      {
+        q: "How does the VSI react if the alternate static source is opened while the aircraft is flying at high speed with cabin air vents fully open?",
+        category: "ALTERNATE STATIC",
+        options: [
+          { text: "Indicates a momentary sharp climb due to stronger suction (lower static pressure) inside the cabin.", correct: true, explain: "High airspeed combined with open cabin vents increases aerodynamic suction inside the cabin, lowering cabin static pressure further and producing a sharp false climb spike on the VSI." },
+          { text: "Indicates a rapid descent because open vents increase interior air pressure.", correct: false, explain: "Venturi effects across cockpit openings lower internal air pressure during flight." },
+          { text: "The needle drops to zero instantly and uncalibrates the diaphragm spring.", correct: false, explain: "The needle spikes temporarily, but equalizes as cabin pressure stabilizes." },
+          { text: "The altimeter and VSI pointers rotate in opposite directions simultaneously.", correct: false, explain: "Both static instruments react to the pressure drop (altimeter jumps up, VSI kicks climb)." }
+        ]
+      },
+      {
+        q: "What structural failure would cause a mechanical VSI needle to remain permanently pointing below zero in level flight?",
+        category: "SYSTEM FAILURES",
+        options: [
+          { text: "A ruptured or ruptured/leaking internal diaphragm capsule.", correct: true, explain: "If the diaphragm ruptures, static pressure floods both inside and outside the capsule equally, but spring bias or damaged linkage can cause it to rest off zero (often below zero)." },
+          { text: "A blocked pitot tube drain hole.", correct: false, explain: "VSI is unaffected by pitot tube blockages." },
+          { text: "Excessive electrical voltage to the glass illumination bulb.", correct: false, explain: "Lighting voltage has no physical connection to mechanical pressure sensing." },
+          { text: "An overspeed condition exceeding Vne.", correct: false, explain: "Overspeed affects pitot dynamic instruments and airframe, not static VSI resting position directly." }
+        ]
+      },
+      {
+        q: "What is the primary operational limitation of a standard mechanical VSI during acrobatic maneuvers or aggressive combat turns?",
+        category: "FLIGHT OPERATIONS",
+        options: [
+          { text: "Severe lag and inaccurate rate indications due to rapid pressure changes exceeding calibrated leak flow rates.", correct: true, explain: "Rapid altitude and pitch shifts outpace the calibrated leak's ability to establish proportional differential pressure, rendering standard VSI indications meaningless during aerobatics." },
+          { text: "Risk of internal gyro tumble causing permanent gimbal lock.", correct: false, explain: "VSI has no gyroscopes to tumble." },
+          { text: "Complete electrical failure due to alternator overload.", correct: false, explain: "Mechanical VSI requires zero electrical power." },
+          { text: "Combustion of trapped static oils at high G loads.", correct: false, explain: "There are no combustible oils inside static pressure lines." }
+        ]
+      },
+      {
+        q: "In an aircraft equipped with dual Air Data Computers (ADC 1 and ADC 2), how is a VSI mismatch error detected by modern avionics?",
+        category: "MODERN AVIONICS",
+        options: [
+          { text: "Flight management computers continuously compare vertical speed output from ADC 1 and ADC 2, issuing a 'VSI MISCOMPARE' alert if deviation thresholds are exceeded.", correct: true, explain: "Avionics comparison monitors check dual independent static pressure transducer channels. A discrepancy triggers yellow 'PITOT/STATIC' or 'VSI MISCOMPARE' flags on PFDs." },
+          { text: "By physically comparing mechanical cable tension behind the primary flight displays.", correct: false, explain: "ADCs process electronic data buses, not mechanical cable tensions." },
+          { text: "Using a mechanical balance beam connecting the two static lines.", correct: false, explain: "Electronic avionics use digital comparison software algorithms." },
+          { text: "By measuring engine exhaust pressure differences on dual engine aircraft.", correct: false, explain: "VSI cross-checks compare air data transducers, unrelated to engine exhaust." }
+        ]
+      },
+      {
+        q: "Why is static line drainage maintenance critical for correct VSI operation in cold weather conditions?",
+        category: "MAINTENANCE & TROUBLESHOOTING",
+        options: [
+          { text: "Trapped moisture in static lines can freeze solid, blocking pressure signals or damaging delicate calibrated leak orifices.", correct: true, explain: "Water trapped in low points of static lines can freeze at sub-zero temperatures, blocking pressure transmission and locking the VSI needle at zero or damaging internal diaphragms." },
+          { text: "Moisture increases air density inside the case, causing permanent high climb indications.", correct: false, explain: "Ice physically blocks lines rather than slightly altering density ratios." },
+          { text: "Water short-circuits the heating element inside the VSI case.", correct: false, explain: "Standard VSI cases contain no internal electrical heating elements." },
+          { text: "Ice formation turns the VSI into a pitot pressure gauge.", correct: false, explain: "Ice seals the static line, preventing pressure changes from reaching the instrument." }
+        ]
+      },
+      {
+        q: "Summarizing VSI principles: What single fundamental mechanical concept allows a VSI to indicate RATE of climb rather than ALTITUDE level?",
+        category: "CORE PRINCIPLES",
+        options: [
+          { text: "The controlled pressure differential between direct static pressure (capsule) and restricted metered static pressure (case through calibrated leak).", correct: true, explain: "Direct static pressure changes immediately inside the capsule, while metered static pressure lags inside the case. The resulting differential pressure is directly proportional to rate of vertical movement." },
+          { text: "The difference between total pitot impact pressure and static port pressure.", correct: false, explain: "Pitot vs static differential is used by Airspeed Indicators, not VSIs." },
+          { text: "The compression of aneroid wafers against a fixed vacuum standard.", correct: false, explain: "Sealed vacuum aneroid wafers are used by Altimeters to measure absolute altitude level." },
+          { text: "The precession force of a vertical axis gyro rotor.", correct: false, explain: "Vertical gyros measure pitch/roll attitude, not pneumatic rate of climb." }
+        ]
+      }
+    ];
+
+    // STATE VARIABLES
+    let currentQuestions = [];
+    let userAnswers = {}; // { questionIndex: optionIndex }
+    let flaggedQuestions = {}; // { questionIndex: true/false }
+    let currentQuestionIdx = 0;
+    let timerInterval = null;
+    let timeRemaining = 3000; // 50 Minutes (3000 seconds)
+    let timeSpent = 0;
+    let activeFilter = 'all';
+
+    // SHUFFLE HELPER (Fisher-Yates)
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // INITIALIZE QUIZ STATE & RANDOMIZE
+    function initQuizData() {
+      // Deep copy and randomize options while preserving correctness tracking
+      currentQuestions = rawQuestionBank.map((qObj, index) => {
+        // Copy options
+        let optionsCopy = qObj.options.map((opt, origIdx) => ({
+          ...opt,
+          originalIndex: origIdx
+        }));
+
+        // Shuffle options
+        optionsCopy = shuffleArray(optionsCopy);
+
+        // Verification guardrail: Ensure option lengths aren't unfairly skewed to always longest/shortest
+        return {
+          id: index + 1,
+          question: qObj.q,
+          category: qObj.category,
+          options: optionsCopy
+        };
+      });
+
+      userAnswers = {};
+      flaggedQuestions = {};
+      currentQuestionIdx = 0;
+      timeRemaining = 3000;
+      timeSpent = 0;
+    }
+
+    // START TIMER
+    function startTimer() {
+      clearInterval(timerInterval);
+      const timerDisplay = document.getElementById('timerDisplay');
+      
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        timeSpent++;
+
+        const mins = Math.floor(timeRemaining / 60);
+        const secs = timeRemaining % 60;
+        timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        if (timeRemaining <= 300) { // Last 5 mins warning styling
+          timerDisplay.classList.add('text-rose-400');
+          timerDisplay.classList.remove('text-cyan-300');
+        }
+
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          submitExam(true); // Forced submit on timeout
+        }
+      }, 1000);
+    }
+
+    // RENDER NAVIGATOR GRID
+    function renderGrid() {
+      const grid = document.getElementById('questionGrid');
+      grid.innerHTML = '';
+
+      currentQuestions.forEach((q, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => jumpToQuestion(idx);
+
+        const isCurrent = idx === currentQuestionIdx;
+        const isAnswered = userAnswers[idx] !== undefined;
+        const isFlagged = flaggedQuestions[idx] === true;
+
+        let baseClasses = "h-9 w-full rounded-lg text-xs font-mono font-bold transition-all relative flex items-center justify-center border ";
+
+        if (isCurrent) {
+          baseClasses += "bg-cyan-600 text-white border-cyan-300 shadow-md shadow-cyan-950/50 ring-2 ring-cyan-400/40 ";
+        } else if (isAnswered) {
+          baseClasses += "bg-slate-800 text-slate-200 border-slate-600 hover:bg-slate-700 ";
+        } else {
+          baseClasses += "bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900 hover:text-slate-200 ";
+        }
+
+        btn.className = baseClasses;
+        btn.innerHTML = `${idx + 1}`;
+
+        if (isFlagged) {
+          const flagBadge = document.createElement('span');
+          flagBadge.className = "absolute -top-1 -right-1 text-amber-400 text-[10px] font-bold";
+          flagBadge.innerHTML = "★";
+          btn.appendChild(flagBadge);
+        }
+
+        grid.appendChild(btn);
+      });
+
+      // Update answered count display
+      const answeredCount = Object.keys(userAnswers).length;
+      document.getElementById('matrixAnsweredCount').textContent = `${answeredCount}/50 Answered`;
+      
+      // Update progress bar
+      const pct = Math.round((answeredCount / 50) * 100);
+      document.getElementById('progressBar').style.width = `${pct}%`;
+      document.getElementById('completionPercentage').textContent = `${pct}% Completed`;
+    }
+
+    // RENDER CURRENT QUESTION
+    function renderCurrentQuestion() {
+      const qData = currentQuestions[currentQuestionIdx];
+      
+      // Header info
+      document.getElementById('progressText').textContent = `Question ${currentQuestionIdx + 1} of 50`;
+      document.getElementById('questionTag').textContent = qData.category;
+      document.getElementById('questionText').textContent = qData.question;
+
+      // Flag button state
+      const isFlagged = flaggedQuestions[currentQuestionIdx] === true;
+      const flagBtn = document.getElementById('flagBtn');
+      const flagBtnText = document.getElementById('flagBtnText');
+      if (isFlagged) {
+        flagBtn.className = "flex items-center gap-1.5 text-xs font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/40";
+        flagBtnText.textContent = "Flagged";
+      } else {
+        flagBtn.className = "flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-amber-400 transition-colors px-2.5 py-1 rounded-md border border-slate-800 hover:border-amber-500/30";
+        flagBtnText.textContent = "Mark for Review";
+      }
+
+      // Options
+      const container = document.getElementById('optionsContainer');
+      container.innerHTML = '';
+
+      const letters = ['A', 'B', 'C', 'D'];
+      const selectedOptIdx = userAnswers[currentQuestionIdx];
+
+      qData.options.forEach((opt, oIdx) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.type = 'button';
+        optionBtn.onclick = () => selectOption(currentQuestionIdx, oIdx);
+
+        const isSelected = selectedOptIdx === oIdx;
+
+        let optClasses = "w-full text-left p-4 rounded-xl border transition-all flex items-start gap-3.5 group relative ";
+        
+        if (isSelected) {
+          optClasses += "bg-cyan-950/60 border-cyan-500 text-white shadow-md shadow-cyan-950/30 ring-1 ring-cyan-500/50";
+        } else {
+          optClasses += "bg-slate-950/60 border-slate-800 text-slate-300 hover:bg-slate-800/60 hover:border-slate-700 hover:text-white";
+        }
+
+        optionBtn.className = optClasses;
+
+        optionBtn.innerHTML = `
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-colors ${
+            isSelected 
+              ? 'bg-cyan-500 text-slate-950 shadow' 
+              : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700 group-hover:text-slate-200'
+          }">
+            ${letters[oIdx]}
+          </div>
+          <div class="text-sm sm:text-base pt-0.5 leading-snug">
+            ${opt.text}
+          </div>
+        `;
+
+        container.appendChild(optionBtn);
+      });
+
+      // Prev / Next button state
+      document.getElementById('prevBtn').disabled = currentQuestionIdx === 0;
+      
+      const nextBtnText = document.getElementById('nextBtnText');
+      if (currentQuestionIdx === 49) {
+        nextBtnText.textContent = "Review & Finish";
+      } else {
+        nextBtnText.textContent = "Next Question";
+      }
+
+      renderGrid();
+      lucide.createIcons();
+    }
+
+    // OPTION SELECTION
+    function selectOption(qIdx, optIdx) {
+      userAnswers[qIdx] = optIdx;
+      renderCurrentQuestion();
+    }
+
+    // NAVIGATION
+    function navigateQuestion(direction) {
+      const newIdx = currentQuestionIdx + direction;
+      if (newIdx >= 0 && newIdx < 50) {
+        currentQuestionIdx = newIdx;
+        renderCurrentQuestion();
+      } else if (newIdx === 50) {
+        confirmSubmit();
+      }
+    }
+
+    function skipQuestion() {
+      if (currentQuestionIdx < 49) {
+        currentQuestionIdx++;
+        renderCurrentQuestion();
+      } else {
+        confirmSubmit();
+      }
+    }
+
+    function jumpToQuestion(idx) {
+      currentQuestionIdx = idx;
+      renderCurrentQuestion();
+    }
+
+    function toggleFlagCurrentQuestion() {
+      flaggedQuestions[currentQuestionIdx] = !flaggedQuestions[currentQuestionIdx];
+      renderCurrentQuestion();
+    }
+
+    // SUBMIT CONFIRMATION MODAL
+    function confirmSubmit() {
+      const answeredCount = Object.keys(userAnswers).length;
+      const unanswered = 50 - answeredCount;
+      const modalText = document.getElementById('modalWarningText');
+
+      if (unanswered > 0) {
+        modalText.textContent = `You still have ${unanswered} unanswered question${unanswered > 1 ? 's' : ''}. Unanswered questions will be marked as incorrect. Are you sure you want to submit now?`;
+      } else {
+        modalText.textContent = "You have answered all 50 questions. Ready to submit for flight debriefing score and full explanations?";
+      }
+
+      document.getElementById('confirmModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+    }
+
+    // FINAL SUBMIT EXAM & SHOW RESULTS
+    function submitExam(isTimeout = false) {
+      closeModal();
+      clearInterval(timerInterval);
+
+      // Hide Quiz Header Stats & View
+      document.getElementById('quizView').classList.add('hidden');
+      document.getElementById('quizHeaderStats').classList.add('hidden');
+
+      // Calculate Results
+      let correctCount = 0;
+      let incorrectCount = 0;
+      let skippedCount = 0;
+
+      currentQuestions.forEach((q, idx) => {
+        const userChoiceIdx = userAnswers[idx];
+        if (userChoiceIdx === undefined) {
+          skippedCount++;
+        } else {
+          const selectedOption = q.options[userChoiceIdx];
+          if (selectedOption.correct) {
+            correctCount++;
+          } else {
+            incorrectCount++;
+          }
+        }
+      });
+
+      const scorePercent = Math.round((correctCount / 50) * 100);
+
+      // Populate Score Card
+      document.getElementById('finalScorePercent').textContent = `${scorePercent}%`;
+      document.getElementById('scoreCorrect').textContent = correctCount;
+      document.getElementById('scoreIncorrect').textContent = incorrectCount;
+      document.getElementById('scoreSkipped').textContent = skippedCount;
+
+      const minsSpent = Math.floor(timeSpent / 60);
+      const secsSpent = timeSpent % 60;
+      document.getElementById('scoreTime').textContent = `${minsSpent.toString().padStart(2, '0')}:${secsSpent.toString().padStart(2, '0')}`;
+
+      // Performance Grade Feedback
+      const gradeText = document.getElementById('performanceGradeText');
+      if (scorePercent >= 90) {
+        gradeText.textContent = "EXCELLENT PASS: Outstanding mastery of Vertical Speed Indicator dynamics, Pitot-Static systems, and IVSI errors.";
+      } else if (scorePercent >= 75) {
+        gradeText.textContent = "PASS: Solid comprehension of VSI operational mechanics and system failure modes. Review missed questions below.";
+      } else {
+        gradeText.textContent = "NEEDS IMPROVEMENT: Review fundamental VSI pressure differentials, calibrated leak mechanics, and IVSI accelerometer errors.";
+      }
+
+      // Show Results View
+      document.getElementById('resultsView').classList.remove('hidden');
+      document.getElementById('resultsView').classList.add('flex');
+
+      renderResultsList();
+      lucide.createIcons();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // RENDER FILTERED RESULTS LIST
+    function renderResultsList() {
+      const container = document.getElementById('resultsList');
+      container.innerHTML = '';
+
+      const letters = ['A', 'B', 'C', 'D'];
+
+      currentQuestions.forEach((q, idx) => {
+        const userChoiceIdx = userAnswers[idx];
+        const isAnswered = userChoiceIdx !== undefined;
+        const correctOptIdx = q.options.findIndex(o => o.correct);
+        const isCorrect = isAnswered && q.options[userChoiceIdx].correct;
+        const isSkipped = !isAnswered;
+
+        // Apply Filter
+        if (activeFilter === 'correct' && !isCorrect) return;
+        if (activeFilter === 'incorrect' && (isCorrect || isSkipped)) return;
+        if (activeFilter === 'skipped' && !isSkipped) return;
+
+        // Card Container
+        const card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-md";
+
+        // Status Header
+        let statusBadge = "";
+        if (isCorrect) {
+          statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-2.5 py-1 rounded-md flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> CORRECT</span>`;
+        } else if (isSkipped) {
+          statusBadge = `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-bold px-2.5 py-1 rounded-md flex items-center gap-1"><i data-lucide="minus-circle" class="w-3.5 h-3.5"></i> SKIPPED</span>`;
+        } else {
+          statusBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/30 text-xs font-bold px-2.5 py-1 rounded-md flex items-center gap-1"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i> INCORRECT</span>`;
+        }
+
+        let optionsMarkup = "";
+        q.options.forEach((opt, oIdx) => {
+          const isUserSelection = userChoiceIdx === oIdx;
+          const isOptionCorrect = opt.correct;
+
+          let optionStyle = "bg-slate-950/50 border-slate-800 text-slate-300";
+          let badgeText = "";
+
+          if (isOptionCorrect) {
+            optionStyle = "bg-emerald-950/40 border-emerald-500/60 text-emerald-200 ring-1 ring-emerald-500/30";
+            badgeText = `<span class="text-[11px] font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800/60">CORRECT ANSWER</span>`;
+          } else if (isUserSelection && !isOptionCorrect) {
+            optionStyle = "bg-rose-950/40 border-rose-500/60 text-rose-200 ring-1 ring-rose-500/30";
+            badgeText = `<span class="text-[11px] font-bold text-rose-400 bg-rose-950 px-2 py-0.5 rounded border border-rose-800/60">YOUR SELECTION</span>`;
+          }
+
+          optionsMarkup += `
+            <div class="p-4 rounded-lg border ${optionStyle} flex flex-col gap-2">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-start gap-2.5">
+                  <span class="font-mono font-bold text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">${letters[oIdx]}</span>
+                  <span class="text-sm font-medium pt-0.5">${opt.text}</span>
+                </div>
+                ${badgeText}
+              </div>
+              <div class="text-xs text-slate-400 mt-1 pl-8 border-l-2 ${isOptionCorrect ? 'border-emerald-500/40' : 'border-slate-700'}">
+                <strong class="text-slate-300">Explanation:</strong> ${opt.explain}
+              </div>
+            </div>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="font-mono font-bold text-xs text-cyan-400 bg-slate-950 px-2.5 py-1 rounded border border-slate-800">
+                QUESTION ${idx + 1}
+              </span>
+              <span class="text-xs font-semibold text-slate-400">${q.category}</span>
+            </div>
+            ${statusBadge}
+          </div>
+
+          <h3 class="text-base font-bold text-white mb-4 leading-relaxed">
+            ${q.question}
+          </h3>
+
+          <div class="space-y-3">
+            ${optionsMarkup}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // FILTER RESULTS TAB
+    function filterResults(type) {
+      activeFilter = type;
+
+      const buttons = {
+        all: document.getElementById('filterAll'),
+        incorrect: document.getElementById('filterIncorrect'),
+        correct: document.getElementById('filterCorrect'),
+        skipped: document.getElementById('filterSkipped')
+      };
+
+      Object.keys(buttons).forEach(key => {
+        if (key === type) {
+          buttons[key].className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600 text-white border border-cyan-400/30 shadow";
+        } else {
+          buttons[key].className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700";
+        }
+      });
+
+      renderResultsList();
+    }
+
+    // RETAKE QUIZ
+    function restartQuiz() {
+      document.getElementById('resultsView').classList.add('hidden');
+      document.getElementById('resultsView').classList.remove('flex');
+      document.getElementById('quizView').classList.remove('hidden');
+      document.getElementById('quizHeaderStats').classList.remove('hidden');
+
+      const timerDisplay = document.getElementById('timerDisplay');
+      timerDisplay.classList.remove('text-rose-400');
+      timerDisplay.classList.add('text-cyan-300');
+
+      initQuizData();
+      startTimer();
+      renderCurrentQuestion();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ON PAGE LOAD INITIALIZATION
+    window.onload = function() {
+      initQuizData();
+      startTimer();
+      renderCurrentQuestion();
+    };
+  </script>
+</body>
+</html>
