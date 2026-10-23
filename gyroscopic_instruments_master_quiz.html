@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyroscopic Instruments Master Quiz (50 Questions)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        aviation: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            dark: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars and styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .user-select-none {
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Top Header Navigation -->
+    <header class="bg-slate-800/90 border-b border-slate-700 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-sky-500/10 rounded-lg text-sky-400 border border-sky-500/20">
+                    <i class="fa-solid fa-plane-flight text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-100 leading-tight">Gyroscopic Instruments Exam</h1>
+                    <p class="text-xs text-sky-400 font-mono">ERAU SpecialVFR Aviation Series</p>
+                </div>
+            </div>
+
+            <!-- Quiz Active Header Info -->
+            <div id="quiz-header-info" class="flex items-center space-x-6">
+                <!-- Progress Bar -->
+                <div class="hidden md:flex flex-col w-48">
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>Progress</span>
+                        <span id="progress-text" class="font-mono text-sky-400">0 / 50</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
+                        <div id="progress-bar" class="bg-sky-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Timer Display -->
+                <div class="flex items-center space-x-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <i class="fa-regular fa-clock text-sky-400 animate-pulse"></i>
+                    <span id="timer-display" class="font-mono text-lg font-semibold text-slate-100">50:00</span>
+                </div>
+
+                <!-- Submit Button -->
+                <button id="top-submit-btn" onclick="confirmSubmit()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                    <span>Submit Exam</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+        <!-- Welcome / Start Screen -->
+        <div id="start-screen" class="max-w-3xl mx-auto bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-10 shadow-2xl my-8">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl border border-sky-500/20 mb-4">
+                    <i class="fa-solid fa-compass text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-white mb-2">50-Question Master Quiz</h2>
+                <p class="text-slate-400 max-w-lg mx-auto text-sm">
+                    Based on ERAU SpecialVFR's technical curriculum on <strong>Gyroscopic Instruments</strong> (Attitude Indicator, Heading Indicator, Turn Coordinator, Vacuum vs Electrical systems, Rigidity in Space, and Gyroscopic Precession).
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 text-sm">
+                <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700/60 flex items-start space-x-3">
+                    <i class="fa-regular fa-clock text-sky-400 text-lg mt-0.5"></i>
+                    <div>
+                        <strong class="block text-slate-200">50 Minutes Limit</strong>
+                        <span class="text-slate-400 text-xs">Strict continuous timer. Auto-submits upon reaching 00:00.</span>
+                    </div>
+                </div>
+                <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700/60 flex items-start space-x-3">
+                    <i class="fa-solid fa-shuffle text-sky-400 text-lg mt-0.5"></i>
+                    <div>
+                        <strong class="block text-slate-200">Randomized Options</strong>
+                        <span class="text-slate-400 text-xs">Answer choices & option lengths are dynamically balanced each attempt.</span>
+                    </div>
+                </div>
+                <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700/60 flex items-start space-x-3">
+                    <i class="fa-solid fa-bookmark text-sky-400 text-lg mt-0.5"></i>
+                    <div>
+                        <strong class="block text-slate-200">Flag & Skip Logic</strong>
+                        <span class="text-slate-400 text-xs">Freely skip and flag questions for review before submitting.</span>
+                    </div>
+                </div>
+                <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700/60 flex items-start space-x-3">
+                    <i class="fa-solid fa-book-open text-sky-400 text-lg mt-0.5"></i>
+                    <div>
+                        <strong class="block text-slate-200">Comprehensive Analysis</strong>
+                        <span class="text-slate-400 text-xs">Detailed explanations for every option (correct and incorrect) upon completion.</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startQuiz()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-4 rounded-xl shadow-lg transition flex items-center justify-center space-x-2 text-lg">
+                <span>Begin Examination</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Quiz Container (Active Test) -->
+        <div id="quiz-screen" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <!-- Left 3 Columns: Main Question Window -->
+            <div class="lg:col-span-3 space-y-6">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-xl relative">
+                    <!-- Top Info Line for Question -->
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-6">
+                        <div class="flex items-center space-x-3">
+                            <span class="bg-sky-500/20 text-sky-300 font-mono text-xs px-3 py-1 rounded-full border border-sky-500/30 font-semibold" id="q-category">
+                                Category
+                            </span>
+                            <span class="text-xs text-slate-400" id="q-number-title">Question 1 of 50</span>
+                        </div>
+                        <button id="flag-btn" onclick="toggleFlag()" class="text-slate-400 hover:text-amber-400 px-3 py-1 rounded-lg border border-slate-700 hover:border-amber-500/50 text-xs font-medium transition flex items-center space-x-2">
+                            <i class="fa-regular fa-bookmark"></i>
+                            <span id="flag-text">Flag for Review</span>
+                        </button>
+                    </div>
+
+                    <!-- Question Text -->
+                    <h3 id="question-text" class="text-lg sm:text-xl font-semibold text-slate-100 leading-relaxed mb-6">
+                        Question text will load here...
+                    </h3>
+
+                    <!-- Option List -->
+                    <div id="options-container" class="space-y-3 mb-8">
+                        <!-- Dynamic Options loaded here -->
+                    </div>
+
+                    <!-- Bottom Nav Actions inside Question Box -->
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-700/80">
+                        <button id="prev-btn" onclick="navigateQuestion(-1)" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-5 py-2.5 rounded-xl font-medium text-sm transition flex items-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                            <span>Previous</span>
+                        </button>
+
+                        <button id="clear-btn" onclick="clearAnswer()" class="text-slate-400 hover:text-slate-200 text-xs font-medium px-3 py-1.5 rounded transition">
+                            Clear Selection
+                        </button>
+
+                        <button id="next-btn" onclick="navigateQuestion(1)" class="bg-sky-600 hover:bg-sky-500 text-white px-6 py-2.5 rounded-xl font-medium text-sm transition flex items-center space-x-2">
+                            <span>Next</span>
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right 1 Column: Question Palette Navigation -->
+            <div class="lg:col-span-1">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl sticky top-20">
+                    <h4 class="text-sm font-semibold text-slate-300 mb-3 flex items-center justify-between">
+                        <span>Question Palette</span>
+                        <span id="palette-count" class="text-xs font-mono text-sky-400">0/50 Answered</span>
+                    </h4>
+
+                    <!-- Palette Legend -->
+                    <div class="grid grid-cols-2 gap-2 text-xs text-slate-400 mb-4 pb-3 border-b border-slate-700">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-3 h-3 rounded-sm bg-sky-600 inline-block"></span>
+                            <span>Answered</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-3 h-3 rounded-sm bg-slate-700 border border-slate-600 inline-block"></span>
+                            <span>Unanswered</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-3 h-3 rounded-sm bg-amber-500 inline-block"></span>
+                            <span>Flagged</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-3 h-3 rounded-sm bg-slate-800 border-2 border-sky-400 inline-block"></span>
+                            <span>Current</span>
+                        </div>
+                    </div>
+
+                    <!-- 50 Grid Buttons -->
+                    <div id="question-palette" class="grid grid-cols-5 gap-2 max-h-[380px] overflow-y-auto pr-1">
+                        <!-- 1-50 generated programmatically -->
+                    </div>
+
+                    <!-- Complete Submission Action -->
+                    <div class="mt-5 pt-3 border-t border-slate-700">
+                        <button onclick="confirmSubmit()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl text-sm transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-check-double"></i>
+                            <span>Submit Quiz</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Results & Post-Submission Review Screen -->
+        <div id="results-screen" class="hidden space-y-8">
+            <!-- Overall Score Banner -->
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-700 pb-6">
+                    <div>
+                        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold mb-2" id="score-badge">
+                            <!-- Passed / Failed badge -->
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white">Performance Summary</h2>
+                        <p class="text-slate-400 text-sm mt-1">Gyroscopic Instruments Comprehensive Aviation Assessment</p>
+                    </div>
+
+                    <div class="flex items-center space-x-8 text-center">
+                        <div>
+                            <span class="text-xs uppercase tracking-wider text-slate-400 block font-medium">Final Score</span>
+                            <span id="final-score-percent" class="text-4xl font-extrabold text-sky-400 font-mono">0%</span>
+                        </div>
+                        <div class="h-10 w-px bg-slate-700"></div>
+                        <div>
+                            <span class="text-xs uppercase tracking-wider text-slate-400 block font-medium">Correct / Total</span>
+                            <span id="final-score-raw" class="text-2xl font-bold text-slate-200 font-mono">0 / 50</span>
+                        </div>
+                        <div class="h-10 w-px bg-slate-700"></div>
+                        <div>
+                            <span class="text-xs uppercase tracking-wider text-slate-400 block font-medium">Time Taken</span>
+                            <span id="final-time-taken" class="text-2xl font-bold text-slate-200 font-mono">00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Filter Header -->
+                <div class="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h3 class="text-lg font-bold text-slate-200">Detailed Explanations & Item Analysis</h3>
+                    <div class="flex items-center space-x-2 bg-slate-900/60 p-1 rounded-xl border border-slate-700 text-xs">
+                        <button onclick="filterReview('all')" id="filter-all" class="px-3 py-1.5 rounded-lg font-semibold bg-sky-600 text-white transition">All (50)</button>
+                        <button onclick="filterReview('correct')" id="filter-correct" class="px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-white transition">Correct</button>
+                        <button onclick="filterReview('incorrect')" id="filter-incorrect" class="px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-white transition">Incorrect / Skipped</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Review Question Cards List -->
+            <div id="review-cards-container" class="space-y-6">
+                <!-- Programmatically rendered explanations -->
+            </div>
+
+            <!-- Restart Action -->
+            <div class="text-center pt-6 pb-12">
+                <button onclick="location.reload()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg transition inline-flex items-center space-x-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Retake Quiz (Reshuffle Options)</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Confirmation for Submission -->
+    <div id="submit-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl text-center space-y-4">
+            <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-full flex items-center justify-center mx-auto border border-amber-500/20">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Submit Examination?</h3>
+            <p id="modal-status-text" class="text-sm text-slate-300">
+                You have answered 0 of 50 questions. Are you sure you want to finish?
+            </p>
+            <div class="flex items-center justify-center space-x-3 pt-2">
+                <button onclick="closeSubmitModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl text-sm font-semibold transition">
+                    Continue Exam
+                </button>
+                <button onclick="finalizeSubmission()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold transition">
+                    Confirm Submission
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        <p>Aviation Training Assessment • Based on ERAU SpecialVFR Gyroscopic Instruments Technical Module</p>
+    </footer>
+
+    <!-- Main JavaScript Application Logic -->
+    <script>
+        // MASTER QUESTION DATASET (50 Highly Technical Questions)
+        const RAW_QUESTIONS = [
+            {
+                id: 1,
+                category: "Fundamental Physics",
+                question: "Which foundational physics principle allows a rapidly spinning gyroscope rotor to maintain its original plane of rotation in space regardless of how its support frame moves?",
+                options: [
+                    { id: "A", text: "Rigidity in Space", correct: true },
+                    { id: "B", text: "Gyroscopic Precession", correct: false },
+                    { id: "C", text: "Coriolis Acceleration Effect", correct: false },
+                    { id: "D", text: "Aerodynamic Damping Force", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Rigidity in space is Newton's First Law applied to rotation: a spinning wheel resists any force trying to alter its plane of rotation.",
+                    B: "Incorrect. Precession describes the resultant deflection 90 degrees downstream in the direction of rotation when a deflective force is applied.",
+                    C: "Incorrect. Coriolis acceleration relates to rotational frames of reference and fluid mechanics, not gyroscopic momentum resistance.",
+                    D: "Incorrect. Aerodynamic damping is air resistance acting on moving surfaces, not a gyroscopic inertial property."
+                }
+            },
+            {
+                id: 2,
+                category: "Fundamental Physics",
+                question: "According to the physics of gyroscopic rigidity, which two factors directly increase a rotor's rigidity in space?",
+                options: [
+                    { id: "A", text: "Higher rotational speed and greater rotor mass concentrated far from the center", correct: true },
+                    { id: "B", text: "Lower rotational speed and concentrating mass tightly around the central axis", correct: false },
+                    { id: "C", text: "Higher ambient pressure and reduced rotor diameter", correct: false },
+                    { id: "D", text: "Decreased bearing friction and horizontal gimbal axis alignment", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Rigidity is proportional to rotational inertia (mass distribution relative to axis) and angular speed (RPM).",
+                    B: "Incorrect. Lowering speed or moving mass closer to the center reduces angular momentum and decreases rigidity.",
+                    C: "Incorrect. Ambient air pressure exerts drag on the gyro but does not enhance angular momentum.",
+                    D: "Incorrect. While bearing friction causes drift, it does not define the magnitude of rigidity."
+                }
+            },
+            {
+                id: 3,
+                category: "Fundamental Physics",
+                question: "When a force is applied to the rim of a spinning gyroscopic rotor, where is the resulting force actually manifested?",
+                options: [
+                    { id: "A", text: "At a point 90 degrees ahead in the direction of rotation", correct: true },
+                    { id: "B", text: "Directly at the point of application", correct: false },
+                    { id: "C", text: "At a point 180 degrees opposite the application point", correct: false },
+                    { id: "D", text: "At a point 90 degrees behind in the direction of rotation", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Gyroscopic precession dictates that a force applied to a spinning rotor takes effect 90° further in the direction of spin.",
+                    B: "Incorrect. Non-rotating solid bodies react at the point of application, but spinning gyros precess 90 degrees downstream.",
+                    C: "Incorrect. 180 degrees would imply simple linear reaction or mirror bounce, not rotational vector addition.",
+                    D: "Incorrect. The force moves in the direction of rotation (forward), not backward by 90 degrees."
+                }
+            },
+            {
+                id: 4,
+                category: "Power Sources",
+                question: "In standard general aviation aircraft (e.g., Cessna 172), which source typically powers the Turn Coordinator gyro?",
+                options: [
+                    { id: "A", text: "Electrical system (DC motor)", correct: true },
+                    { id: "B", text: "Engine-driven vacuum pump", correct: false },
+                    { id: "C", text: "Venturi tube system", correct: false },
+                    { id: "D", text: "Static pressure differential", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The Turn Coordinator is electric to provide instrument redundancy in case the vacuum system fails.",
+                    B: "Incorrect. The engine-driven vacuum pump usually powers the Attitude Indicator and Heading Indicator.",
+                    C: "Incorrect. Venturis were older vacuum sources, but turn coordinators on modern aircraft are electric.",
+                    D: "Incorrect. Static pressure powers pitot-static instruments (altimeter, VSI), not gyroscopes."
+                }
+            },
+            {
+                id: 5,
+                category: "Power Sources",
+                question: "Why do aircraft instrument panels mix vacuum-driven and electrically-driven gyroscopic instruments?",
+                options: [
+                    { id: "A", text: "To ensure instrument redundancy in the event of an engine vacuum or electrical failure", correct: true },
+                    { id: "B", text: "Because electric gyros cannot measure pitch and roll attitudes accurately", correct: false },
+                    { id: "C", text: "Because vacuum pumps lack the power required to drive a Turn Coordinator", correct: false },
+                    { id: "D", text: "To prevent total magnetic interference with the wet compass", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Mixing power sources ensures that if the alternator fails or vacuum pump shears, at least one primary bank/horizon reference remains active.",
+                    B: "Incorrect. Electric attitude indicators exist and work accurately (e.g., standby electric AI).",
+                    C: "Incorrect. Vacuum pumps have ample air volume; the separation is purely for safety/redundancy.",
+                    D: "Incorrect. Electrical shielded wiring eliminates magnetic interference; it is not the reason for mixing power sources."
+                }
+            },
+            {
+                id: 6,
+                category: "Attitude Indicator",
+                question: "In a standard vacuum-driven Attitude Indicator, in what plane does the gyroscopic rotor spin?",
+                options: [
+                    { id: "A", text: "Horizontal plane around a vertical axis", correct: true },
+                    { id: "B", text: "Vertical plane around a longitudinal axis", correct: false },
+                    { id: "C", text: "Vertical plane around a lateral axis", correct: false },
+                    { id: "D", text: "Canted at 30 degrees to the horizon", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The Attitude Indicator's rotor spins horizontally around a vertical axis, leveraging rigidity in space to define true pitch and bank.",
+                    B: "Incorrect. Spinning vertically around a longitudinal axis would measure roll rate, not horizon attitude.",
+                    C: "Incorrect. Vertical spin around a lateral axis is used in the Heading Indicator.",
+                    D: "Incorrect. A 30-degree canted gimbal is unique to the Turn Coordinator."
+                }
+            },
+            {
+                id: 7,
+                category: "Attitude Indicator",
+                question: "How many gimbals support the rotor in a standard vacuum attitude indicator to grant full freedom of movement?",
+                options: [
+                    { id: "A", text: "2 gimbals (inner and outer)", correct: true },
+                    { id: "B", text: "1 single canted gimbal", correct: false },
+                    { id: "C", text: "3 fully independent gimbals", correct: false },
+                    { id: "D", text: "No gimbals; it is mounted rigidly to the case", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Two gimbals (inner pitch gimbal and outer roll gimbal) allow the airplane to pitch and roll around the stabilized vertical rotor.",
+                    B: "Incorrect. A single canted gimbal is used in turn coordinators.",
+                    C: "Incorrect. Three gimbals would introduce gimbal lock unless restricted; standard AIs use two.",
+                    D: "Incorrect. Without gimbals, the rotor could not remain stabilized relative to the aircraft body."
+                }
+            },
+            {
+                id: 8,
+                category: "Attitude Indicator",
+                question: "How does air from the vacuum system cause the Attitude Indicator rotor to spin at high speeds?",
+                options: [
+                    { id: "A", text: "Suction pulls ambient air through air jets aimed at buckets carved into the rotor rim", correct: true },
+                    { id: "B", text: "High-pressure air from the pneumatic pump blows directly onto the rotor axis", correct: false },
+                    { id: "C", text: "Air pressure creates electro-magnetic levitation around the gimbal housing", correct: false },
+                    { id: "D", text: "Engine oil pressure drives an impeller attached to the gimbal drive shaft", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The vacuum pump creates low pressure in the instrument case. Filtered cabin air is drawn through jets against buckets cut into the rotor.",
+                    B: "Incorrect. Vacuum systems pull suction (typically 4.5 - 5.5 in Hg), rather than blowing high pressure.",
+                    C: "Incorrect. Vacuum attitude indicators are entirely mechanical pneumatic instruments.",
+                    D: "Incorrect. Engine oil drives no instrument impellers; it is pneumatic suction."
+                }
+            },
+            {
+                id: 9,
+                category: "Attitude Indicator",
+                question: "What erection mechanism corrects minor friction-induced precession in a vacuum-driven Attitude Indicator to keep the gyro vertical?",
+                options: [
+                    { id: "A", text: "Pendulous vanes covering four air exhaust ports at the bottom of the rotor housing", correct: true },
+                    { id: "B", text: "Weighted mercury switches triggering electric correction solenoids", correct: false },
+                    { id: "C", text: "Centrifugal governor weights connected directly to the pitch housing", correct: false },
+                    { id: "D", text: "A torque motor controlled by micro-switches on the outer gimbal", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Four pendulous vanes drop or cover air ports when the gyro tilts. Reaction forces from escaping air precess the gyro back to vertical.",
+                    B: "Incorrect. Mercury switches are found in older electric attitude gyros, not standard vacuum AIs.",
+                    C: "Incorrect. Governors control RPM, not gyroscopic precession erection.",
+                    D: "Incorrect. Torque motors are used in electronic or high-end autopilot gyros."
+                }
+            },
+            {
+                id: 10,
+                category: "Attitude Indicator Errors",
+                question: "During rapid acceleration on a takeoff roll, what false attitude indication typically appears on a mechanical Attitude Indicator?",
+                options: [
+                    { id: "A", text: "A false pitch-up indication and slight right bank", correct: true },
+                    { id: "B", text: "A false pitch-down indication and slight left bank", correct: false },
+                    { id: "C", text: "A rapid rotation of the horizon card in the counter-clockwise direction", correct: false },
+                    { id: "D", text: "A false pure left bank with no pitch change", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Forward acceleration causes pendulous vanes to move backward under inertia. The altered air exhaust precesses the gyro into a false pitch-up/right bank.",
+                    B: "Incorrect. Pitch-down occurs during rapid deceleration, not acceleration.",
+                    C: "Incorrect. Horizon card rotation occurs during tumbling or uncaging, not simple acceleration error.",
+                    D: "Incorrect. Acceleration creates both a pitch-up and a slight right bank vector."
+                }
+            },
+            {
+                id: 11,
+                category: "Attitude Indicator Errors",
+                question: "During rapid deceleration (such as heavy braking or reducing power), what error affects the Attitude Indicator?",
+                options: [
+                    { id: "A", text: "A false pitch-down indication", correct: true },
+                    { id: "B", text: "A false pitch-up indication", correct: false },
+                    { id: "C", text: "A false 30-degree right bank", correct: false },
+                    { id: "D", text: "No error occurs because deceleration forces cancel pendulous movement", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Forward inertia swings the pendulous vanes forward, causing precession that displays a false pitch-down attitude.",
+                    B: "Incorrect. Pitch-up is the acceleration error signature.",
+                    C: "Incorrect. Pitch-down with slight left bank is typical, not 30-degree right bank.",
+                    D: "Incorrect. Deceleration forces trigger vane deflection just as acceleration does."
+                }
+            },
+            {
+                id: 12,
+                category: "Attitude Indicator Errors",
+                question: "In a 180-degree steep turn, precession and centrifugal force on the pendulous vanes can cause what false indication upon rolling out to wings-level?",
+                options: [
+                    { id: "A", text: "A slight pitch-up and bank error opposite the turn direction", correct: true },
+                    { id: "B", text: "A sharp 45-degree pitch down error", correct: false },
+                    { id: "C", text: "A complete inverted display of the miniature aircraft", correct: false },
+                    { id: "D", text: "Zero error because turns cancel out pendulous vane movement", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Centrifugal force pushes pendulous vanes during a sustained turn, introducing small precession errors (pitch-up and bank error opposite the turn upon rollout).",
+                    B: "Incorrect. Pitch errors are small (1 to 3 degrees), not extreme 45-degree deviations.",
+                    C: "Incorrect. Inversion only occurs if pitch limits are exceeded causing gimbal lock/tumbling.",
+                    D: "Incorrect. Centrifugal forces actively affect pendulous vanes during turns."
+                }
+            },
+            {
+                id: 13,
+                category: "Heading Indicator",
+                question: "In what orientation does the gyroscopic rotor spin inside a conventional vacuum-driven Heading Indicator?",
+                options: [
+                    { id: "A", text: "Vertical plane around a horizontal axis", correct: true },
+                    { id: "B", text: "Horizontal plane around a vertical axis", correct: false },
+                    { id: "C", text: "Canted 30 degrees to the vertical axis", correct: false },
+                    { id: "D", text: "Parallel to the aircraft's longitudinal axis", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The Heading Indicator's rotor spins vertically (axis lies horizontally) to maintain directional orientation.",
+                    B: "Incorrect. Horizontal plane / vertical axis is the configuration of the Attitude Indicator.",
+                    C: "Incorrect. Canted spin is used in Turn Coordinators.",
+                    D: "Incorrect. Spinning parallel to longitudinal axis would measure roll, not heading."
+                }
+            },
+            {
+                id: 14,
+                category: "Heading Indicator",
+                question: "Why is the Heading Indicator (Directional Gyro) NOT self-sensing of magnetic north?",
+                options: [
+                    { id: "A", text: "It relies purely on rigidity in space and has no magnetic flux sensor or needle", correct: true },
+                    { id: "B", text: "It is shielded by heavy lead casing to prevent electromagnetic pickup", correct: false },
+                    { id: "C", text: "The vacuum airflow destroys natural magnetic fields inside the instrument case", correct: false },
+                    { id: "D", text: "It is calibrated strictly to True North using GPS signals", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The Heading Indicator has no magnetic seeking properties; it only holds whatever heading it was manually aligned to.",
+                    B: "Incorrect. Lead casing is not used; magnetic isolation is irrelevant since it lacks magnets.",
+                    C: "Incorrect. Vacuum air flow has no effect on magnetic fields.",
+                    D: "Incorrect. Traditional Heading Indicators are purely mechanical and unlinked to GPS."
+                }
+            },
+            {
+                id: 15,
+                category: "Heading Indicator",
+                question: "Because of friction and Earth's rotation, a free-headed Heading Indicator will drift. What is the maximum allowable drift rate before overhaul/maintenance is required?",
+                options: [
+                    { id: "A", text: "3 degrees in 15 minutes", correct: true },
+                    { id: "B", text: "10 degrees in 15 minutes", correct: false },
+                    { id: "C", text: "1 degree per hour", correct: false },
+                    { id: "D", text: "15 degrees per minute", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Standard aviation operational limits dictate checking and resetting the HI to the magnetic compass every 15 minutes, allowing max 3° drift.",
+                    B: "Incorrect. 10 degrees in 15 minutes is excessive drift indicating worn bearings.",
+                    C: "Incorrect. 1 degree per hour is performance reserved for ring-laser INS, not mechanical vacuum gyros.",
+                    D: "Incorrect. 15 degrees per minute is unrealistically high."
+                }
+            },
+            {
+                id: 16,
+                category: "Heading Indicator",
+                question: "What mechanism is used by the pilot to realign the Heading Indicator with the magnetic compass in flight?",
+                options: [
+                    { id: "A", text: "A push-and-turn adjustment knob at the bottom of the instrument face", correct: true },
+                    { id: "B", text: "An electrical rheostat switch located on the avionics bus", correct: false },
+                    { id: "C", text: "A vacuum pressure regulator valve on the firewall", correct: false },
+                    { id: "D", text: "An automatic solenoid pulse button", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Pushing in the knob engages gears directly with the compass card ring, overriding gimbal friction so the pilot can align it.",
+                    B: "Incorrect. Rheostats control lighting or electric motor speeds, not compass card alignment.",
+                    C: "Incorrect. The pressure regulator manages suction level, not compass heading position.",
+                    D: "Incorrect. Traditional HIs use a manual mechanical push-and-turn knob."
+                }
+            },
+            {
+                id: 17,
+                category: "Turn Mechanism",
+                question: "What primary parameter does a Turn-and-Slip Indicator measure, compared to a Turn Coordinator?",
+                options: [
+                    { id: "A", text: "Turn-and-slip measures rate of yaw only; Turn Coordinator measures both rate of roll and rate of yaw", correct: true },
+                    { id: "B", text: "Turn-and-slip measures bank angle; Turn Coordinator measures pitch angle", correct: false },
+                    { id: "C", text: "Turn-and-slip is electrically driven; Turn Coordinator is strictly vacuum driven", correct: false },
+                    { id: "D", text: "Turn-and-slip uses a 30-degree canted gimbal; Turn Coordinator uses a horizontal gimbal", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The older turn-and-slip needle responds only to yaw rate. The Turn Coordinator's canted gimbal allows it to respond initially to roll rate and then to yaw rate.",
+                    B: "Incorrect. Neither instrument directly displays pitch angle.",
+                    C: "Incorrect. Power sources vary, but Turn Coordinators are overwhelmingly electric while older needles were often vacuum.",
+                    D: "Incorrect. It is the Turn Coordinator that has the 30-degree canted gimbal."
+                }
+            },
+            {
+                id: 18,
+                category: "Turn Coordinator",
+                question: "What design feature of the Turn Coordinator allows it to sense BOTH aircraft roll rate and yaw rate?",
+                options: [
+                    { id: "A", text: "The gimbal axis is canted upward at approximately 30 degrees", correct: true },
+                    { id: "B", text: "It utilizes two separate rotors spinning in opposite directions", correct: false },
+                    { id: "C", text: "The rotor is connected to the static port differential line", correct: false },
+                    { id: "D", text: "The display face uses a mechanical glass pendulum", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. By angling (canting) the gimbal framework 30° upward, roll movements torque the gyro in addition to yawing movements.",
+                    B: "Incorrect. The Turn Coordinator uses a single electric gyro rotor.",
+                    C: "Incorrect. Static ports connect to pitot-static instruments, not turn gyros.",
+                    D: "Incorrect. The display uses a miniature airplane symbol linked to the gyro, and a liquid inclinometer tube."
+                }
+            },
+            {
+                id: 19,
+                category: "Rate of Turn",
+                question: "What is the standard rate of turn for a civil aircraft under Instrument Flight Rules (IFR)?",
+                options: [
+                    { id: "A", text: "3 degrees per second (360 degrees in 2 minutes)", correct: true },
+                    { id: "B", text: "6 degrees per second (360 degrees in 1 minute)", correct: false },
+                    { id: "C", text: "1.5 degrees per second (360 degrees in 4 minutes)", correct: false },
+                    { id: "D", text: "5 degrees per second (360 degrees in 72 seconds)", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. A standard rate turn is 3°/sec, completing a full 360-degree circle in exactly 2 minutes (120 seconds).",
+                    B: "Incorrect. 6°/sec is a half-standard rate turn (1 minute 360) used in high-speed jet transport operational procedures.",
+                    C: "Incorrect. 1.5°/sec is a half-standard rate turn (4 minutes for 360°).",
+                    D: "Incorrect. 5°/sec is an arbitrary non-standard rate."
+                }
+            },
+            {
+                id: 20,
+                category: "Inclinometer & Slip/Skid",
+                question: "In an inclinometer (the ball in the liquid-filled curved tube), what forces act on the ball during a turn?",
+                options: [
+                    { id: "A", text: "Gravity pulling down and centrifugal force pushing outward", correct: true },
+                    { id: "B", text: "Engine torque force and gyroscopic precession force", correct: false },
+                    { id: "C", text: "Dynamic pitot air pressure and static casing pressure", correct: false },
+                    { id: "D", text: "Electromagnetic induction and skin friction drag", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Gravity pulls the ball toward the center of the earth, while inertia/centrifugal force pushes it outward during a turn.",
+                    B: "Incorrect. Engine torque and precession act on the airframe/rotor, not directly on the unattached agate/steel ball in the tube.",
+                    C: "Incorrect. The inclinometer is sealed and contains liquid, unaffected by static ports.",
+                    D: "Incorrect. The ball reacts strictly to mechanical acceleration vectors (gravity and centrifugal force)."
+                }
+            },
+            {
+                id: 21,
+                category: "Inclinometer & Slip/Skid",
+                question: "What condition exists when the ball in the inclinometer falls toward the INSIDE of the turn?",
+                options: [
+                    { id: "A", text: "A Slip (rate of turn is too slow for the angle of bank)", correct: true },
+                    { id: "B", text: "A Skid (rate of turn is too fast for the angle of bank)", correct: false },
+                    { id: "C", text: "A Coordinated Turn (gravity and centrifugal force are perfectly balanced)", correct: false },
+                    { id: "D", text: "Gyroscopic tumbling due to gimbal limits", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. In a slip, gravity exceeds horizontal centrifugal force; the aircraft slides inward toward the center of the turn, and the ball falls inside.",
+                    B: "Incorrect. In a skid, centrifugal force is excessive, throwing the ball to the outside of the turn.",
+                    C: "Incorrect. In a coordinated turn, the ball remains centered.",
+                    D: "Incorrect. The ball is a simple fluid-suspended gravity marker, not a gyroscope."
+                }
+            },
+            {
+                id: 22,
+                category: "Inclinometer & Slip/Skid",
+                question: "What pilot action is required to correct a SKID (where the ball is pushed to the OUTSIDE of the turn)?",
+                options: [
+                    { id: "A", text: "Apply rudder in the direction of the ball (or reduce bank / increase turn radius)", correct: true },
+                    { id: "B", text: "Apply rudder opposite the ball position", correct: false },
+                    { id: "C", text: "Pull back sharply on the elevator yoke", correct: false },
+                    { id: "D", text: "Increase engine power while maintaining rudder pressure", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The golden rule is 'Step on the ball'. If the ball is skidding outside, pressing that rudder pedal (or reducing bank angle) aligns fuselages airflows.",
+                    B: "Incorrect. Applying opposite rudder aggravates uncoordinated flight and increases skid intensity.",
+                    C: "Incorrect. Elevator controls pitch and airspeed, not directional balance/skid correction.",
+                    D: "Incorrect. Power adjustments alone do not correct yaw imbalance."
+                }
+            },
+            {
+                id: 23,
+                category: "Inclinometer & Slip/Skid",
+                question: "During a turn, if the aircraft's rate of turn is excessive for the bank angle being used, what type of uncoordinated flight is taking place?",
+                options: [
+                    { id: "A", text: "A Skid", correct: true },
+                    { id: "B", text: "A Slip", correct: false },
+                    { id: "C", text: "Adverse Yaw", correct: false },
+                    { id: "D", text: "Spiral Instability", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. A skid occurs when rate of turn exceeds bank angle requirement (too much rudder input), flinging centrifugal force outward.",
+                    B: "Incorrect. A slip is too little rate of turn for the bank angle.",
+                    C: "Incorrect. Adverse yaw is the initial tendency of the nose to yaw opposite the roll direction due to differential aileron drag.",
+                    D: "Incorrect. Spiral instability is a lateral/directional stability characteristic, not a slip/skid classification."
+                }
+            },
+            {
+                id: 24,
+                category: "Vacuum System Mechanics",
+                question: "What is the typical operating suction range for standard vacuum-driven gyroscopic instruments?",
+                options: [
+                    { id: "A", text: "4.5 to 5.5 inches of Mercury (in. Hg)", correct: true },
+                    { id: "B", text: "10 to 15 inches of Mercury (in. Hg)", correct: false },
+                    { id: "C", text: "29.92 to 30.00 inches of Mercury (in. Hg)", correct: false },
+                    { id: "D", text: "1.0 to 2.0 PSI", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Standard aircraft vacuum systems operate between 4.5 and 5.5 in. Hg. Lower suction leads to gyro sluggishness; higher leads to excessive wear.",
+                    B: "Incorrect. 10-15 in. Hg is manifold pressure range at low throttle, far too strong for delicate gyros.",
+                    C: "Incorrect. 29.92 in. Hg is standard barometric atmospheric pressure.",
+                    D: "Incorrect. Vacuum is measured in suction (inches of mercury), not positive PSI."
+                }
+            },
+            {
+                id: 25,
+                category: "Vacuum System Mechanics",
+                question: "What happens to a vacuum-driven Attitude Indicator if the vacuum suction drops significantly below 4.5 in. Hg?",
+                options: [
+                    { id: "A", text: "Rotor RPM drops, rigidity decreases, and the instrument becomes sluggish and unreliable", correct: true },
+                    { id: "B", text: "The rotor locks in place immediately via internal magnetic brakes", correct: false },
+                    { id: "C", text: "The horizon bar rotates rapidly at 360 degrees per minute", correct: false },
+                    { id: "D", text: "The instrument display turns red automatically", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Reduced suction lowers rotor RPM. Low RPM reduces angular momentum (rigidity), making the instrument precess rapidly and give false indications.",
+                    B: "Incorrect. Mechanical gyros have no magnetic auto-locking brakes; they gradually spin down.",
+                    C: "Incorrect. The gyro does not spin the horizon bar wildly; it droops and precesses erratically.",
+                    D: "Incorrect. Most mechanical gyros have a failure flag (e.g., VAC flag), but the display face does not turn red."
+                }
+            },
+            {
+                id: 26,
+                category: "Attitude Indicator Mechanics",
+                question: "What is the purpose of the adjustment knob at the bottom center of the Attitude Indicator display?",
+                options: [
+                    { id: "A", text: "To raise or lower the miniature airplane relative to the horizon bar for pitch trim", correct: true },
+                    { id: "B", text: "To cage the gyro rotor prior to performing aerobatic maneuvers", correct: false },
+                    { id: "C", text: "To adjust the internal vacuum airflow rate through the air jets", correct: false },
+                    { id: "D", text: "To rotate the entire instrument casing inside the cockpit panel cutout", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The knob moves the miniature airplane symbol up or down to align with the horizon bar to adjust for pilot eye level and pitch attitude in cruise.",
+                    B: "Incorrect. Caging knobs (when present) push/pull to lock gimbals; standard trim knobs adjust symbol pitch position.",
+                    C: "Incorrect. Airflow is regulated by the vacuum relief valve behind the panel, not by the front knob.",
+                    D: "Incorrect. The casing remains fixed; only the internal reference symbol moves vertically."
+                }
+            },
+            {
+                id: 27,
+                category: "Attitude Indicator Mechanics",
+                question: "On a standard Attitude Indicator, what do the tick marks at the top arc of the instrument represent?",
+                options: [
+                    { id: "A", text: "Bank angles (typically 10, 20, 30, 60, and 90 degrees)", correct: true },
+                    { id: "B", text: "Pitch angles in 5-degree increments", correct: false },
+                    { id: "C", text: "Rate of turn in degrees per second", correct: false },
+                    { id: "D", text: "Vacuum suction pressure indicators", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The top scale indices indicate bank angle: lines usually mark 10°, 20°, 30°, 60°, and 90°.",
+                    B: "Incorrect. Pitch lines are horizontal bars on the central sphere face itself.",
+                    C: "Incorrect. Rate of turn is shown on the Turn Coordinator, not bank tick marks on the AI top rim.",
+                    D: "Incorrect. Suction pressure is monitored on a separate suction gauge."
+                }
+            },
+            {
+                id: 28,
+                category: "Heading Indicator Mechanics",
+                question: "Why must a pilot periodically align the Heading Indicator with the magnetic compass during flight?",
+                options: [
+                    { id: "A", text: "Precession caused by mechanical friction and Earth's rotation causes heading drift", correct: true },
+                    { id: "B", text: "The vacuum pump fluctuates in pressure causing continuous electrical reset", correct: false },
+                    { id: "C", text: "Static port blockage alters the internal casing pressure", correct: false },
+                    { id: "D", text: "Centrifugal forces in turns permanently magnetize the rotor", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Internal bearing friction combined with Earth's 15°/hr rotation causes apparent and real precession, drifting the HI over time.",
+                    B: "Incorrect. Vacuum pump fluctuation changes RPM slightly but does not eliminate the need for magnetic alignment.",
+                    C: "Incorrect. Heading indicators are non-static vacuum instruments.",
+                    D: "Incorrect. Non-magnetic rotors cannot become permanently magnetized by centrifugal force."
+                }
+            },
+            {
+                id: 29,
+                category: "Turn Coordinator Mechanics",
+                question: "In the Turn Coordinator, what visual representation is used to indicate rate of roll and rate of turn?",
+                options: [
+                    { id: "A", text: "A miniature aircraft symbol that banks left or right", correct: true },
+                    { id: "B", text: "A vertical needle swinging over a turn scale", correct: false },
+                    { id: "C", text: "A rotating compass card marked with cardinal directions", correct: false },
+                    { id: "D", text: "A glowing LED arc around the perimeter", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The Turn Coordinator displays rate of roll and turn using a miniature airplane symbol that dips its wings.",
+                    B: "Incorrect. A vertical needle is used on the older Turn-and-Slip Indicator.",
+                    C: "Incorrect. Rotating compass cards are used on Heading Indicators and RMIs.",
+                    D: "Incorrect. LEDs are modern glass cockpit elements; traditional TCs use mechanical miniature airplanes."
+                }
+            },
+            {
+                id: 30,
+                category: "Limits & Tumbling",
+                question: "What occurs when an older, non-transport category gyroscopic attitude indicator exceeds its pitch or bank design limits (e.g., 60-70° pitch or 100° bank)?",
+                options: [
+                    { id: "A", text: "The gimbals strike the mechanical stops, causing the gyro to tumble and give erratic readings", correct: true },
+                    { id: "B", text: "The gyro automatically cages itself using pneumatic pressure release", correct: false },
+                    { id: "C", text: "The electric motor shuts down to prevent bearing damage", correct: false },
+                    { id: "D", text: "The horizon bar locks permanently at 0 degrees pitch", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. When attitude limits are exceeded, gimbals hit mechanical stops. Forces applied directly to the rotor cause extreme precession, tumbling the gyro.",
+                    B: "Incorrect. Older gyros do not automatically cage; they must be manually caged or allowed time to erect.",
+                    C: "Incorrect. Motors continue spinning; friction/forces increase, causing wild precession, not shutdown.",
+                    D: "Incorrect. The horizon bar spins wildly during tumbling rather than locking at zero."
+                }
+            },
+            {
+                id: 31,
+                category: "Advanced Precession",
+                question: "Apparent precession (drift) on a heading indicator is partly caused by the rotation of the Earth. At the Geographic North Pole, how fast does Earth's rotation cause apparent drift?",
+                options: [
+                    { id: "A", text: "15 degrees per hour", correct: true },
+                    { id: "B", text: "30 degrees per hour", correct: false },
+                    { id: "C", text: "0 degrees per hour", correct: false },
+                    { id: "D", text: "5 degrees per hour", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Earth rotates 360° in 24 hours, which equals 15° per hour. At the poles, apparent drift equals full Earth rotation (15°/hr).",
+                    B: "Incorrect. 30°/hr is double Earth's rotational rate.",
+                    C: "Incorrect. Apparent drift is zero at the Equator, not at the poles.",
+                    D: "Incorrect. 5°/hr is an incorrect calculation."
+                }
+            },
+            {
+                id: 32,
+                category: "Advanced Precession",
+                question: "What is the apparent precession rate of a Heading Indicator located at the Equator (Latitude 0 degrees)?",
+                options: [
+                    { id: "A", text: "0 degrees per hour", correct: true },
+                    { id: "B", text: "15 degrees per hour", correct: false },
+                    { id: "C", text: "7.5 degrees per hour", correct: false },
+                    { id: "D", text: "3 degrees per hour", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Apparent precession due to Earth's rotation equals 15°/hr × sin(Latitude). Sin(0°) = 0, so drift at the equator is zero.",
+                    B: "Incorrect. 15°/hr occurs at the poles where sin(90°) = 1.",
+                    C: "Incorrect. 7.5°/hr occurs at 30° latitude (sin 30° = 0.5).",
+                    D: "Incorrect. 3 degrees is the operational tolerance limit per 15 minutes."
+                }
+            },
+            {
+                id: 33,
+                category: "Instrument Diagnostics",
+                question: "During taxiing, how should the Turn Coordinator respond when making a left turn on the ground?",
+                options: [
+                    { id: "A", text: "The miniature aircraft banks left, and the ball skids to the right (outside)", correct: true },
+                    { id: "B", text: "The miniature aircraft banks right, and the ball slides to the left", correct: false },
+                    { id: "C", text: "The miniature aircraft remains level, and the ball stays centered", correct: false },
+                    { id: "D", text: "The miniature aircraft banks left, and the ball slides to the left", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. In a left taxi turn, the airplane symbol banks left (showing left turn rate). Centrifugal force pushes the unbanked taxiing ball right.",
+                    B: "Incorrect. Aircraft symbol must bank in the direction of the turn.",
+                    C: "Incorrect. If the symbol remains level during a turn, the instrument is inoperative.",
+                    D: "Incorrect. During an unbanked taxi turn, centrifugal force drives the ball opposite the turn direction (right)."
+                }
+            },
+            {
+                id: 34,
+                category: "Instrument Diagnostics",
+                question: "During taxi checks before takeoff, how should the Heading Indicator respond during turns?",
+                options: [
+                    { id: "A", text: "It should track known taxiway headings and decrease numbers in a left turn, increase in a right turn", correct: true },
+                    { id: "B", text: "It should spin freely in the opposite direction of the turn", correct: false },
+                    { id: "C", text: "It should pitch up 5 degrees during left turns", correct: false },
+                    { id: "D", text: "It should remain frozen until airspeed reaches 40 knots", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Standard taxi checks confirm the HI moves smoothly and decreases heading numbers during left turns and increases during right turns.",
+                    B: "Incorrect. Opposite spinning indicates a broken or reversed gimbal drive.",
+                    C: "Incorrect. The HI does not display pitch.",
+                    D: "Incorrect. Gyros operate as soon as vacuum suction / electric power is established, irrespective of airspeed."
+                }
+            },
+            {
+                id: 35,
+                category: "Vacuum System Mechanics",
+                question: "What primary component prevents excessive vacuum suction from damaging the internal gyroscopic instruments?",
+                options: [
+                    { id: "A", text: "Vacuum relief valve (regulator)", correct: true },
+                    { id: "B", text: "Static air alternate valve", correct: false },
+                    { id: "C", text: "In-line pitot drain plug", correct: false },
+                    { id: "D", text: "Centrifugal air compressor bypass", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The vacuum relief valve opens to admit ambient air if pump suction rises above set parameters (4.5 - 5.5 in. Hg), protecting gyro bearings.",
+                    B: "Incorrect. Alternate static valve feeds static pressure to pitot-static instruments during port icing.",
+                    C: "Incorrect. Pitot drain relates to moisture in the airspeed pitot tube line.",
+                    D: "Incorrect. Aircraft vacuum systems use dry or wet vane pumps, not centrifugal bypass compressors."
+                }
+            },
+            {
+                id: 36,
+                category: "Turn Coordinator vs Turn & Slip",
+                question: "Why is the Turn Coordinator symbol tilted downward when the aircraft is in a level coordinated bank?",
+                options: [
+                    { id: "A", text: "To indicate the rate of turn established by the bank angle", correct: true },
+                    { id: "B", text: "Because the pitch gimbal is locked in climb mode", correct: false },
+                    { id: "C", text: "To reflect elevator trim angle relative to horizontal stabilizer", correct: false },
+                    { id: "D", text: "Due to gravitational pull on the miniature airplane weight", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The lower wing mark aligns with the alignment index mark to indicate a standard rate turn (3 degrees/sec) for that direction.",
+                    B: "Incorrect. The turn coordinator has no pitch gimbal.",
+                    C: "Incorrect. Elevator trim is not connected to gyroscopic turn indicators.",
+                    D: "Incorrect. The aircraft symbol is driven mechanically by gimbal precession, not gravity drop."
+                }
+            },
+            {
+                id: 37,
+                category: "Attitude Indicator Mechanics",
+                question: "What mechanism prevents a modern caged Attitude Indicator from tumbling during aggressive maneuvers?",
+                options: [
+                    { id: "A", text: "A manual caging lever that mechanically locks the gimbals in place", correct: true },
+                    { id: "B", text: "An automated pneumatic brake disc", correct: false },
+                    { id: "C", text: "A secondary electric governor motor", correct: false },
+                    { id: "D", text: "High-density silicone fluid damping inside the outer ring", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Pulling the caging knob mechanically clamps gimbals in alignment with the case, protecting bearings and preventing pitch/roll lock during aerobatics.",
+                    B: "Incorrect. Pneumatic brakes are not used on aircraft gyros.",
+                    C: "Incorrect. Caging is a mechanical locking linkage, not an electric governor.",
+                    D: "Incorrect. Gyro gimbals pivot dry on ball bearings; they are not submerged in silicone fluid."
+                }
+            },
+            {
+                id: 38,
+                category: "Errors & Limitations",
+                question: "If the air filter supplying the vacuum system becomes severely clogged, what is the impact on vacuum instruments?",
+                options: [
+                    { id: "A", text: "Airflow to gyro buckets is reduced, leading to lower RPM and instrument drift", correct: true },
+                    { id: "B", text: "Vacuum suction pressure spikes off the high end of the scale", correct: false },
+                    { id: "C", text: "Gyro rotors reverse their direction of spin", correct: false },
+                    { id: "D", text: "Instrument cases rupture due to excess positive pressure", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Clogged filters restrict air entry into the system, starving air jets, reducing gyro RPM, and degrading gyroscopic rigidity.",
+                    B: "Incorrect. A clogged filter starves air into the system, causing gauge suction readings to drop or air volume to stall.",
+                    C: "Incorrect. Rotors spin in one direction dictated by bucket angles; reduced flow slows spin without reversing it.",
+                    D: "Incorrect. Vacuum systems operate under suction (negative relative pressure), so cases will never rupture from positive pressure."
+                }
+            },
+            {
+                id: 39,
+                category: "Fundamental Physics",
+                question: "A rotor spinning at 10,000 RPM experiences a force pushing downward on its top rim (12 o'clock position). Where will the resulting tilt occur?",
+                options: [
+                    { id: "A", text: "At the 3 o'clock position (90 degrees ahead in rotation direction)", correct: true },
+                    { id: "B", text: "At the 12 o'clock position directly where pushed", correct: false },
+                    { id: "C", text: "At the 6 o'clock position directly opposite", correct: false },
+                    { id: "D", text: "At the 9 o'clock position (90 degrees behind rotation)", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. By gyroscopic precession, pushing down at 12 o'clock causes the maximum deflection 90° further in the direction of rotation (3 o'clock position).",
+                    B: "Incorrect. Direct deflection at 12 o'clock applies to non-rotating objects.",
+                    C: "Incorrect. 6 o'clock is 180° away from force input.",
+                    D: "Incorrect. Precession acts 90° ahead in spin direction, not behind."
+                }
+            },
+            {
+                id: 40,
+                category: "Power Systems",
+                question: "What visual indication alerts a pilot to an electrical power failure on a standard Turn Coordinator?",
+                options: [
+                    { id: "A", text: "A red 'OFF' or power warning flag drops into view on the instrument face", correct: true },
+                    { id: "B", text: "The miniature aircraft symbol spins upside down", correct: false },
+                    { id: "C", text: "The glass tube on the inclinometer shatters", correct: false },
+                    { id: "D", text: "The instrument lighting changes to flashing amber", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Electric turn coordinators feature a mechanical spring-loaded red 'OFF' flag that drops into the window when electric current is lost.",
+                    B: "Incorrect. The symbol drops level as the gyro spins down; it does not invert.",
+                    C: "Incorrect. Glass inclinometers are physically separate fluid tubes unaffected by electrical power.",
+                    D: "Incorrect. Warning flags are mechanical indicators that function even during total panel light failure."
+                }
+            },
+            {
+                id: 41,
+                category: "Heading Indicator Mechanics",
+                question: "Why does the Heading Indicator NOT suffer from dip errors, acceleration errors, or turning errors like a magnetic wet compass?",
+                options: [
+                    { id: "A", text: "It relies on gyroscopic rigidity in space rather than Earth's magnetic flux lines", correct: true },
+                    { id: "B", text: "Its internal compass card is immersed in heavy silicone damping fluid", correct: false },
+                    { id: "C", text: "It is connected to the pitot-static tube to cancel out acceleration forces", correct: false },
+                    { id: "D", text: "It uses counterweights that automatically offset magnetic dip angle", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Standard Heading Indicators are non-magnetic gyros, so they are immune to magnetic dip, UNOS (undershoot/overshoot), and acceleration dip errors.",
+                    B: "Incorrect. The Heading Indicator is dry and vacuum-driven, not fluid-immersed like a wet magnetic compass.",
+                    C: "Incorrect. Pitot-static inputs are not connected to heading gyros.",
+                    D: "Incorrect. Counterweights on magnetic compasses offset dip, but HIs do not use magnetic dip weights."
+                }
+            },
+            {
+                id: 42,
+                category: "Inclinometer Mechanics",
+                question: "In a coordinated climb or descent, where should the inclinometer ball be positioned?",
+                options: [
+                    { id: "A", text: "Centered in the middle of the reference lines", correct: true },
+                    { id: "B", text: "Deflected fully to the right side of the tube", correct: false },
+                    { id: "C", text: "Deflected fully to the left side of the tube", correct: false },
+                    { id: "D", text: "Floating at the top of the glass curve", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Coordinated flight—whether climbing, descending, or level—means rudder and ailerons are balanced, keeping the ball centered.",
+                    B: "Incorrect. Deflection to the right indicates a skid or slip condition.",
+                    C: "Incorrect. Left deflection indicates uncoordinated yaw.",
+                    D: "Incorrect. The ball stays at the bottom of the curved tube unless subject to inverted G-forces."
+                }
+            },
+            {
+                id: 43,
+                category: "Attitude Indicator Mechanics",
+                question: "On an Attitude Indicator, what do the horizontal pitch reference lines on the sphere scale represent?",
+                options: [
+                    { id: "A", text: "Pitch angles, typically in 5-degree or 10-degree increments above and below the horizon", correct: true },
+                    { id: "B", text: "Angles of bank during standard rate turns", correct: false },
+                    { id: "C", text: "Aircraft angle of attack relative to ambient air stream", correct: false },
+                    { id: "D", text: "Vertical speed rate in thousands of feet per minute", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Horizontal rungs on the horizon sphere denote pitch attitude (5°, 10°, 15°, 20° nose-up or nose-down).",
+                    B: "Incorrect. Bank marks are located along the upper rim perimeter.",
+                    C: "Incorrect. Attitude indicators show pitch attitude relative to horizon, not Angle of Attack (AoA).",
+                    D: "Incorrect. Vertical speed rate is measured by the VSI."
+                }
+            },
+            {
+                id: 44,
+                category: "Vacuum Systems",
+                question: "What component in a wet-type engine-driven vacuum pump separates oil from the air before discharging it overboard?",
+                options: [
+                    { id: "A", text: "An oil separator", correct: true },
+                    { id: "B", text: "A air-jet venturi ring", correct: false },
+                    { id: "C", text: "A static pressure equalizer", correct: false },
+                    { id: "D", text: "A gyro vacuum relief chamber", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Wet vacuum pumps use engine oil for lubrication and require an oil separator to catch and return oil to the crankcase before exhausting air.",
+                    B: "Incorrect. Air jets drive rotor buckets inside instrument cases.",
+                    C: "Incorrect. Static equalizers relate to altimeter static lines.",
+                    D: "Incorrect. Relief valves regulate suction level, not oil separation."
+                }
+            },
+            {
+                id: 45,
+                category: "Turn Coordinator",
+                question: "Why does the Turn Coordinator miniature aircraft roll briefly when an aircraft rolls into a turn, even before the turn direction changes?",
+                options: [
+                    { id: "A", text: "Because the 30-degree canted gimbal senses rate of roll immediately upon aileron deflection", correct: true },
+                    { id: "B", text: "Because precession causes the gyro to lean in the opposite direction first", correct: false },
+                    { id: "C", text: "Because of static pressure changes inside the cockpit during roll", correct: false },
+                    { id: "D", text: "Because the inclinometer ball strikes the gimbal housing", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The 30° canted gimbal axis exposes the rotor to roll forces, so it reacts instantly to roll rate before yaw rate establishes.",
+                    B: "Incorrect. The gyro reacts immediately in the correct direction of roll due to precession geometry.",
+                    C: "Incorrect. Static pressure is not connected to turn coordinators.",
+                    D: "Incorrect. The ball is in a separate fluid tube and does not touch gyro gimbals."
+                }
+            },
+            {
+                id: 46,
+                category: "System Failures",
+                question: "If an engine-driven vacuum pump drive shaft shears in flight, what visual symptom will be observed on the vacuum gauge?",
+                options: [
+                    { id: "A", text: "The vacuum gauge pointer drops to zero in. Hg", correct: true },
+                    { id: "B", text: "The vacuum gauge pointer spikes to maximum suction (30 in. Hg)", correct: false },
+                    { id: "C", text: "The gauge needle oscillates rapidly between 4.5 and 5.5 in. Hg", correct: false },
+                    { id: "D", text: "The vacuum gauge glass turns red automatically", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. A sheared pump drive shaft immediately stops pump rotation, causing suction to collapse to 0 in. Hg.",
+                    B: "Incorrect. Maximum suction cannot occur when the pump stops spinning.",
+                    C: "Incorrect. Rapid oscillation indicates a fluttering relief valve, not a sheared drive shaft.",
+                    D: "Incorrect. Pressure gauges are mechanical needle instruments."
+                }
+            },
+            {
+                id: 47,
+                category: "System Failures",
+                question: "Following a complete vacuum pump failure, how will the vacuum-driven Attitude Indicator behave over the subsequent 5 to 10 minutes?",
+                options: [
+                    { id: "A", text: "It slowly loses RPM, rigidity degrades, and it gradually sags, precesses, and gives false indications", correct: true },
+                    { id: "B", text: "It immediately locks to level horizon and illuminates a red LED", correct: false },
+                    { id: "C", text: "It tumbles violently within 2 seconds of power loss", correct: false },
+                    { id: "D", text: "It continues operating with 100% precision for up to 3 hours", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. As inertia maintains rotor spin, the gyro slowly spins down over several minutes. As RPM drops, drift increases subtly before total breakdown.",
+                    B: "Incorrect. Mechanical vacuum gyros have no self-leveling auto-locks or failure LEDs.",
+                    C: "Incorrect. Rotors spin at ~10,000 RPM and take time to coast down rather than tumbling immediately.",
+                    D: "Incorrect. High accuracy ends within minutes as spin decays below operational speed."
+                }
+            },
+            {
+                id: 48,
+                category: "Turn & Slip vs Turn Coordinator",
+                question: "Which gyroscopic instrument was traditionally referred to as the 'needle and ball'?",
+                options: [
+                    { id: "A", text: "Turn-and-Slip Indicator", correct: true },
+                    { id: "B", text: "Turn Coordinator", correct: false },
+                    { id: "C", text: "Heading Indicator", correct: false },
+                    { id: "D", text: "Attitude Gyro Horizon", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The classical Turn-and-Slip indicator features a vertical turn pointer (needle) and fluid inclinometer (ball).",
+                    B: "Incorrect. The Turn Coordinator features a miniature airplane symbol rather than a vertical pointer/needle.",
+                    C: "Incorrect. Heading indicators display compass card headings.",
+                    D: "Incorrect. Attitude indicators display pitch and roll horizon."
+                }
+            },
+            {
+                id: 49,
+                category: "Instrument Calibration",
+                question: "When aligning the Heading Indicator with the magnetic compass during straight-and-level unaccelerated flight, why must the flight be unaccelerated?",
+                options: [
+                    { id: "A", text: "To ensure the magnetic compass is free from acceleration and dip errors and displaying accurate magnetic heading", correct: true },
+                    { id: "B", text: "To keep the vacuum pump suction from spiking during speed changes", correct: false },
+                    { id: "C", text: "To allow the pendulous vanes in the heading gyro to lock in place", correct: false },
+                    { id: "D", text: "Because pitch changes disconnect the adjustment knob shaft", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The magnetic compass suffers from acceleration errors on E/W headings and turning errors on N/S headings. You must establish steady, unaccelerated flight to get an accurate reading to set the HI.",
+                    B: "Incorrect. Suction is controlled by the regulator valve regardless of minor speed changes.",
+                    C: "Incorrect. Pendulous vanes belong to attitude indicators, not heading gyros.",
+                    D: "Incorrect. The adjustment knob is always mechanically available."
+                }
+            },
+            {
+                id: 50,
+                category: "Advanced System Integration",
+                question: "In modern glass cockpit aircraft (e.g., Garmin G1000), what system replaces traditional mechanical gyroscopes, vacuum pumps, and gimbal structures?",
+                options: [
+                    { id: "A", text: "AHRS (Attitude and Heading Reference System) using solid-state rate sensors and accelerometers", correct: true },
+                    { id: "B", text: "ADC (Air Data Computer) using pitot tubes exclusively", correct: false },
+                    { id: "C", text: "Mechanical laser-driven vacuum impellers inside the MFD display", correct: false },
+                    { id: "D", text: "Direct magnetic flux sensors mounted in the tail cone", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. AHRS uses solid-state MEMS sensors, Ring Laser Gyros (RLGs), and accelerometers to determine attitude without moving mechanical gimbals or vacuum pumps.",
+                    B: "Incorrect. The ADC calculates pitot-static information (airspeed, altitude, VSI, OAT), not attitude.",
+                    C: "Incorrect. Solid-state sensors contain no vacuum impellers.",
+                    D: "Incorrect. A Flux Gate / Magnetometer supplies magnetic heading to AHRS, but AHRS itself handles full attitude."
+                }
+            }
+        ];
+
+        // GLOBAL APPLICATION STATE
+        let activeQuestions = [];
+        let userAnswers = {}; // { questionId: optionId }
+        let flaggedQuestions = {}; // { questionId: boolean }
+        let currentQuestionIndex = 0;
+        let timerSeconds = 50 * 60; // 50 Minutes = 3000s
+        let timerInterval = null;
+        let isSubmitted = false;
+        let reviewFilter = 'all';
+
+        // DOM ELEMENTS
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const quizHeaderInfo = document.getElementById('quiz-header-info');
+        const timerDisplay = document.getElementById('timer-display');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.text = document.getElementById('progress-text');
+        
+        const qCategory = document.getElementById('q-category');
+        const qNumberTitle = document.getElementById('q-number-title');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const flagBtn = document.getElementById('flag-btn');
+        const flagText = document.getElementById('flag-text');
+        const questionPalette = document.getElementById('question-palette');
+        const paletteCount = document.getElementById('palette-count');
+
+        // UTILITY: Fisher-Yates Array Shuffle
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // INITIALIZE AND PREPARE DATASET
+        function prepareQuestions() {
+            // Clone and shuffle options for each question to avoid length bias and static order
+            activeQuestions = RAW_QUESTIONS.map((q) => {
+                // Shuffle options
+                const shuffledOpts = shuffleArray(q.options);
+                return {
+                    ...q,
+                    options: shuffledOpts
+                };
+            });
+        }
+
+        // START QUIZ
+        function startQuiz() {
+            prepareQuestions();
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizHeaderInfo.classList.remove('hidden');
+            
+            // Start Timer
+            startTimer();
+            
+            // Render Initial Question & Palette
+            renderPalette();
+            loadQuestion(0);
+        }
+
+        // TIMER SYSTEM
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmitOnTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            timerDisplay.textContent = formatted;
+
+            // Warning style if under 5 minutes
+            if (timerSeconds <= 300) {
+                timerDisplay.classList.add('text-rose-400');
+                timerDisplay.classList.remove('text-slate-100');
+            }
+        }
+
+        // LOAD QUESTION AT INDEX
+        function loadQuestion(index) {
+            currentQuestionIndex = index;
+            const q = activeQuestions[index];
+
+            qCategory.textContent = q.category;
+            qNumberTitle.textContent = `Question ${index + 1} of ${activeQuestions.length}`;
+            questionText.textContent = q.question;
+
+            // Render Options
+            optionsContainer.innerHTML = '';
+            const selectedOptId = userAnswers[q.id];
+
+            q.options.forEach((opt, optIdx) => {
+                const letter = String.fromCharCode(65 + optIdx); // A, B, C, D
+                const isSelected = selectedOptId === opt.id;
+
+                const optBtn = document.createElement('button');
+                optBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-start space-x-3.5 group ${
+                    isSelected 
+                        ? 'bg-sky-600/20 border-sky-500 text-sky-100 shadow-md ring-1 ring-sky-500' 
+                        : 'bg-slate-800/80 hover:bg-slate-700/60 border-slate-700 text-slate-200'
+                }`;
+
+                optBtn.onclick = () => selectOption(q.id, opt.id);
+
+                optBtn.innerHTML = `
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold font-mono transition flex-shrink-0 ${
+                        isSelected 
+                            ? 'bg-sky-500 text-white' 
+                            : 'bg-slate-700 text-slate-300 group-hover:bg-slate-600'
+                    }">
+                        ${letter}
+                    </span>
+                    <span class="text-sm pt-0.5 leading-relaxed flex-1">${opt.text}</span>
+                `;
+
+                optionsContainer.appendChild(optBtn);
+            });
+
+            // Update Nav Buttons
+            prevBtn.disabled = index === 0;
+            if (index === activeQuestions.length - 1) {
+                nextBtn.innerHTML = `<span>Review Finish</span> <i class="fa-solid fa-flag-checkered text-xs"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>Next</span> <i class="fa-solid fa-chevron-right text-xs"></i>`;
+            }
+
+            // Update Flag State
+            if (flaggedQuestions[q.id]) {
+                flagBtn.classList.add('text-amber-400', 'border-amber-500/50', 'bg-amber-500/10');
+                flagBtn.classList.remove('text-slate-400');
+                flagText.textContent = 'Flagged';
+            } else {
+                flagBtn.classList.remove('text-amber-400', 'border-amber-500/50', 'bg-amber-500/10');
+                flagBtn.classList.add('text-slate-400');
+                flagText.textContent = 'Flag for Review';
+            }
+
+            // Highlight Active in Palette
+            renderPalette();
+            updateProgress();
+        }
+
+        // OPTION SELECTION logic
+        function selectOption(questionId, optionId) {
+            if (isSubmitted) return;
+            userAnswers[questionId] = optionId;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // CLEAR SELECTION
+        function clearAnswer() {
+            const q = activeQuestions[currentQuestionIndex];
+            delete userAnswers[q.id];
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // TOGGLE FLAG
+        function toggleFlag() {
+            const q = activeQuestions[currentQuestionIndex];
+            flaggedQuestions[q.id] = !flaggedQuestions[q.id];
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // NAVIGATE QUESTION
+        function navigateQuestion(delta) {
+            const newIndex = currentQuestionIndex + delta;
+            if (newIndex >= 0 && newIndex < activeQuestions.length) {
+                loadQuestion(newIndex);
+            } else if (newIndex >= activeQuestions.length) {
+                confirmSubmit();
+            }
+        }
+
+        // UPDATE PROGRESS DISPLAY
+        function updateProgress() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const total = activeQuestions.length;
+            const percent = Math.round((answeredCount / total) * 100);
+
+            progressBar.style.width = `${percent}%`;
+            progressText.textContent = `${answeredCount} / ${total}`;
+            paletteCount.textContent = `${answeredCount}/${total} Answered`;
+        }
+
+        // RENDER 50-QUESTION PALETTE GRID
+        function renderPalette() {
+            questionPalette.innerHTML = '';
+            
+            activeQuestions.forEach((q, idx) => {
+                const isAnswered = userAnswers[q.id] !== undefined;
+                const isFlagged = flaggedQuestions[q.id] === true;
+                const isCurrent = idx === currentQuestionIndex;
+
+                const paletteBtn = document.createElement('button');
+                paletteBtn.onclick = () => loadQuestion(idx);
+
+                let baseClasses = "h-9 rounded-lg font-mono text-xs font-semibold flex items-center justify-center transition border relative ";
+
+                if (isCurrent) {
+                    baseClasses += "ring-2 ring-sky-400 border-sky-400 shadow-md ";
+                } else {
+                    baseClasses += "border-slate-700/80 ";
+                }
+
+                if (isFlagged) {
+                    baseClasses += "bg-amber-500/20 text-amber-300 border-amber-500/50 ";
+                } else if (isAnswered) {
+                    baseClasses += "bg-sky-600 text-white ";
+                } else {
+                    baseClasses += "bg-slate-800 text-slate-400 hover:bg-slate-700 ";
+                }
+
+                paletteBtn.className = baseClasses;
+                paletteBtn.textContent = idx + 1;
+
+                // Add flag dot indicator if flagged & answered
+                if (isFlagged && isAnswered) {
+                    const dot = document.createElement('span');
+                    dot.className = "absolute top-1 right-1 w-1.5 h-1.5 bg-sky-400 rounded-full";
+                    paletteBtn.appendChild(dot);
+                }
+
+                questionPalette.appendChild(paletteBtn);
+            });
+        }
+
+        // SUBMISSION MODAL DIALOGS
+        function confirmSubmit() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const total = activeQuestions.length;
+            const modalStatusText = document.getElementById('modal-status-text');
+
+            if (answeredCount < total) {
+                modalStatusText.textContent = `You have answered ${answeredCount} of ${total} questions. Unanswered questions will be marked as incorrect. Are you sure you want to submit?`;
+            } else {
+                modalStatusText.textContent = `You have answered all ${total} questions! Are you ready to finalize and view your score?`;
+            }
+
+            document.getElementById('submit-modal').classList.remove('hidden');
+        }
+
+        function closeSubmitModal() {
+            document.getElementById('submit-modal').classList.add('hidden');
+        }
+
+        function autoSubmitOnTimeout() {
+            alert("Time is up! Your examination is being automatically submitted.");
+            finalizeSubmission();
+        }
+
+        // FINALIZE SUBMISSION & CALCULATE RESULTS
+        function finalizeSubmission() {
+            closeSubmitModal();
+            clearInterval(timerInterval);
+            isSubmitted = true;
+
+            // Hide active exam, show results
+            quizScreen.classList.add('hidden');
+            quizHeaderInfo.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            // Calculate score
+            let correctCount = 0;
+            activeQuestions.forEach((q) => {
+                const userChoice = userAnswers[q.id];
+                const correctOption = q.options.find(opt => opt.correct);
+                if (userChoice && correctOption && userChoice === correctOption.id) {
+                    correctCount++;
+                }
+            });
+
+            const percentScore = Math.round((correctCount / activeQuestions.length) * 100);
+            const timeElapsed = (50 * 60) - timerSeconds;
+            const elapsedMins = Math.floor(timeElapsed / 60);
+            const elapsedSecs = timeElapsed % 60;
+
+            // Render Score Banner
+            document.getElementById('final-score-percent').textContent = `${percentScore}%`;
+            document.getElementById('final-score-raw').textContent = `${correctCount} / ${activeQuestions.length}`;
+            document.getElementById('final-time-taken').textContent = `${String(elapsedMins).padStart(2, '0')}:${String(elapsedSecs).padStart(2, '0')}`;
+
+            const badge = document.getElementById('score-badge');
+            if (percentScore >= 70) {
+                badge.className = "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>FAA PASSING SCORE (70%+)</span>`;
+            } else {
+                badge.className = "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30";
+                badge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <span>UNSATISFACTORY - RETAKE REQUIRED</span>`;
+            }
+
+            renderReviewCards();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // FILTER REVIEW CARDS
+        function filterReview(filter) {
+            reviewFilter = filter;
+            ['all', 'correct', 'incorrect'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filter) {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold bg-sky-600 text-white transition";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-white transition";
+                }
+            });
+            renderReviewCards();
+        }
+
+        // RENDER POST-SUBMISSION DETAILED REVIEW CARDS
+        function renderReviewCards() {
+            const container = document.getElementById('review-cards-container');
+            container.innerHTML = '';
+
+            activeQuestions.forEach((q, idx) => {
+                const userChoice = userAnswers[q.id];
+                const correctOpt = q.options.find(opt => opt.correct);
+                const isCorrect = userChoice && userChoice === correctOpt.id;
+
+                // Apply filter
+                if (reviewFilter === 'correct' && !isCorrect) return;
+                if (reviewFilter === 'incorrect' && isCorrect) return;
+
+                const card = document.createElement('div');
+                card.className = `bg-slate-800 border rounded-2xl p-6 shadow-xl space-y-4 ${
+                    isCorrect ? 'border-emerald-500/40' : 'border-rose-500/40'
+                }`;
+
+                // Card Header
+                let statusBadge = isCorrect
+                    ? `<span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-semibold flex items-center space-x-1.5">
+                        <i class="fa-solid fa-check text-xs"></i><span>Correct</span>
+                       </span>`
+                    : `<span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-full text-xs font-semibold flex items-center space-x-1.5">
+                        <i class="fa-solid fa-xmark text-xs"></i><span>Incorrect / Skipped</span>
+                       </span>`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-700/80 pb-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xs font-mono font-bold text-sky-400 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-700">Q${idx + 1}</span>
+                            <span class="text-xs text-slate-400">${q.category}</span>
+                        </div>
+                        ${statusBadge}
+                    </div>
+
+                    <h4 class="text-base font-semibold text-slate-100">${q.question}</h4>
+
+                    <!-- Options list in review -->
+                    <div class="space-y-2 pt-1">
+                        ${q.options.map((opt, optIdx) => {
+                            const letter = String.fromCharCode(65 + optIdx);
+                            const isThisUserChoice = userChoice === opt.id;
+                            const isThisCorrect = opt.correct;
+
+                            let optStyle = "bg-slate-900/50 border-slate-700/60 text-slate-300";
+                            let iconMark = "";
+
+                            if (isThisCorrect) {
+                                optStyle = "bg-emerald-950/40 border-emerald-500/60 text-emerald-200 ring-1 ring-emerald-500/50";
+                                iconMark = `<span class="text-xs font-bold text-emerald-400 flex items-center space-x-1"><i class="fa-solid fa-circle-check"></i><span>Correct Answer</span></span>`;
+                            } else if (isThisUserChoice && !isThisCorrect) {
+                                optStyle = "bg-rose-950/40 border-rose-500/60 text-rose-200 ring-1 ring-rose-500/50";
+                                iconMark = `<span class="text-xs font-bold text-rose-400 flex items-center space-x-1"><i class="fa-solid fa-circle-xmark"></i><span>Your Selection</span></span>`;
+                            }
+
+                            return `
+                                <div class="p-3.5 rounded-xl border ${optStyle} text-sm flex flex-col space-y-2">
+                                    <div class="flex items-start justify-between space-x-3">
+                                        <div class="flex items-start space-x-3">
+                                            <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-800 border border-slate-700">${letter}</span>
+                                            <span class="pt-0.5">${opt.text}</span>
+                                        </div>
+                                        ${iconMark}
+                                    </div>
+                                    <div class="text-xs text-slate-400 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 font-sans mt-1">
+                                        <strong class="text-slate-300 block mb-0.5">Rationale:</strong>
+                                        ${q.explanations[opt.id]}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            if (container.children.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-500">No questions match the selected review filter.</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
