@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heading Indicator (Directional Gyro) Master Assessment</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cockpit: {
+                            base: '#0B0F19',
+                            card: '#151C2C',
+                            border: '#2A364F',
+                            cyan: '#06B6D4',
+                            cyanGlow: 'rgba(6, 182, 212, 0.25)',
+                            amber: '#F59E0B',
+                            red: '#EF4444',
+                            green: '#10B981',
+                            text: '#E2E8F0'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Chakra Petch', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 75%);
+        }
+
+        .cockpit-panel {
+            background: rgba(21, 28, 44, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid #2A364F;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2A364F;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06B6D4;
+        }
+
+        .custom-radio {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #2A364F;
+            border-radius: 50%;
+            outline: none;
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        .custom-radio:checked {
+            border-color: #06B6D4;
+            background-color: transparent;
+        }
+        .custom-radio:checked::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: #06B6D4;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px #06B6D4;
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+
+        /* Pulse animation for timer under 5 mins */
+        @keyframes pulse-red {
+            0%, 100% { color: #EF4444; border-color: #EF4444; }
+            50% { color: #FCA5A5; border-color: #F87171; }
+        }
+        .timer-warning {
+            animation: pulse-red 1s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+
+    <!-- Header / Cockpit HUD Bar -->
+    <header class="sticky top-0 z-50 cockpit-panel border-b border-cockpit-border px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl shadow-inner">
+                    <i class="fa-solid font-mono fa-compass"></i>
+                </div>
+                <div>
+                    <h1 class="font-mono text-lg font-bold tracking-wider text-cyan-400 uppercase">Heading Indicator Assessment</h1>
+                    <p class="text-xs text-slate-400">Aviation Theory • 50 Questions • Advanced Aerodynamics & Avionics</p>
+                </div>
+            </div>
+
+            <!-- Quiz Running Indicators -->
+            <div id="quiz-hud-controls" class="flex items-center space-x-6">
+                <!-- Timer Display -->
+                <div class="flex items-center space-x-2 bg-slate-900/80 px-4 py-2 rounded-lg border border-cockpit-border">
+                    <i class="fa-regular fa-clock text-cyan-400"></i>
+                    <span id="timer-display" class="font-mono text-xl font-bold tracking-widest text-cyan-400">50:00</span>
+                </div>
+
+                <!-- Submit Button -->
+                <button onclick="confirmSubmitQuiz()" class="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-semibold px-5 py-2 rounded-lg transition-all flex items-center space-x-2 shadow-lg hover:shadow-cyan-500/20 active:scale-95">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Submit Exam</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 flex-grow">
+        
+        <!-- Welcome / Instructions Modal Overlay (Before Start) -->
+        <div id="start-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+            <div class="cockpit-panel rounded-2xl max-w-2xl w-full p-6 lg:p-8 border border-cyan-500/30 text-center space-y-6">
+                <div class="w-20 h-20 mx-auto rounded-full bg-cyan-950/50 border-2 border-cyan-400 flex items-center justify-center text-cyan-400 text-4xl shadow-lg">
+                    <i class="fa-solid fa-plane-departure"></i>
+                </div>
+                <h2 class="font-mono text-2xl font-bold tracking-wide text-white uppercase">Aviation Theory Heading Indicator Certification Exam</h2>
+                <div class="text-slate-300 text-sm leading-relaxed text-left space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                    <p><i class="fa-solid fa-circle-check text-cyan-400 mr-2"></i><strong>Questions:</strong> Exactly 50 challenging multiple-choice questions testing core concepts, math calculations, mechanical limitations, gyroscopic drift, and slaved variants.</p>
+                    <p><i class="fa-solid fa-circle-check text-cyan-400 mr-2"></i><strong>Time Limit:</strong> 50 Minutes (1 minute per question average).</p>
+                    <p><i class="fa-solid fa-circle-check text-cyan-400 mr-2"></i><strong>Navigation:</strong> Free jumping between questions via grid. Skip and mark items for review anytime.</p>
+                    <p><i class="fa-solid fa-circle-check text-cyan-400 mr-2"></i><strong>Randomization:</strong> Answer ordering and correct indices are dynamically randomized each session.</p>
+                </div>
+                <button onclick="startQuiz()" class="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold font-mono text-lg rounded-xl transition-all shadow-lg hover:shadow-cyan-500/30">
+                    BEGIN EXAMINATION NOW
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Main Screen Layout -->
+        <div id="quiz-screen" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Side: Question Canvas (8 cols) -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- Question Card -->
+                <div class="cockpit-panel rounded-2xl p-6 lg:p-8 space-y-6 relative">
+                    <!-- Top Toolbar for Current Question -->
+                    <div class="flex justify-between items-center border-b border-cockpit-border pb-4">
+                        <span id="question-number-badge" class="font-mono text-xs font-bold px-3 py-1 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800">
+                            QUESTION 01 OF 50
+                        </span>
+                        <button id="flag-btn" onclick="toggleFlagCurrentQuestion()" class="text-xs font-mono px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/50 text-slate-300 hover:text-amber-400 hover:border-amber-500/50 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-bookmark" id="flag-icon"></i>
+                            <span id="flag-text">Mark for Review</span>
+                        </button>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div id="question-text" class="text-lg lg:text-xl font-medium text-slate-100 leading-relaxed min-h-[4rem]">
+                        Loading question...
+                    </div>
+
+                    <!-- Options Container -->
+                    <div id="options-container" class="space-y-3 pt-2">
+                        <!-- Options generated dynamically -->
+                    </div>
+
+                    <!-- Footer Navigation Controls -->
+                    <div class="flex justify-between items-center pt-6 border-t border-cockpit-border">
+                        <button id="prev-btn" onclick="navigateQuestion(-1)" class="px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-mono text-sm transition flex items-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Previous</span>
+                        </button>
+                        
+                        <div class="text-xs text-slate-400 font-mono hidden sm:block">
+                            Press <span class="bg-slate-800 px-1.5 py-0.5 rounded text-cyan-400 border border-slate-700">A-D</span> to select
+                        </div>
+
+                        <button id="next-btn" onclick="navigateQuestion(1)" class="px-5 py-2.5 rounded-xl bg-cyan-900/60 hover:bg-cyan-800 border border-cyan-700/80 text-cyan-200 font-mono text-sm transition flex items-center space-x-2">
+                            <span>Next</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Navigation Palette & Progress (4 cols) -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="cockpit-panel rounded-2xl p-6 space-y-5">
+                    <h3 class="font-mono text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center justify-between">
+                        <span>Flight Grid Navigation</span>
+                        <span id="answered-count-badge" class="text-xs font-normal text-cyan-400">0 / 50 Completed</span>
+                    </h3>
+
+                    <!-- Status Legend -->
+                    <div class="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-cyan-500"></span>
+                            <span class="text-slate-400">Answered</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-slate-800 border border-slate-700"></span>
+                            <span class="text-slate-400">Unanswered</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-amber-500"></span>
+                            <span class="text-slate-400">Flagged</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded ring-2 ring-cyan-400 bg-cyan-950"></span>
+                            <span class="text-slate-400">Active</span>
+                        </div>
+                    </div>
+
+                    <!-- 1 - 50 Grid Matrix -->
+                    <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-[380px] overflow-y-auto pr-1">
+                        <!-- Grid buttons generated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Results Screen (Hidden initially) -->
+        <div id="results-screen" class="hidden space-y-8">
+            <!-- Executive Summary Header -->
+            <div class="cockpit-panel rounded-2xl p-6 lg:p-8 space-y-6 border border-cyan-500/30">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6 pb-6 border-b border-cockpit-border">
+                    <div>
+                        <h2 class="font-mono text-2xl font-bold text-white uppercase tracking-wider">Flight Assessment Results</h2>
+                        <p class="text-sm text-slate-400">Heading Indicator (Directional Gyro) Master Knowledge Certification</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div id="score-percentage-badge" class="text-4xl font-mono font-bold text-cyan-400 bg-slate-900 px-6 py-3 rounded-2xl border border-cyan-500/30 shadow-lg">
+                            0.0%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                        <p class="text-xs font-mono text-slate-400 uppercase">Total Score</p>
+                        <p id="stat-score" class="text-2xl font-mono font-bold text-slate-100 mt-1">0 / 50</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                        <p class="text-xs font-mono text-slate-400 uppercase">Time Expended</p>
+                        <p id="stat-time" class="text-2xl font-mono font-bold text-cyan-400 mt-1">00:00</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                        <p class="text-xs font-mono text-slate-400 uppercase">Correct Answers</p>
+                        <p id="stat-correct" class="text-2xl font-mono font-bold text-emerald-400 mt-1">0</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                        <p class="text-xs font-mono text-slate-400 uppercase">Incorrect / Omitted</p>
+                        <p id="stat-incorrect" class="text-2xl font-mono font-bold text-rose-400 mt-1">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Itemized Review Section -->
+            <div class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-mono text-xl font-bold text-cyan-400 tracking-wider uppercase">
+                        <i class="fa-solid fa-list-check mr-2"></i>Itemized Question Breakdown & Analysis
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button onclick="filterReview('all')" class="review-filter-btn px-3 py-1 rounded text-xs font-mono bg-cyan-600 text-slate-950 font-semibold" data-filter="all">All (50)</button>
+                        <button onclick="filterReview('incorrect')" class="review-filter-btn px-3 py-1 rounded text-xs font-mono bg-slate-800 text-slate-300 border border-slate-700" data-filter="incorrect">Incorrect Only</button>
+                    </div>
+                </div>
+
+                <div id="review-list-container" class="space-y-6">
+                    <!-- Itemized cards inserted here dynamically -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="cockpit-panel border-t border-cockpit-border py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs font-mono text-slate-500">
+            Aviation Knowledge System • Based on "The Heading Indicator (Directional Gyro)" by Aviation Theory
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        /* ----------------------------------------------------
+           RAW QUESTION BANK (50 Comprehensive Flight Questions)
+           ---------------------------------------------------- */
+        const rawQuestionBank = [
+            {
+                q: "In typical light general aviation aircraft equipped with traditional vacuum systems, how is instrument power distributed between the primary flight instruments?",
+                options: [
+                    "Attitude Indicator and Heading Indicator are vacuum-driven; Turn Coordinator is electrically driven (DC).",
+                    "Attitude Indicator and Turn Coordinator are vacuum-driven; Heading Indicator is electrically driven (DC).",
+                    "Heading Indicator and Turn Coordinator are vacuum-driven; Attitude Indicator is electrically driven (DC).",
+                    "All three primary gyro instruments (Attitude, Heading, Turn Coordinator) are strictly vacuum-driven."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "In standard light aircraft vacuum configurations, engine-driven vacuum pumps supply suction to the Attitude Indicator and Heading Indicator, while the Turn Coordinator relies on an electric motor (DC) for system redundancy in case of vacuum failure.",
+                    incorrect: [
+                        "Incorrect: The Turn Coordinator is electric, not vacuum-driven.",
+                        "Incorrect: The Heading Indicator is vacuum-driven, not electric.",
+                        "Incorrect: The Turn Coordinator is electrically powered specifically to provide gyro redundancy."
+                    ]
+                }
+            },
+            {
+                q: "Why does a standard standalone Heading Indicator (Directional Gyro) require periodic manual alignment with the magnetic compass?",
+                options: [
+                    "It lacks any internal magnetic sensing capability and cannot detect Magnetic North independently.",
+                    "Internal friction forces the gyro to continuously seek True North instead of Magnetic North.",
+                    "Engine alternator magnetic fields interfere with its internal flux gate every 15 minutes.",
+                    "Centrifugal forces during coordinated turns lock the gyro card in place."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The Directional Gyro is purely a gyroscopic instrument containing no magnetic elements or flux valves; it relies entirely on the pilot to align it with the magnetic compass.",
+                    incorrect: [
+                        "Incorrect: Standalone Heading Indicators do not seek True North; they simply maintain gyroscopic rigidity.",
+                        "Incorrect: Traditional standalone Heading Indicators do not possess an internal flux gate.",
+                        "Incorrect: Centrifugal force does not lock the gyro card; gyroscopic rigidity keeps it stable."
+                    ]
+                }
+            },
+            {
+                q: "Which inherent operational limitation of the direct-reading magnetic compass makes the Heading Indicator necessary during flight maneuvers?",
+                options: [
+                    "Dip errors (acceleration/deceleration and turning errors) and sensitivity to turbulence.",
+                    "Precession caused by Earth's rotation at high latitudes.",
+                    "Mechanical stops that lock the compass card beyond 15° of bank.",
+                    "Vacuum suction fluctuations during engine pitch changes."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The magnetic compass suffers from dip errors during turns, acceleration/deceleration, and oscillates wildly in turbulence, making accurate real-time heading control difficult without a stabilized Heading Indicator.",
+                    incorrect: [
+                        "Incorrect: Precession affects gyroscopes, not direct-reading magnetic compasses.",
+                        "Incorrect: Magnetic compasses do not have mechanical stops at 15° bank.",
+                        "Incorrect: Magnetic compasses are non-powered magnetic float mechanisms, independent of vacuum."
+                    ]
+                }
+            },
+            {
+                q: "On a standard Heading Indicator compass rose, what heading increment is represented by the longer graduation marks and shorter graduation marks, respectively?",
+                options: [
+                    "Longer lines represent 10° increments; shorter lines represent 5° increments.",
+                    "Longer lines represent 15° increments; shorter lines represent 5° increments.",
+                    "Longer lines represent 10° increments; shorter lines represent 2° increments.",
+                    "Longer lines represent 5° increments; shorter lines represent 1° increments."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The 360° compass card features long tick marks every 10 degrees (numbered every 30°) and short tick marks every 5 degrees.",
+                    incorrect: [
+                        "Incorrect: Longer lines are spaced at 10°, not 15°.",
+                        "Incorrect: Shorter lines are spaced at 5°, not 2°.",
+                        "Incorrect: Longer lines are 10° and short lines are 5°."
+                    ]
+                }
+            },
+            {
+                q: "On the compass rose of a Heading Indicator, how are three-digit heading values displayed to prevent visual clutter?",
+                options: [
+                    "The trailing zero is omitted (e.g., '3' indicates 030°, '15' indicates 150°, '30' indicates 300°).",
+                    "The leading zero is omitted (e.g., '3' indicates 003°, '15' indicates 015°).",
+                    "Only Cardinal points are labeled with numbers; all intermediate headings use ticks.",
+                    "The hundreds digit is omitted (e.g., '3' indicates 130°, '5' indicates 250°)."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "To maintain clarity on a small dial, numbers omit the final zero. Thus 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33 represent 030° through 330°.",
+                    incorrect: [
+                        "Incorrect: The trailing zero is dropped, not the leading zero.",
+                        "Incorrect: Intermediate headings every 30° are numbered.",
+                        "Incorrect: Dropping hundreds digits would cause total ambiguity across quadrants."
+                    ]
+                }
+            },
+            {
+                q: "An aircraft is currently maintaining a heading of 285°. Air Traffic Control issues an instruction to turn '45 degrees right.' What is the target heading on the HI?",
+                options: [
+                    "330°",
+                    "320°",
+                    "240°",
+                    "340°"
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "285° + 45° = 330°. Using relative heading indices on the HI face, 45° right of 285° directly lands on 330°.",
+                    incorrect: [
+                        "Incorrect: Mathematical error (285 + 45 = 330, not 320).",
+                        "Incorrect: 240° corresponds to a 45° left turn (285 - 45 = 240).",
+                        "Incorrect: Mathematical calculation error."
+                    ]
+                }
+            },
+            {
+                q: "An aircraft on heading 285° receives an instruction to turn '90 degrees left'. What is the resulting heading?",
+                options: [
+                    "195°",
+                    "205°",
+                    "180°",
+                    "375°"
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "285° - 90° = 195°. Subtracting 90° yields 195° directly.",
+                    incorrect: [
+                        "Incorrect: Subtraction error (285 - 90 = 195).",
+                        "Incorrect: 180° would be a 105° turn.",
+                        "Incorrect: Headings cannot exceed 360°."
+                    ]
+                }
+            },
+            {
+                q: "Which foundational gyroscopic principle allows the Heading Indicator rotor to maintain its orientation in space regardless of aircraft maneuvering?",
+                options: [
+                    "Rigidity in Space.",
+                    "Gyroscopic Precession.",
+                    "Coriolis acceleration.",
+                    "Aerodynamic damping."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Rigidity in space is the principle that a spinning rotor maintains its plane of rotation fixed in inertial space unless acted upon by an external force.",
+                    incorrect: [
+                        "Incorrect: Precession is the unwanted or deflected force response, whereas Rigidity keeps it steady.",
+                        "Incorrect: Coriolis effect relates to rotating frames of reference across planetary scales.",
+                        "Incorrect: Aerodynamic damping is a fluid mechanics property, not a gyroscopic law."
+                    ]
+                }
+            },
+            {
+                q: "In what plane is the gyro rotor aligned inside a standard directional gyro (Heading Indicator)?",
+                options: [
+                    "Vertical plane (rotor spins about a horizontal axis).",
+                    "Horizontal plane (rotor spins about a vertical axis).",
+                    "Canted at 45 degrees relative to aircraft lateral axis.",
+                    "Variable plane that auto- tilts with aircraft pitch."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The heading indicator rotor spins in a vertical plane around a horizontal axis, providing directional rigidity in the horizontal plane.",
+                    incorrect: [
+                        "Incorrect: A vertical spin axis (horizontal plane of rotation) is used in Attitude Indicators.",
+                        "Incorrect: Canted gyros (typically 5°) are used in Turn Coordinators.",
+                        "Incorrect: The rotor axis is fixed in gimbals, not variable."
+                    ]
+                }
+            },
+            {
+                q: "How many degrees of freedom does the horizontal gimbal assembly of a directional gyro possess?",
+                options: [
+                    "3 degrees of freedom (allowing the aircraft to pitch, roll, and yaw relative to the fixed gyro).",
+                    "1 degree of freedom (restricted purely to yaw motion).",
+                    "2 degrees of freedom (restricted strictly to pitch and roll).",
+                    "4 degrees of freedom including translational movement."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "By mounting the gyro rotor inside inner and outer gimbals, the instrument assembly provides 3 degrees of rotational freedom relative to the airframe.",
+                    incorrect: [
+                        "Incorrect: 1 degree of freedom is characteristic of rate gyros (like turn indicators).",
+                        "Incorrect: 2 degrees of freedom would lock yaw sensing.",
+                        "Incorrect: Translational freedom is not applicable to gimballed rotational gyros."
+                    ]
+                }
+            },
+            {
+                q: "During a level 360-degree turn, what actually happens mechanically inside the Heading Indicator housing?",
+                options: [
+                    "The gyro rotor remains rigid in space while the instrument case and aircraft rotate around it.",
+                    "The gyro rotor actively rotates 360 degrees inside the case driven by the vacuum suction air streams.",
+                    "The magnetic flux valve turns the rotor assembly via electromagnets to match aircraft nose movement.",
+                    "The inner gimbal locks to the aircraft frame to push the compass card around."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Because of rigidity in space, the gyro spin assembly stays stationary while the aircraft fuselage, instrument case, and reference lubber line rotate around it.",
+                    incorrect: [
+                        "Incorrect: The gyro does not rotate with the turn; it stays rigid while the case turns.",
+                        "Incorrect: Flux valves are only present in slaved gyros, and even then, they don't mechanically force 360° rotor spins.",
+                        "Incorrect: If the gimbal locked to the frame, rigidity would be lost and toppling would occur."
+                    ]
+                }
+            },
+            {
+                q: "What is the typical mechanical pitch/bank limit for traditional vacuum-driven (air-driven) Heading Indicators before gimbal tumble/toppling occurs?",
+                options: [
+                    "Approximately 55° in pitch and bank.",
+                    "Approximately 85° in pitch and bank.",
+                    "Exactly 30° in pitch and bank.",
+                    "180° in roll and 90° in pitch."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Standard air-driven heading indicators have mechanical stops and suffer gimbal lock/toppling at approximately 55° of pitch or roll.",
+                    incorrect: [
+                        "Incorrect: 85° limits apply to modern or electric directional gyros.",
+                        "Incorrect: 30° is a standard steep turn angle, well within limits.",
+                        "Incorrect: Air-driven gyros cannot withstand 180° roll without toppling."
+                    ]
+                }
+            },
+            {
+                q: "Modern or electric Heading Indicators feature expanded operational freedom compared to older vacuum units. What are their typical pitch and bank limits?",
+                options: [
+                    "Approximately 85° in pitch and bank.",
+                    "Approximately 55° in pitch and bank.",
+                    "Fully unlimited (360° in all axes without cage requirement).",
+                    "Exactly 45° in pitch and bank."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Advanced and electric directional gyros feature modified gimbal ring geometries providing limits up to ~85° before hitting internal stops.",
+                    incorrect: [
+                        "Incorrect: 55° applies to legacy air-driven vacuum gyros.",
+                        "Incorrect: Non-INS, standard gimballed gyros still have mechanical stops short of 90°/360°.",
+                        "Incorrect: 45° is too restrictive for electric gyros."
+                    ]
+                }
+            },
+            {
+                q: "What phenomenon describes the apparent drift of the Heading Indicator caused by the Earth rotating beneath a space-rigid gyroscope?",
+                options: [
+                    "Apparent Wander (or Apparent Precession).",
+                    "Real Wander.",
+                    "Transport Drift.",
+                    "Coriolis Deflection."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Apparent wander occurs because the gyroscope maintains a fixed orientation in inertial space, while the Earth rotates 15° per hour beneath it.",
+                    incorrect: [
+                        "Incorrect: Real wander is caused by mechanical imperfections, friction, and rotor unbalance.",
+                        "Incorrect: Transport drift is caused by moving the gyro across longitude lines over Earth's surface.",
+                        "Incorrect: Coriolis deflection is an inertial effect on moving masses, not gyro reference shift."
+                    ]
+                }
+            },
+            {
+                q: "What is the rotation rate of the Earth used to calculate Apparent Wander?",
+                options: [
+                    "15 degrees per hour.",
+                    "10 degrees per hour.",
+                    "360 degrees per hour.",
+                    "5 degrees per hour."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The Earth completes one full 360° rotation in 24 hours, which equals 360 / 24 = 15° per hour.",
+                    incorrect: [
+                        "Incorrect: 10°/hr is incorrect rate.",
+                        "Incorrect: 360°/hr would mean Earth rotates once every hour.",
+                        "Incorrect: 5°/hr is mathematically incorrect."
+                    ]
+                }
+            },
+            {
+                q: "What is the mathematical formula for calculating Apparent Wander due to Earth's rotation at a given latitude?",
+                options: [
+                    "15° × sin(Latitude) per hour.",
+                    "15° × cos(Latitude) per hour.",
+                    "15° × tan(Latitude) per hour.",
+                    "15° / sin(Latitude) per hour."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Apparent wander in the horizontal plane is proportional to the vertical component of Earth's rotation: Drift = 15°/hr × sin(Latitude).",
+                    incorrect: [
+                        "Incorrect: Cosine gives the vertical drift component (tilt), not horizontal heading wander.",
+                        "Incorrect: Tangent is not used for Earth rotation rate breakdown.",
+                        "Incorrect: Division by sine is mathematically invalid (approaches infinity at equator)."
+                    ]
+                }
+            },
+            {
+                q: "Calculate the theoretical Apparent Wander per hour experienced by a Heading Indicator located at the Geographic North Pole (Latitude 90°N).",
+                options: [
+                    "15° per hour.",
+                    "0° per hour.",
+                    "7.5° per hour.",
+                    "30° per hour."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "At the pole (90° latitude), sin(90°) = 1. Therefore, Apparent Wander = 15° × 1 = 15° per hour.",
+                    incorrect: [
+                        "Incorrect: 0°/hr occurs at the equator.",
+                        "Incorrect: 7.5°/hr occurs at 30° latitude (sin 30° = 0.5).",
+                        "Incorrect: Maximum rate cannot exceed Earth's rotation rate of 15°/hr."
+                    ]
+                }
+            },
+            {
+                q: "Calculate the theoretical Apparent Wander per hour experienced by a Heading Indicator located at the Equator (Latitude 0°).",
+                options: [
+                    "0° per hour.",
+                    "15° per hour.",
+                    "7.5° per hour.",
+                    "12° per hour."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "At the equator (0° latitude), sin(0°) = 0. Therefore, Apparent Wander = 15° × 0 = 0° per hour.",
+                    incorrect: [
+                        "Incorrect: 15°/hr occurs at the geographical poles.",
+                        "Incorrect: 7.5°/hr occurs at 30° latitude.",
+                        "Incorrect: Zero wander occurs because local meridian direction remains parallel to gyro plane."
+                    ]
+                }
+            },
+            {
+                q: "Calculate the Apparent Wander rate per hour for an aircraft flying at Latitude 30° North.",
+                options: [
+                    "7.5° per hour.",
+                    "15.0° per hour.",
+                    "13.0° per hour.",
+                    "3.75° per hour."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Apparent Wander = 15° × sin(30°). Since sin(30°) = 0.5, 15 × 0.5 = 7.5° per hour.",
+                    incorrect: [
+                        "Incorrect: 15°/hr is the rate at 90° latitude.",
+                        "Incorrect: 13°/hr corresponds to sin(60°).",
+                        "Incorrect: 3.75°/hr corresponds to sin(14.5°)."
+                    ]
+                }
+            },
+            {
+                q: "What causes 'Real Wander' (or Real Precession) in a Heading Indicator, as distinguished from Apparent Wander?",
+                options: [
+                    "Mechanical imperfections, friction in gimbal bearings, and rotor asymmetry.",
+                    "Earth spinning beneath the gyro plane of rotation.",
+                    "Aircraft movement across lines of latitude.",
+                    "Solar radiation pressure on instrument glass."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Real wander is caused by physical defect factors inside the instrument: bearing friction, balance weight shifts, and mechanical wear causing unwanted torque.",
+                    incorrect: [
+                        "Incorrect: Earth rotation causes Apparent Wander.",
+                        "Incorrect: Crossing lines of latitude causes Transport Drift.",
+                        "Incorrect: Solar radiation has zero measurable impact on internal avionics gyros."
+                    ]
+                }
+            },
+            {
+                q: "What is the maximum acceptable precession drift rate for a well-maintained modern directional gyro under normal operation?",
+                options: [
+                    "Approximately 3° to 5° per 15 minutes (or ~15° per hour total drift budget requiring reset every 10-15 mins).",
+                    "0° per hour under all circumstances.",
+                    "45° per hour.",
+                    "1° per minute."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "A standard directional gyro typically drifts around 3° to 5° every 15 minutes due to combined real and apparent wander, establishing the practical rule to reset it every 10–15 minutes.",
+                    incorrect: [
+                        "Incorrect: Mechanical gyros inherently drift; 0° drift is impossible without slaving systems.",
+                        "Incorrect: 45° per hour is far beyond airworthiness limits and indicates a failing unit.",
+                        "Incorrect: 1° per minute (60°/hr) would make navigation unsafe."
+                    ]
+                }
+            },
+            {
+                q: "To ensure an accurate reset of the Heading Indicator using the magnetic compass during flight, what flight condition must be maintained?",
+                options: [
+                    "Straight, unaccelerated, wings-level flight in smooth air.",
+                    "A steady 3-degree per second rate-one turn.",
+                    "Maximum pitch-up climb attitude.",
+                    "A steep bank of 45° to lock the magnetic compass bowl."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The magnetic compass is only accurate when free from turning and acceleration errors. Therefore, re-alignment must occur strictly in straight, level, unaccelerated flight.",
+                    incorrect: [
+                        "Incorrect: In a turn, the magnetic compass suffers severe turning errors (NORTHERLY/SOUTHERLY turning errors).",
+                        "Incorrect: Pitch climbs induce acceleration/dip errors on the magnetic compass.",
+                        "Incorrect: Steep banks induce severe dip and fluid swirl errors in the compass card."
+                    ]
+                }
+            },
+            {
+                q: "How frequently should a pilot re-check and manually align the traditional Heading Indicator with the magnetic compass during cruise flight?",
+                options: [
+                    "Every 10 to 15 minutes.",
+                    "Every 60 minutes.",
+                    "Only prior to takeoff and after engine shutdown.",
+                    "Every 30 seconds."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Because accumulated drift (real + apparent wander) accumulates roughly 3°–5° over 15 minutes, pilot operating handbooks mandate checking/resetting every 10 to 15 minutes.",
+                    incorrect: [
+                        "Incorrect: 60 minutes allows up to 20°+ of uncorrected heading error to accumulate.",
+                        "Incorrect: Pre-takeoff only leaves the gyro uncalibrated during enroute flight.",
+                        "Incorrect: Checking every 30 seconds is unnecessary and creates high pilot workload."
+                    ]
+                }
+            },
+            {
+                q: "What primary function does pushing and twisting the Heading Indicator adjustment knob serve on a standard unit?",
+                options: [
+                    "It cages the gimbal frame and manually rotates the compass card to match the magnetic compass.",
+                    "It adjusts the vacuum pump suction relief valve pressure.",
+                    "It sets the barometric altimeter pressure scale.",
+                    "It recalibrates the internal electrical flux gate."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Pushing in the knob engages gears that cage/lock the gimbal and allow the pilot to rotate the compass card directly to realign it with the magnetic compass.",
+                    incorrect: [
+                        "Incorrect: The adjustment knob has no connection to the engine vacuum regulator.",
+                        "Incorrect: Altimeter barometric adjustment is performed on the altimeter (Kollsman window).",
+                        "Incorrect: Traditional units do not have internal flux gates."
+                    ]
+                }
+            },
+            {
+                q: "What is the function of the Heading Bug on a Heading Indicator equipped with autopilot integration or bug selector knob?",
+                options: [
+                    "It provides a visual reference index and sends a heading command signal to the autopilot system.",
+                    "It locks the directional gyro rotor to prevent tumbling during aerobatics.",
+                    "It displays wind drift angle calculated by the pitot-static system.",
+                    "It automatically rotates the compass card every 15 minutes."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The heading bug serves as a movable target marker on the compass perimeter for manual pilot reference or heading selection mode in autopilot systems.",
+                    incorrect: [
+                        "Incorrect: Caging mechanisms lock gyros, not the heading bug.",
+                        "Incorrect: Pitot-static systems measure airspeed/altitude, not wind drift angle on the bug.",
+                        "Incorrect: The bug does not rotate the compass card."
+                    ]
+                }
+            },
+            {
+                q: "On a Heading Indicator face, what relative angular displacement is indicated by the tick mark positioned directly 135 degrees to the right of the lubber line?",
+                options: [
+                    "135° relative heading (Right rear quartering index).",
+                    "045° relative heading.",
+                    "225° relative heading.",
+                    "315° relative heading."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Relative markings measure clockwise from the top lubber line (0°). 135° to the right is 135° relative.",
+                    incorrect: [
+                        "Incorrect: 045° relative is right forward quartering.",
+                        "Incorrect: 225° relative is 135° to the left (left rear quartering).",
+                        "Incorrect: 315° relative is 45° to the left."
+                    ]
+                }
+            },
+            {
+                q: "If an aircraft is heading 090° and is instructed to make a relative turn to heading 225°, what is the required direction and magnitude of turn?",
+                options: [
+                    "Turn right by 135°.",
+                    "Turn left by 135°.",
+                    "Turn right by 45°.",
+                    "Turn left by 90°."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "225° - 090° = +135° (clockwise/right turn of 135°).",
+                    incorrect: [
+                        "Incorrect: A left turn of 135° would result in 090 - 135 = 315°.",
+                        "Incorrect: 090 + 45 = 135°.",
+                        "Incorrect: 090 - 90 = 360°."
+                    ]
+                }
+            },
+            {
+                q: "What advanced system eliminates the need for manual compass alignment by continuously slaving the directional gyro to magnetic north?",
+                options: [
+                    "Slaved Gyro Compass / Gyromagnetic Compass / Remote Indicating Compass System.",
+                    "Air Data Computer (ADC).",
+                    "Inertial Navigation System (INS) without magnetic sensors.",
+                    "Electric Turn Coordinator."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Slaved gyromagetic compass systems use remote magnetometers (flux gates/valves) mounted in wingtips to continuously sense magnetic north and slaving torque motors to drive out gyro drift automatically.",
+                    incorrect: [
+                        "Incorrect: Air Data Computers process pitot-static pressures for airspeed and altitude.",
+                        "Incorrect: Standalone INS relies on accelerometers and laser gyros, not remote magnetic slaving.",
+                        "Incorrect: Turn coordinator indicates rate of turn and slip/skid, not slaved heading."
+                    ]
+                }
+            },
+            {
+                q: "Where is the Flux Valve (Flux Gate Magnetometer) typically located in an aircraft equipped with a slaved gyro system, and why?",
+                options: [
+                    "In a wingtip or vertical stabilizer; to isolate it from local electrical/magnetic interference caused by the engine and cockpit.",
+                    "Directly inside the Heading Indicator instrument housing in the main instrument panel.",
+                    "Inside the nose compartment near the engine alternator for maximum power.",
+                    "On the landing gear strut to sense ground alignment."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Flux valves are positioned as far as possible from heavy metallic structure, engine magnetic fields, and cockpit wiring—typically in wingtips or tail vertical fin.",
+                    incorrect: [
+                        "Incorrect: Mounting inside the instrument panel exposes it to intense cockpit electrical interference.",
+                        "Incorrect: Engine alternators create high magnetic fields that distort readings.",
+                        "Incorrect: Landing gear struts move and are subject to heavy metallic interference."
+                    ]
+                }
+            },
+            {
+                q: "In a slaved gyromagnetic compass system, what specific component compares the heading output of the directional gyro with the magnetic header signal from the flux valve?",
+                options: [
+                    "Slaving Amplifier / Comparator Circuit.",
+                    "Suction Relief Valve.",
+                    "Pitot-Static Annunciator.",
+                    "Barometric pressure capsule."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The slaving amplifier receives signals from the flux valve and gyro sensor, compares error signals, and applies small corrections via a torque motor.",
+                    incorrect: [
+                        "Incorrect: Suction relief valves regulate vacuum pressure in pneumatic lines.",
+                        "Incorrect: Pitot-static annunciator monitors air data warnings.",
+                        "Incorrect: Barometric capsules measure atmospheric pressure."
+                    ]
+                }
+            },
+            {
+                q: "What is the typical slow slaving rate of correction applied by a torque motor in a slaved gyromagnetic system during normal cruise flight?",
+                options: [
+                    "Approximately 1° to 2° per minute.",
+                    "180° per minute.",
+                    "15° per second.",
+                    "45° per minute."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Slaving systems drive out drift at a slow, smooth rate (~1° to 2° per minute) so that temporary magnetic compass oscillations during turbulence do not distort gyro stability.",
+                    incorrect: [
+                        "Incorrect: 180° per minute is far too fast and would make the gyro jump during turns.",
+                        "Incorrect: 15° per second would transmit all compass turbulence noise directly into the gyro display.",
+                        "Incorrect: 45° per minute is overly aggressive for slaving tracking."
+                    ]
+                }
+            },
+            {
+                q: "What visually informs the pilot that a slaved gyromagnetic compass system is operating correctly and aligned with magnetic north?",
+                options: [
+                    "The Slaving Meter (Annunciator needle or '+' / '-' display) centers or oscillates slowly around zero.",
+                    "A red 'GYRO' warning flag appears across the instrument dial.",
+                    "The heading bug continuously spins around the perimeter at 15 rpm.",
+                    "The vacuum gauge reads zero inches of mercury."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The slaving meter indicator displays error correction. When aligned, the meter needle centers or fluctuates gently around zero.",
+                    incorrect: [
+                        "Incorrect: Red warning flags indicate system power or sensor failure.",
+                        "Incorrect: A spinning bug indicates a broken feedback loop or failure.",
+                        "Incorrect: Zero suction indicates complete failure of pneumatic supply."
+                    ]
+                }
+            },
+            {
+                q: "Why is a slaved gyro system designed with a slow slaving rate rather than an instantaneous response rate to flux valve outputs?",
+                options: [
+                    "To filter out short-term magnetic dip and sloshing errors caused by atmospheric turbulence and acceleration.",
+                    "Because electric torque motors lack the power to turn gyros quickly.",
+                    "To allow the pilot time to override automatic turns.",
+                    "To prevent overheating of the vacuum pump."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Because magnetic flux sensors experience temporary distortions during acceleration and turns, a slow slaving rate smooths out noise, maintaining gyroscopic stability.",
+                    incorrect: [
+                        "Incorrect: Torque motors are sized purposefully; power is not the limiting factor.",
+                        "Incorrect: Slaving systems align heading displays, not flight control surfaces directly.",
+                        "Incorrect: Pneumatic vacuum pumps are unrelated to slaving torque rates."
+                    ]
+                }
+            },
+            {
+                q: "What push-button mode allows the pilot to manually force quick slaving of the gyro system when establishing initial heading alignment on the ground?",
+                options: [
+                    "Free Gyro / Manual Slaving Push-Button (or CW/CCW manual slew button).",
+                    "Autopilot Disconnect Button.",
+                    "Pneumatic Caging Plunger.",
+                    "Static Vent Drain Switch."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Slaved systems typically feature a 'Free/Slave' switch and manual CW/CCW slewing switches to fast-erect/align heading before takeoff.",
+                    incorrect: [
+                        "Incorrect: Autopilot disconnect disengages control servos.",
+                        "Incorrect: Pneumatic caging plungers are used on non-slaved mechanical gyros.",
+                        "Incorrect: Static vent drains purge moisture from airspeed/altimeter lines."
+                    ]
+                }
+            },
+            {
+                q: "If an aircraft turns onto a heading of 045° and the Heading Indicator displays 045°, what relative bearing on the compass card corresponds to a target located directly off the starboard (right) wingtip?",
+                options: [
+                    "135°",
+                    "090°",
+                    "225°",
+                    "315°"
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Aircraft heading (045°) + 90° right wingtip offset = 135° magnetic heading on the compass rose.",
+                    incorrect: [
+                        "Incorrect: 090° is only a 45° turn right from 045°.",
+                        "Incorrect: 225° is directly behind the tail (180° offset).",
+                        "Incorrect: 315° is off the left wingtip."
+                    ]
+                }
+            },
+            {
+                q: "Which error is completely eliminated in a Heading Indicator compared to a traditional liquid-filled Magnetic Compass?",
+                options: [
+                    "Northerly and Southerly turning errors.",
+                    "Apparent precession due to Earth rotation.",
+                    "Bearing friction drift.",
+                    "Gimbal limit tumble during extreme maneuvers."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Because the Heading Indicator is stabilized by a gyroscope rather than suspended in magnetic liquid, it suffers zero dip, turning, or acceleration errors.",
+                    incorrect: [
+                        "Incorrect: Directional gyros still suffer apparent precession.",
+                        "Incorrect: Bearing friction drift (real wander) affects gyros.",
+                        "Incorrect: Mechanical directional gyros suffer gimbal lock when limits are exceeded."
+                    ]
+                }
+            },
+            {
+                q: "What causes 'Gimbal Lock' in a traditional 3-axis gimballed gyroscope?",
+                options: [
+                    "When two of the three gimbal rings align in the same plane, causing the loss of one degree of rotational freedom.",
+                    "When vacuum pressure exceeds 6.0 inches of mercury.",
+                    "When the magnetic flux valve experiences excessive ground deviation.",
+                    "When rotor speed drops below 1,000 RPM."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Gimbal lock occurs when two axes become coplanar during extreme attitude maneuvers, preventing independent rotation and causing rotor tumble.",
+                    incorrect: [
+                        "Incorrect: Excess vacuum does not cause gimbal alignment lock.",
+                        "Incorrect: Flux valve input affects slaving torque, not mechanical gimbal geometry.",
+                        "Incorrect: Low RPM causes gradual precession drift, not physical structural locking."
+                    ]
+                }
+            },
+            {
+                q: "In an aircraft equipped with a standard vacuum system, what is the normal operating suction pressure range displayed on the vacuum gauge?",
+                options: [
+                    "4.5 to 5.5 inches of Mercury (in. Hg).",
+                    "1.0 to 2.0 inches of Mercury (in. Hg).",
+                    "10.0 to 15.0 inches of Mercury (in. Hg).",
+                    "29.92 to 30.00 inches of Mercury (in. Hg)."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Standard aircraft air-driven gyro systems operate at suction pressures between 4.5 and 5.5 in. Hg.",
+                    incorrect: [
+                        "Incorrect: 1.0 - 2.0 in. Hg is insufficient rotor driving force.",
+                        "Incorrect: 10.0 - 15.0 in. Hg would over-speed and damage gyro rotor bearings.",
+                        "Incorrect: 29.92 in. Hg represents standard atmospheric sea level barometric pressure."
+                    ]
+                }
+            },
+            {
+                q: "If the aircraft vacuum pump fails completely during IMC flight, how will the traditional Heading Indicator behave?",
+                options: [
+                    "The gyro rotor slowly spools down, leading to erratic indication, severe precession drift, and eventual complete unreliability.",
+                    "The compass card immediately freezes and locks precisely on the last heading.",
+                    "The instrument instantly snaps 180 degrees opposite to actual aircraft heading.",
+                    "The red slaving warning flag drops while heading remains 100% accurate."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "As suction drops, rotor RPM decays gradually; rigidity in space degrades, causing severe, progressive heading drift and eventual spinning/tumbling.",
+                    incorrect: [
+                        "Incorrect: The card does not freeze instantly; it drifts erratically as momentum decays.",
+                        "Incorrect: A 180-degree reversal is not a characteristic of vacuum spin-down failure.",
+                        "Incorrect: Standalone vacuum gyros do not have slaving warning flags."
+                    ]
+                }
+            },
+            {
+                q: "What is the relative heading marking positioned 180 degrees opposite to the main lubber line on a standard Heading Indicator?",
+                options: [
+                    "180° relative (Reciprocal / Tail indicator).",
+                    "090° relative.",
+                    "270° relative.",
+                    "360° relative."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "The position 180° around the compass card represents the tail of the aircraft or reciprocal relative heading.",
+                    incorrect: [
+                        "Incorrect: 090° is right wingtip.",
+                        "Incorrect: 270° is left wingtip.",
+                        "Incorrect: 360° is the nose lubber line."
+                    ]
+                }
+            },
+            {
+                q: "An aircraft on heading 120° is instructed to turn '45 degrees left'. What is the new target heading?",
+                options: [
+                    "075°",
+                    "165°",
+                    "085°",
+                    "065°"
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "120° - 45° = 075°.",
+                    incorrect: [
+                        "Incorrect: 165° is a 45° turn right (120 + 45).",
+                        "Incorrect: Calculation error.",
+                        "Incorrect: Calculation error."
+                    ]
+                }
+            },
+            {
+                q: "An aircraft on heading 010° is instructed to turn '30 degrees left'. What is the new target heading?",
+                options: [
+                    "340°",
+                    "020°",
+                    "320°",
+                    "040°"
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "010° - 30° = -20° = 360° - 20° = 340°.",
+                    incorrect: [
+                        "Incorrect: 020° is a 10° right turn.",
+                        "Incorrect: 320° is a 50° left turn.",
+                        "Incorrect: 040° is a 30° right turn."
+                    ]
+                }
+            },
+            {
+                q: "An aircraft on heading 350° is instructed to turn '20 degrees right'. What is the new target heading?",
+                options: [
+                    "010°",
+                    "330°",
+                    "370°",
+                    "020°"
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "350° + 20° = 370° - 360° = 010°.",
+                    incorrect: [
+                        "Incorrect: 330° is a 20° left turn.",
+                        "Incorrect: Headings wrap around 360°; 370° is properly designated 010°.",
+                        "Incorrect: 020° is a 30° right turn."
+                    ]
+                }
+            },
+            {
+                q: "Why is the Directional Gyro rotor designed with heavy mass concentrated around its outer rim?",
+                options: [
+                    "To maximize Moment of Inertia, enhancing gyroscopic rigidity in space for a given rotor RPM.",
+                    "To minimize air drag inside the instrument case.",
+                    "To create a strong magnetic field for compass coupling.",
+                    "To allow quick caging with minimal force."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Gyroscopic rigidity is directly proportional to rotational moment of inertia (mass × radius squared) and angular speed. Concentrating mass on the outer rim maximizes inertia.",
+                    incorrect: [
+                        "Incorrect: Rim mass distribution increases inertia, independent of aerodynamic drag.",
+                        "Incorrect: Gyro rotors are made of non-magnetic metals (e.g., bronze/brass) to prevent magnetic interference.",
+                        "Incorrect: High mass inertia increases required caging force."
+                    ]
+                }
+            },
+            {
+                q: "In a gyromagnetic slaved system, if the aircraft enters a prolonged constant-bank turn, how does the system prevent slaving errors caused by magnetic sensor dip?",
+                options: [
+                    "A slaving cut-off switch or gyro-logic disables slaving signals when bank angles exceed a specified limit (~6°).",
+                    "The flux gate physically rotates inside the wingtip to match the bank angle.",
+                    "The pilot must pull the vacuum breaker during turns.",
+                    "The torque motor reverses direction automatically to cancel turn rate."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Slaved systems contain bank cut-off switches (mercury switches or solid-state tilt sensors) that disconnect flux gate slaving during steep or prolonged turns.",
+                    incorrect: [
+                        "Incorrect: Flux gates are rigidly mounted without mechanical gimbal stabilization.",
+                        "Incorrect: Pulling circuit breakers in turn flight is dangerous and prohibited.",
+                        "Incorrect: Reversing torque motor direction would corrupt heading output."
+                    ]
+                }
+            },
+            {
+                q: "What is the fundamental difference between 'Apparent Wander' and 'Transport Drift'?",
+                options: [
+                    "Apparent Wander is caused by Earth's rotation; Transport Drift is caused by flying across meridians of longitude over Earth's curved surface.",
+                    "Apparent Wander occurs on the ground; Transport Drift occurs only in supersonic flight.",
+                    "Apparent Wander is caused by bearing wear; Transport Drift is caused by vacuum loss.",
+                    "There is no difference; they are synonymous terms for gyroscopic precession."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Apparent wander happens due to Earth's rotation at a stationary point; transport drift arises when an aircraft moves over true convergence lines of longitude.",
+                    incorrect: [
+                        "Incorrect: Speed changes transport drift magnitude, but transport drift applies to all cross-country flights.",
+                        "Incorrect: Bearing wear causes real wander, not apparent wander or transport drift.",
+                        "Incorrect: They describe physically distinct geometric motion phenomena."
+                    ]
+                }
+            },
+            {
+                q: "If an aircraft is maintained at Latitude 60° North, calculate its theoretical Apparent Wander per hour.",
+                options: [
+                    "13.0° per hour (15° × sin(60°) = 15 × 0.866).",
+                    "15.0° per hour.",
+                    "7.5° per hour.",
+                    "10.0° per hour."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Apparent Wander = 15° × sin(60°) = 15 × 0.8660 = 12.99° ≈ 13.0° per hour.",
+                    incorrect: [
+                        "Incorrect: 15°/hr occurs at 90° latitude.",
+                        "Incorrect: 7.5°/hr occurs at 30° latitude.",
+                        "Incorrect: Mathematical calculation error."
+                    ]
+                }
+            },
+            {
+                q: "What component in an air-driven Heading Indicator directs jets of air onto the rotor buckets to spin the gyro at high velocity?",
+                options: [
+                    "Air nozzles connected to the vacuum air inlet filter.",
+                    "Engine exhaust manifold ducts.",
+                    "Pitot static impact tubes.",
+                    "Electric brushless solenoids."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Suction pulled by the vacuum pump draws filtered cabin air into the sealed case, driving high-velocity air nozzles aimed at rotor buckets to spin the wheel to ~10,000–18,000 RPM.",
+                    incorrect: [
+                        "Incorrect: Engine exhaust fumes would contaminate and destroy delicate bearings.",
+                        "Incorrect: Pitot static impact air is used for airspeed indicators, not pneumatically driving gyros.",
+                        "Incorrect: Pneumatic gyros do not use electric solenoids for rotor drive."
+                    ]
+                }
+            },
+            {
+                q: "When caging a Heading Indicator prior to flight or during realignment, what mechanical action takes place inside the housing?",
+                options: [
+                    "A mechanical arm grasps the gimbal frame to lock it perpendicular, while engaging alignment gears.",
+                    "The rotor wheel is physically stopped from spinning.",
+                    "The suction line is completely vented to atmospheric pressure.",
+                    "The flux gate signal wires are shorted to ground."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Pushing the caging knob pushes mechanical fingers against the gimbal ring to level it and lock its axis while allowing manual gear rotation of the compass card.",
+                    incorrect: [
+                        "Incorrect: Caging locks the gimbal ring; it does NOT stop the spinning rotor wheel.",
+                        "Incorrect: Vacuum suction remains active while caging.",
+                        "Incorrect: Standalone mechanical units do not have flux gate electrical connections."
+                    ]
+                }
+            },
+            {
+                q: "Why must a pilot avoid caging or pulling the adjustment knob abruptly during high rate-of-turn maneuvers?",
+                options: [
+                    "It can subject the internal delicate gimbal gears and pivot bearings to high mechanical stress and potential damage.",
+                    "It will reverse the rotation direction of the vacuum pump.",
+                    "It causes an immediate electrical short circuit in the avionics bus.",
+                    "It causes the magnetic compass to freeze permanent polarity."
+                ],
+                correct: 0,
+                explanation: {
+                    correct: "Enforcing mechanical caging gear mesh while high precession torques are present during fast turns can shear gear teeth and damage delicate jewel pivot bearings.",
+                    incorrect: [
+                        "Incorrect: Caging an instrument inside the cockpit has zero effect on engine vacuum pumps.",
+                        "Incorrect: Vacuum heading indicators are mechanical and do not short circuit avionics buses.",
+                        "Incorrect: Mechanical gyros cannot alter the permanent magnetism of liquid magnetic compasses."
+                    ]
+                }
+            }
+        ];
+
+        /* ----------------------------------------------------
+           QUIZ STATE VARIABLES
+           ---------------------------------------------------- */
+        let shuffledQuestions = [];
+        let userAnswers = {}; // { questionIndex: selectedOptionIndex }
+        let flaggedQuestions = new Set();
+        let currentQuestionIndex = 0;
+        let timerInterval = null;
+        let totalTimeSeconds = 50 * 60; // 50 minutes = 3000s
+        let timeRemainingSeconds = totalTimeSeconds;
+        let examSubmitted = false;
+
+        /* ----------------------------------------------------
+           APPLICATION INITIALIZATION & SHUFFLING ENGINE
+           ---------------------------------------------------- */
+        window.onload = function() {
+            // Display start modal by default
+        };
+
+        function startQuiz() {
+            document.getElementById('start-modal').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            // Process and shuffle questions and options
+            prepareQuestionBank();
+
+            // Render Palette Grid
+            renderNavigationGrid();
+
+            // Load first question
+            loadQuestion(0);
+
+            // Start 50-minute timer
+            startTimer();
+
+            // Keyboard shortcut support
+            document.addEventListener('keydown', handleKeyPress);
+        }
+
+        /* 
+           Prepares question bank by deep copying raw questions, 
+           shuffling options dynamically, and maintaining option answer tracking.
+           Guarantees correct answer position randomness.
+        */
+        function prepareQuestionBank() {
+            shuffledQuestions = rawQuestionBank.map((q, origIdx) => {
+                // Create indexed options array
+                let optionsObj = q.options.map((optText, i) => {
+                    return {
+                        text: optText,
+                        originalIndex: i,
+                        explanation: i === q.correct ? q.explanation.correct : q.explanation.incorrect[i > q.correct ? i - 1 : i]
+                    };
+                });
+
+                // Fisher-Yates shuffle options array
+                for (let i = optionsObj.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [optionsObj[i], optionsObj[j]] = [optionsObj[j], optionsObj[i]];
+                }
+
+                // Find new correct index
+                const newCorrectIndex = optionsObj.findIndex(item => item.originalIndex === q.correct);
+
+                return {
+                    question: q.q,
+                    options: optionsObj,
+                    correctIndex: newCorrectIndex,
+                    originalID: origIdx + 1
+                };
+            });
+        }
+
+        /* ----------------------------------------------------
+           TIMER ENGINE
+           ---------------------------------------------------- */
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemainingSeconds--;
+                updateTimerDisplay();
+
+                if (timeRemainingSeconds <= 300) { // Under 5 minutes
+                    document.getElementById('timer-display').classList.add('timer-warning');
+                }
+
+                if (timeRemainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmitQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemainingSeconds / 60);
+            const seconds = timeRemainingSeconds % 60;
+            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = formatted;
+        }
+
+        /* ----------------------------------------------------
+           QUESTION NAVIGATION & DISPLAY
+           ---------------------------------------------------- */
+        function loadQuestion(index) {
+            currentQuestionIndex = index;
+            const qData = shuffledQuestions[index];
+
+            // Badge & Question Text
+            document.getElementById('question-number-badge').innerText = `QUESTION ${String(index + 1).padStart(2, '0')} OF 50`;
+            document.getElementById('question-text').innerText = qData.question;
+
+            // Flag state button update
+            const flagBtn = document.getElementById('flag-btn');
+            const flagText = document.getElementById('flag-text');
+            const flagIcon = document.getElementById('flag-icon');
+
+            if (flaggedQuestions.has(index)) {
+                flagBtn.classList.add('border-amber-500', 'bg-amber-950/40', 'text-amber-400');
+                flagText.innerText = 'Flagged';
+                flagIcon.classList.remove('fa-bookmark');
+                flagIcon.classList.add('fa-solid', 'fa-flag');
+            } else {
+                flagBtn.classList.remove('border-amber-500', 'bg-amber-950/40', 'text-amber-400');
+                flagText.innerText = 'Mark for Review';
+                flagIcon.classList.remove('fa-flag');
+                flagIcon.classList.add('fa-bookmark');
+            }
+
+            // Options rendering
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const selectedOpt = userAnswers[index];
+
+            qData.options.forEach((opt, optIdx) => {
+                const optLetter = String.fromCharCode(65 + optIdx);
+                const isSelected = selectedOpt === optIdx;
+
+                const optElement = document.createElement('div');
+                optElement.className = `p-4 rounded-xl border transition-all cursor-pointer flex items-start space-x-3 ${
+                    isSelected 
+                        ? 'border-cyan-500 bg-cyan-950/40 text-cyan-200 shadow-md ring-1 ring-cyan-500/50' 
+                        : 'border-cockpit-border bg-slate-900/40 hover:bg-slate-800/60 text-slate-200 hover:border-slate-600'
+                }`;
+                optElement.onclick = () => selectOption(optIdx);
+
+                optElement.innerHTML = `
+                    <input type="radio" name="option" class="custom-radio mt-0.5" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); selectOption(${optIdx});">
+                    <div class="flex-grow">
+                        <span class="font-mono font-bold text-cyan-400 mr-2">${optLetter}.</span>
+                        <span>${escapeHtml(opt.text)}</span>
+                    </div>
+                `;
+                container.appendChild(optElement);
+            });
+
+            // Prev / Next button state
+            document.getElementById('prev-btn').disabled = (index === 0);
+            const nextBtn = document.getElementById('next-btn');
+            if (index === 49) {
+                nextBtn.innerHTML = `<span>Finish</span> <i class="fa-solid fa-check"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>Next</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+
+            updateNavigationGridState();
+        }
+
+        function selectOption(optionIndex) {
+            if (examSubmitted) return;
+            userAnswers[currentQuestionIndex] = optionIndex;
+            loadQuestion(currentQuestionIndex);
+            updateAnsweredCount();
+        }
+
+        function toggleFlagCurrentQuestion() {
+            if (flaggedQuestions.has(currentQuestionIndex)) {
+                flaggedQuestions.delete(currentQuestionIndex);
+            } else {
+                flaggedQuestions.add(currentQuestionIndex);
+            }
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function navigateQuestion(delta) {
+            const target = currentQuestionIndex + delta;
+            if (target >= 0 && target < 50) {
+                loadQuestion(target);
+            }
+        }
+
+        /* ----------------------------------------------------
+           NAVIGATION PALETTE GRID
+           ---------------------------------------------------- */
+        function renderNavigationGrid() {
+            const gridContainer = document.getElementById('question-grid');
+            gridContainer.innerHTML = '';
+
+            for (let i = 0; i < 50; i++) {
+                const btn = document.createElement('button');
+                btn.id = `grid-btn-${i}`;
+                btn.onclick = () => loadQuestion(i);
+                btn.className = `h-10 rounded-lg font-mono text-xs font-semibold border transition-all flex flex-col items-center justify-center relative`;
+                btn.innerText = String(i + 1).padStart(2, '0');
+                gridContainer.appendChild(btn);
+            }
+            updateNavigationGridState();
+        }
+
+        function updateNavigationGridState() {
+            for (let i = 0; i < 50; i++) {
+                const btn = document.getElementById(`grid-btn-${i}`);
+                if (!btn) continue;
+
+                const isAnswered = userAnswers.hasOwnProperty(i);
+                const isFlagged = flaggedQuestions.has(i);
+                const isActive = (i === currentQuestionIndex);
+
+                // Base style reset
+                btn.className = `h-10 rounded-lg font-mono text-xs font-semibold border transition-all flex items-center justify-center relative `;
+
+                if (isActive) {
+                    btn.className += ` ring-2 ring-cyan-400 font-bold shadow-lg shadow-cyan-500/20 `;
+                }
+
+                if (isFlagged) {
+                    btn.className += ` bg-amber-500/20 border-amber-500 text-amber-300 `;
+                } else if (isAnswered) {
+                    btn.className += ` bg-cyan-600 border-cyan-500 text-slate-950 font-bold `;
+                } else {
+                    btn.className += ` bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-600 `;
+                }
+            }
+        }
+
+        function updateAnsweredCount() {
+            const count = Object.keys(userAnswers).length;
+            document.getElementById('answered-count-badge').innerText = `${count} / 50 Completed`;
+        }
+
+        /* ----------------------------------------------------
+           KEYBOARD SHORTCUTS
+           ---------------------------------------------------- */
+        function handleKeyPress(e) {
+            if (examSubmitted || document.getElementById('quiz-screen').classList.contains('hidden')) return;
+
+            if (e.key === 'ArrowRight') {
+                navigateQuestion(1);
+            } else if (e.key === 'ArrowLeft') {
+                navigateQuestion(-1);
+            } else if (['a', 'b', 'c', 'd', 'A', 'B', 'C', 'D'].includes(e.key)) {
+                const charCode = e.key.toUpperCase().charCodeAt(0);
+                const optIndex = charCode - 65;
+                if (optIndex >= 0 && optIndex < 4) {
+                    selectOption(optIndex);
+                }
+            }
+        }
+
+        /* ----------------------------------------------------
+           SUBMISSION & RESULTS EVALUATION ENGINE
+           ---------------------------------------------------- */
+        function confirmSubmitQuiz() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const unansweredCount = 50 - answeredCount;
+
+            let confirmMsg = "Are you sure you want to finalize and submit your assessment?";
+            if (unansweredCount > 0) {
+                confirmMsg = `Warning: You still have ${unansweredCount} unanswered question(s).\n\nAre you sure you want to submit now?`;
+            }
+
+            if (window.confirm(confirmMsg)) {
+                submitQuiz();
+            }
+        }
+
+        function autoSubmitQuiz() {
+            submitQuiz();
+        }
+
+        function submitQuiz() {
+            if (examSubmitted) return;
+            examSubmitted = true;
+            clearInterval(timerInterval);
+
+            // Hide Quiz HUD controls
+            document.getElementById('quiz-hud-controls').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.add('hidden');
+
+            // Calculate Statistics
+            let score = 0;
+            shuffledQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correctIndex) {
+                    score++;
+                }
+            });
+
+            const percentage = ((score / 50) * 100).toFixed(1);
+            const timeSpentSeconds = totalTimeSeconds - timeRemainingSeconds;
+            const timeSpentMin = Math.floor(timeSpentSeconds / 60);
+            const timeSpentSec = timeSpentSeconds % 60;
+            const formattedTimeSpent = `${String(timeSpentMin).padStart(2, '0')}:${String(timeSpentSec).padStart(2, '0')}`;
+
+            // Update Statistics UI
+            document.getElementById('score-percentage-badge').innerText = `${percentage}%`;
+            document.getElementById('stat-score').innerText = `${score} / 50`;
+            document.getElementById('stat-time').innerText = formattedTimeSpent;
+            document.getElementById('stat-correct').innerText = score;
+            document.getElementById('stat-incorrect').innerText = 50 - score;
+
+            // Render Itemized Review Cards
+            renderReviewList();
+
+            // Display Results Screen
+            document.getElementById('results-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ----------------------------------------------------
+           ITEMIZED REVIEW CARD GENERATOR
+           ---------------------------------------------------- */
+        function renderReviewList(filter = 'all') {
+            const container = document.getElementById('review-list-container');
+            container.innerHTML = '';
+
+            shuffledQuestions.forEach((qData, qIdx) => {
+                const userSelectedOptIndex = userAnswers[qIdx];
+                const isCorrect = (userSelectedOptIndex === qData.correctIndex);
+                const isUnanswered = (userSelectedOptIndex === undefined);
+
+                if (filter === 'incorrect' && isCorrect) return;
+
+                const card = document.createElement('div');
+                card.className = `cockpit-panel rounded-2xl p-6 border space-y-4 ${
+                    isCorrect ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-rose-500/40 bg-rose-950/10'
+                }`;
+
+                // Header Badge
+                let statusBadgeHTML = '';
+                if (isCorrect) {
+                    statusBadgeHTML = `<span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center space-x-1"><i class="fa-solid fa-check"></i><span>CORRECT</span></span>`;
+                } else if (isUnanswered) {
+                    statusBadgeHTML = `<span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center space-x-1"><i class="fa-solid fa-triangle-exclamation"></i><span>OMITTED</span></span>`;
+                } else {
+                    statusBadgeHTML = `<span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40 flex items-center space-x-1"><i class="fa-solid fa-xmark"></i><span>INCORRECT</span></span>`;
+                }
+
+                // Options Breakdown HTML
+                let optionsHTML = '';
+                qData.options.forEach((opt, optIdx) => {
+                    const optLetter = String.fromCharCode(65 + optIdx);
+                    const isUserChoice = (userSelectedOptIndex === optIdx);
+                    const isRightOption = (optIdx === qData.correctIndex);
+
+                    let optionStyle = 'border-slate-800 bg-slate-900/40 text-slate-300';
+                    let iconTag = '';
+
+                    if (isRightOption) {
+                        optionStyle = 'border-emerald-500/80 bg-emerald-950/30 text-emerald-200 font-medium';
+                        iconTag = `<i class="fa-solid fa-circle-check text-emerald-400 ml-auto"></i>`;
+                    } else if (isUserChoice && !isCorrect) {
+                        optionStyle = 'border-rose-500/80 bg-rose-950/30 text-rose-200';
+                        iconTag = `<i class="fa-solid fa-circle-xmark text-rose-400 ml-auto"></i>`;
+                    }
+
+                    optionsHTML += `
+                        <div class="p-3.5 rounded-xl border text-sm flex items-start space-x-3 ${optionStyle}">
+                            <span class="font-mono font-bold text-xs px-2 py-0.5 rounded ${isRightOption ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400'}">${optLetter}</span>
+                            <span class="flex-grow">${escapeHtml(opt.text)}</span>
+                            ${iconTag}
+                        </div>
+                    `;
+                });
+
+                // Detailed Explanations
+                const correctOptionObj = qData.options[qData.correctIndex];
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-4">
+                        <div class="space-y-1">
+                            <span class="font-mono text-xs text-slate-400 uppercase tracking-wider">Question ${qIdx + 1} of 50</span>
+                            <h4 class="text-base font-semibold text-white leading-relaxed">${escapeHtml(qData.question)}</h4>
+                        </div>
+                        ${statusBadgeHTML}
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        ${optionsHTML}
+                    </div>
+
+                    <!-- Comprehensive Analysis Block -->
+                    <div class="mt-4 p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 text-xs leading-relaxed">
+                        <div class="flex items-center space-x-2 text-cyan-400 font-mono font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Detailed Aviation Analysis & Rationale</span>
+                        </div>
+                        <p class="text-slate-300"><strong class="text-emerald-400">Why Correct Answer (${String.fromCharCode(65 + qData.correctIndex)}) is Right:</strong> ${escapeHtml(correctOptionObj.explanation)}</p>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function filterReview(filterType) {
+            document.querySelectorAll('.review-filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filterType) {
+                    btn.classList.add('bg-cyan-600', 'text-slate-950', 'font-semibold');
+                    btn.classList.remove('bg-slate-800', 'text-slate-300');
+                } else {
+                    btn.classList.remove('bg-cyan-600', 'text-slate-950', 'font-semibold');
+                    btn.classList.add('bg-slate-800', 'text-slate-300');
+                }
+            });
+            renderReviewList(filterType);
+        }
+
+        /* Utility helper to sanitize text */
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
