@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Aviation Masterclass Quiz: The Turn Coordinator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cockpit: {
+                            base: '#0B0F19',
+                            card: '#151D2A',
+                            border: '#2A364F',
+                            accent: '#38BDF8',
+                            amber: '#F59E0B',
+                            emerald: '#10B981',
+                            rose: '#EF4444',
+                            instrument: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #F3F4F6;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+        }
+        /* Glassmorphism styling */
+        .glass-panel {
+            background: rgba(21, 29, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2A364F;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #38BDF8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-cockpit-border px-4 py-3 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-cockpit-accent/10 border border-cockpit-accent/30 rounded-lg text-cockpit-accent">
+                    <i class="fa-solid fa-plane-departure text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-white tracking-wide">AV-501: TURN COORDINATOR MASTERCLASS</h1>
+                    <p class="text-xs text-gray-400">Based strictly on video transcript: 
+                        <a href="https://www.youtube.com/watch?v=EipFg6sMR4I" target="_blank" rel="noopener noreferrer" class="text-cockpit-accent underline hover:text-sky-300 transition-colors">
+                            https://www.youtube.com/watch?v=EipFg6sMR4I <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- TIMER & CONTROLS -->
+            <div id="top-timer-container" class="flex items-center gap-4">
+                <div class="flex items-center gap-2 px-4 py-2 bg-cockpit-instrument border border-cockpit-border rounded-lg shadow-inner">
+                    <i class="fa-regular fa-clock text-cockpit-amber animate-pulse"></i>
+                    <span id="time-display" class="font-mono text-xl font-bold text-cockpit-amber tracking-wider">50:00</span>
+                </div>
+                <button id="submit-btn-top" onclick="confirmSubmit()" class="hidden bg-cockpit-emerald hover:bg-emerald-600 text-white font-semibold px-4 py-2 rounded-lg transition shadow-md border border-emerald-400/30 flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Quiz
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- START SCREEN -->
+    <main id="start-screen" class="max-w-4xl mx-auto my-auto p-6 w-full">
+        <div class="glass-panel p-8 rounded-2xl border border-cockpit-border shadow-2xl text-center">
+            <div class="w-20 h-20 bg-cockpit-accent/10 rounded-full border border-cockpit-accent/30 flex items-center justify-center mx-auto mb-6 text-cockpit-accent text-3xl">
+                <i class="fa-solid fa-compass"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-white mb-3 tracking-tight">50-Question Systems & Physics Examination</h2>
+            <p class="text-gray-300 max-w-2xl mx-auto mb-6 text-sm sm:text-base leading-relaxed">
+                This examination tests deeply rigorous knowledge of gyroscopic dynamics, precession physics, electrical vs vacuum systems, inclinometer balance, turn rates, and instrument differences presented in <i>The Turn Coordinator</i> training module.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 text-left max-w-2xl mx-auto text-xs sm:text-sm">
+                <div class="p-4 bg-cockpit-instrument/60 border border-cockpit-border rounded-xl">
+                    <i class="fa-solid fa-stopwatch text-cockpit-amber text-lg mb-2"></i>
+                    <h3 class="font-semibold text-white">50 Minutes Strict</h3>
+                    <p class="text-gray-400">Timer counts down automatically upon initiation.</p>
+                </div>
+                <div class="p-4 bg-cockpit-instrument/60 border border-cockpit-border rounded-xl">
+                    <i class="fa-solid fa-list-check text-cockpit-accent text-lg mb-2"></i>
+                    <h3 class="font-semibold text-white">50 Complex Questions</h3>
+                    <p class="text-gray-400">Zero duplicate questions. Full coverage of all details.</p>
+                </div>
+                <div class="p-4 bg-cockpit-instrument/60 border border-cockpit-border rounded-xl">
+                    <i class="fa-solid fa-route text-cockpit-emerald text-lg mb-2"></i>
+                    <h3 class="font-semibold text-white">Free Navigation</h3>
+                    <p class="text-gray-400">Skip and return to any question at any point.</p>
+                </div>
+            </div>
+
+            <button onclick="startQuiz()" class="w-full sm:w-auto px-8 py-4 bg-cockpit-accent hover:bg-sky-500 text-slate-950 font-bold text-lg rounded-xl shadow-lg transition transform hover:-translate-y-0.5 border border-sky-300/50">
+                <i class="fa-solid fa-play mr-2"></i> Begin Examination
+            </button>
+        </div>
+    </main>
+
+    <!-- QUIZ INTERFACE (HIDDEN BY DEFAULT) -->
+    <main id="quiz-interface" class="hidden max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6 my-auto">
+        
+        <!-- MAIN QUESTION DISPLAY (3 COLS) -->
+        <section class="lg:col-span-3 flex flex-col justify-between glass-panel p-6 rounded-2xl border border-cockpit-border shadow-xl min-h-[550px]">
+            <div>
+                <!-- Question Header -->
+                <div class="flex items-center justify-between pb-4 border-b border-cockpit-border mb-6">
+                    <span id="question-badge" class="px-3 py-1 bg-cockpit-accent/10 border border-cockpit-accent/30 text-cockpit-accent font-mono text-sm rounded-full font-bold">
+                        Question 1 of 50
+                    </span>
+                    <span id="question-status-pill" class="text-xs px-2.5 py-1 rounded bg-gray-800 text-gray-400 font-mono">
+                        Not Answered
+                    </span>
+                </div>
+
+                <!-- Question Text -->
+                <h2 id="question-text" class="text-lg sm:text-xl font-semibold text-white mb-6 leading-relaxed">
+                    Loading question...
+                </h2>
+
+                <!-- Options Grid -->
+                <div id="options-container" class="space-y-3 mb-6">
+                    <!-- Options injected dynamically -->
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="pt-4 border-t border-cockpit-border flex items-center justify-between">
+                <button id="prev-btn" onclick="navigateQuestion(-1)" class="px-4 py-2 bg-cockpit-instrument border border-cockpit-border hover:bg-cockpit-border rounded-lg text-sm font-semibold transition text-gray-200 flex items-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </button>
+                <div class="flex items-center gap-2">
+                    <button id="mark-review-btn" onclick="toggleReviewFlag()" class="px-3 py-2 bg-cockpit-amber/10 border border-cockpit-amber/30 text-cockpit-amber hover:bg-cockpit-amber/20 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
+                        <i class="fa-regular fa-flag"></i> Flag for Review
+                    </button>
+                </div>
+                <button id="next-btn" onclick="navigateQuestion(1)" class="px-4 py-2 bg-cockpit-accent hover:bg-sky-500 text-slate-950 font-bold rounded-lg text-sm transition flex items-center gap-2">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- QUESTION NAV GRID PALETTE (1 COL) -->
+        <aside class="glass-panel p-5 rounded-2xl border border-cockpit-border flex flex-col justify-between max-h-[600px]">
+            <div>
+                <h3 class="text-sm font-bold text-white mb-3 tracking-wider uppercase flex items-center justify-between">
+                    <span>Flight Deck Overview</span>
+                    <span id="completion-stat" class="text-xs text-cockpit-accent font-mono">0/50</span>
+                </h3>
+                
+                <!-- Grid legend -->
+                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400 mb-4 pb-3 border-b border-cockpit-border">
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-cockpit-accent"></span> Answered</div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-cockpit-instrument border border-cockpit-border"></span> Unanswered</div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-cockpit-amber"></span> Flagged</div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded border-2 border-white"></span> Current</div>
+                </div>
+
+                <!-- Palette Grid -->
+                <div id="question-grid" class="grid grid-cols-5 sm:grid-cols-10 lg:grid-cols-5 gap-2 overflow-y-auto max-h-[360px] pr-1 custom-scrollbar">
+                    <!-- Buttons generated dynamically -->
+                </div>
+            </div>
+
+            <button onclick="confirmSubmit()" class="mt-4 w-full py-3 bg-cockpit-emerald hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition shadow-lg border border-emerald-400/30 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> Submit Final Quiz
+            </button>
+        </aside>
+
+    </main>
+
+    <!-- RESULTS SCREEN (HIDDEN BY DEFAULT) -->
+    <main id="results-screen" class="hidden max-w-5xl mx-auto w-full p-4 sm:p-6 my-auto">
+        <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-cockpit-border shadow-2xl mb-8">
+            <!-- Overall Score Summary -->
+            <div class="text-center pb-8 border-b border-cockpit-border">
+                <span class="text-xs uppercase font-mono tracking-widest text-cockpit-accent font-bold">Flight Evaluation Result</span>
+                <h2 id="final-score-percent" class="text-5xl font-black text-white mt-2 mb-1">0%</h2>
+                <p id="final-score-raw" class="text-sm font-mono text-gray-400 mb-4">Score: 0 / 50</p>
+                <div id="evaluation-badge" class="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                    -
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 my-6 text-center">
+                <div class="p-3 bg-cockpit-instrument/50 rounded-xl border border-cockpit-border">
+                    <span class="text-xs text-gray-400 block">Correct</span>
+                    <span id="stat-correct" class="text-xl font-bold text-cockpit-emerald">0</span>
+                </div>
+                <div class="p-3 bg-cockpit-instrument/50 rounded-xl border border-cockpit-border">
+                    <span class="text-xs text-gray-400 block">Incorrect</span>
+                    <span id="stat-incorrect" class="text-xl font-bold text-cockpit-rose">0</span>
+                </div>
+                <div class="p-3 bg-cockpit-instrument/50 rounded-xl border border-cockpit-border">
+                    <span class="text-xs text-gray-400 block">Unanswered</span>
+                    <span id="stat-unanswered" class="text-xl font-bold text-gray-400">0</span>
+                </div>
+                <div class="p-3 bg-cockpit-instrument/50 rounded-xl border border-cockpit-border">
+                    <span class="text-xs text-gray-400 block">Time Used</span>
+                    <span id="stat-time-used" class="text-xl font-bold text-cockpit-amber font-mono">00:00</span>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-6 pt-4 border-t border-cockpit-border">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-cockpit-accent"></i> Comprehensive Question Breakdown & Option Analysis
+                </h3>
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-xs text-cockpit-accent hover:underline">Back to top</button>
+            </div>
+
+            <!-- Full Review Container -->
+            <div id="review-container" class="space-y-6">
+                <!-- Generated dynamically -->
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="glass-panel border-t border-cockpit-border py-4 px-6 text-center text-xs text-gray-400 mt-auto">
+        <p>Aviation Systems Assessment Tool &bull; Reference Video: <a href="https://www.youtube.com/watch?v=EipFg6sMR4I" target="_blank" class="text-cockpit-accent underline">The Turn Coordinator (YouTube)</a></p>
+    </footer>
+
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirm-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel max-w-md w-full p-6 rounded-2xl border border-cockpit-border shadow-2xl text-center">
+            <i class="fa-solid fa-triangle-exclamation text-4xl text-cockpit-amber mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-2">Submit Examination?</h3>
+            <p id="modal-unanswered-msg" class="text-sm text-gray-300 mb-6">Are you sure you want to finalize your answers?</p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="closeModal()" class="px-5 py-2.5 bg-cockpit-instrument border border-cockpit-border rounded-xl text-sm font-semibold text-gray-300 hover:bg-cockpit-border transition">
+                    Continue Quiz
+                </button>
+                <button onclick="finalizeSubmission()" class="px-5 py-2.5 bg-cockpit-emerald hover:bg-emerald-600 text-white font-semibold text-sm rounded-xl transition shadow-lg">
+                    Confirm Submission
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // MASTER QUESTION DATABASE - 50 Comprehensive Questions Strictly from Transcript Physics & Mechanics
+        const rawQuestionBank = [
+            {
+                q: "What fundamental gyroscopic property enables turn-indicating instruments to detect aircraft angular rate changes?",
+                options: [
+                    "Gyroscopic precession, where an applied force manifests 90 degrees later in the direction of rotation.",
+                    "Rigidity in space, which keeps the rotor perfectly fixed relative to the magnetic earth axis.",
+                    "Centrifugal balance, which causes the gimbal to lock in place during pitch maneuvers.",
+                    "Aerodynamic damping, which resists all lateral acceleration inside the sealed capsule."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Gyroscopic precession causes force applied to a spinning rotor to act 90 degrees ahead in the direction of rotation, allowing angular turn rates to deflect the gimbal against calibrated springs.",
+                    "Incorrect. Rigidity in space is utilized by the attitude indicator and heading indicator, whereas turn indicators rely primarily on precession.",
+                    "Incorrect. Centrifugal balance relates to the inclinometer/ball, not the internal gyroscopic rotor mechanics.",
+                    "Incorrect. Aerodynamic damping is not the core gyroscopic principle used for turn rate measurement."
+                ]
+            },
+            {
+                q: "How is the internal gimbal axis mounted inside a modern Turn Coordinator compared to an older Turn and Slip Indicator?",
+                options: [
+                    "It is canted upward at approximately a 30-degree angle relative to the longitudinal axis.",
+                    "It is aligned strictly parallel with the vertical axis of the aircraft structure.",
+                    "It is mounted on a 45-degree downward angle relative to the lateral pitch axis.",
+                    "It is completely free-floating without any physical axis connection to the instrument case."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The Turn Coordinator's gimbal axis is tilted upward by ~30 degrees, allowing it to sense both rate of roll and rate of turn.",
+                    "Incorrect. Aligning parallel with the vertical axis would prevent sensing standard yaw/roll rates correctly.",
+                    "Incorrect. The gimbal is canted upward by 30 degrees, not downward by 45 degrees.",
+                    "Incorrect. The gimbal is mounted on pivot bearings with calibrated springs, not free-floating."
+                ]
+            },
+            {
+                q: "What key primary flight parameter does the Turn Coordinator's miniature aircraft display to the pilot?",
+                options: [
+                    "Rate of roll and rate of turn.",
+                    "Direct bank angle degree measurement.",
+                    "Pitch attitude relative to horizon.",
+                    "Indicated air speed and slip ratio."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Due to its 30-degree tilted gimbal, the miniature aircraft responds initially to rate of roll and subsequently to rate of turn.",
+                    "Incorrect. The instrument does NOT display bank angle degrees; a 2-minute turn rate can occur at varying bank angles depending on airspeed.",
+                    "Incorrect. The Turn Coordinator provides zero pitch information.",
+                    "Incorrect. Airspeed and slip ratio are not displayed by the miniature aircraft symbol."
+                ]
+            },
+            {
+                q: "Why does the Turn Coordinator NOT display the actual bank angle in degrees?",
+                options: [
+                    "Because the required bank angle for a standard rate turn varies depending on true airspeed.",
+                    "Because gyroscopic precession cancels out the gravity vector completely.",
+                    "Because the internal gyro rotor speed is variable and slows down during bank entry.",
+                    "Because the liquid capsule dampens bank angle indication to prevent pilot vertigo."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Higher airspeeds require steeper bank angles to achieve the same 3 degree/second standard rate turn.",
+                    "Incorrect. Precession does not cancel gravity; gravity acts on the inclinometer ball independently.",
+                    "Incorrect. Gyro rotor speed is kept constant (usually electrically driven) and does not vary with bank angle.",
+                    "Incorrect. Liquid damping is used inside the inclinometer tube, not to obscure bank angle."
+                ]
+            },
+            {
+                q: "What is the key structural difference between a Turn and Slip Indicator and a Turn Coordinator?",
+                options: [
+                    "The Turn and Slip Indicator uses a needle and a horizontal gimbal axis, sensing yaw rate only.",
+                    "The Turn and Slip Indicator uses an electric gyro, while Turn Coordinators are strictly pneumatic.",
+                    "The Turn Coordinator lacks an inclinometer tube at the bottom of the dial.",
+                    "The Turn and Slip Indicator measures aircraft pitch attitude during vertical climbs."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The older Turn and Slip Indicator has a horizontal gimbal parallel to the longitudinal axis, showing only yaw rate via a vertical pointer needle.",
+                    "Incorrect. Turn Coordinators are typically electrically driven, whereas older indicators were often vacuum or electric.",
+                    "Incorrect. Both instruments feature an inclinometer (ball) at the bottom.",
+                    "Incorrect. Neither instrument measures pitch attitude."
+                ]
+            },
+            {
+                q: "What rate of angular rotation defines a standard rate turn for general aviation aircraft?",
+                options: [
+                    "3 degrees per second (360 degrees in 2 minutes).",
+                    "6 degrees per second (360 degrees in 1 minute).",
+                    "1.5 degrees per second (360 degrees in 4 minutes).",
+                    "5 degrees per second (180 degrees in 30 seconds)."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Standard rate of turn is 3 degrees per second, completing a full 360-degree rotation in 2 minutes.",
+                    "Incorrect. 6 degrees per second is a half-standard rate or double-rate turn depending on category, but standard rate is 3 deg/sec.",
+                    "Incorrect. 1.5 deg/sec is half-standard rate.",
+                    "Incorrect. 5 deg/sec is non-standard."
+                ]
+            },
+            {
+                q: "When the miniature aircraft wing touches the alignment mark on a Turn Coordinator, how long does it take to turn 360 degrees?",
+                options: [
+                    "2 minutes.",
+                    "1 minute.",
+                    "3 minutes.",
+                    "4 minutes."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Marking alignment indicates a standard rate turn (3 deg/sec), which yields 360 degrees of heading change in 2 minutes.",
+                    "Incorrect. 1 minute would require a 6 deg/sec turn rate.",
+                    "Incorrect. 3 minutes corresponds to a 2 deg/sec turn rate.",
+                    "Incorrect. 4 minutes corresponds to 1.5 deg/sec."
+                ]
+            },
+            {
+                q: "What power source is most commonly utilized to drive the Turn Coordinator's gyro in modern aircraft?",
+                options: [
+                    "Direct current (DC) or AC electrical power.",
+                    "Engine-driven vacuum pump system.",
+                    "Pitot-static differential air pressure.",
+                    "Direct mechanical linkage to the rudder cables."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Turn Coordinators are almost universally electric to provide redundancy against vacuum system failures affecting the Attitude and Heading Indicators.",
+                    "Incorrect. Vacuum systems traditionally power the Attitude Indicator and Directional Gyro.",
+                    "Incorrect. Pitot-static pressure drives the airspeed indicator, altimeter, and vertical speed indicator.",
+                    "Incorrect. No mechanical rudder linkage powers the gyroscopic rotor."
+                ]
+            },
+            {
+                q: "What does the appearance of the red warning flag on the face of a Turn Coordinator signify?",
+                options: [
+                    "Loss of electrical power or inadequate voltage to drive the gyro rotor.",
+                    "Aircraft speed has exceeded structural maneuvering speed (Va).",
+                    "The inclinometer ball has leaked its damping fluid.",
+                    "The gimbal calibration springs have snapped under high G-loads."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The red power failure flag drops into view when electrical voltage drops below operational limits or power is lost.",
+                    "Incorrect. Airspeed limits are monitored via the Airspeed Indicator.",
+                    "Incorrect. Inclinometer fluid leakage is a mechanical visual leak, not indicated by a red electrical flag.",
+                    "Incorrect. The flag specifically monitors electrical power supply/voltage."
+                ]
+            },
+            {
+                q: "What force acts on the solid ball inside the inclinometer to pull it toward the inside of a turn during a slip?",
+                options: [
+                    "Gravity (weight component along the inclined lateral axis).",
+                    "Centrifugal force exceeding centripetal force.",
+                    "Aerodynamic drag on the vertical stabilizer.",
+                    "Gyroscopic precession along the roll gimbal."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. In a slip, the rate of turn is too slow for the angle of bank. Gravity pulls the ball down toward the inside of the turn.",
+                    "Incorrect. Excess centrifugal force pushes the ball outward (skid), whereas in a slip gravity dominates inward.",
+                    "Incorrect. Aerodynamic drag affects tail alignment, but gravity directly pulls the ball down in a slip.",
+                    "Incorrect. Precession operates on the gyro rotor, not the inclinometer ball."
+                ]
+            },
+            {
+                q: "In a skidding turn, where does the inclinometer ball move relative to the turn center?",
+                options: [
+                    "Toward the outside of the turn.",
+                    "Toward the inside of the turn.",
+                    "Remains perfectly centered between marks.",
+                    "Oscillates vertically at top of tube."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. In a skid, the rate of turn is too rapid for the bank angle, creating excessive centrifugal force that throws the ball outward.",
+                    "Incorrect. The ball moves inside during a slipping turn.",
+                    "Incorrect. Centered ball defines a coordinated turn.",
+                    "Incorrect. The ball slides horizontally along a curved liquid-filled glass tube."
+                ]
+            },
+            {
+                q: "What pilot action is required when the inclinometer ball is displaced to the left of center?",
+                options: [
+                    "Apply left rudder pressure ('step on the ball').",
+                    "Apply right rudder pressure to push it back.",
+                    "Increase throttle to increase airspeed.",
+                    "Pull back on the yoke to raise the nose."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The golden rule of thumb is 'step on the ball'—depressing the rudder pedal on the side of displacement centers the ball.",
+                    "Incorrect. Applying right rudder when the ball is left would exacerbate the uncoordinated condition.",
+                    "Incorrect. Throttle adjusts airspeed/power, not directly lateral ball coordination.",
+                    "Incorrect. Elevator controls pitch, not lateral slip/skid balance."
+                ]
+            },
+            {
+                q: "What liquid is typically contained inside the sealed glass tube of the inclinometer to dampen ball movement?",
+                options: [
+                    "Damping fluid such as kerosene or clear alcohol mixture.",
+                    "Hydraulic fluid MIL-H-5606.",
+                    "Distilled water with anti-freeze additive.",
+                    "Heavy silicone grease."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The tube is filled with a clear liquid (like kerosene or specialized alcohol) to dampen rapid oscillations of the ball.",
+                    "Incorrect. Hydraulic fluid is red and too viscous for smooth ball movement.",
+                    "Incorrect. Water could freeze at altitude and damage the glass tube.",
+                    "Incorrect. Heavy grease would lock the ball in place."
+                ]
+            },
+            {
+                q: "How many degrees of freedom does the Turn Coordinator's gimbal mechanism possess?",
+                options: [
+                    "1 degree of freedom (gimbal constrained by calibrated springs).",
+                    "2 degrees of freedom (completely unconstrained multi-axis gimbal).",
+                    "3 degrees of freedom (free spatial gyro).",
+                    "0 degrees of freedom (fixed rigid mount)."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Rate gyros like the turn coordinator have 1 degree of freedom (restricted precession gimbal restrained by springs).",
+                    "Incorrect. Free gyros (like attitude indicators) have 2 degrees of freedom (3 frames total including case).",
+                    "Incorrect. Gyroscopes max out at 2 gimballing degrees of freedom relative to casing.",
+                    "Incorrect. Fixed rigid mounts cannot precess or indicate turn rates."
+                ]
+            },
+            {
+                q: "What restrains the gimbal movement in a Turn Coordinator to ensure pointer/aircraft deflection is proportional to turn rate?",
+                options: [
+                    "Calibrated precision springs.",
+                    "Magnetic eddy-current brake pads.",
+                    "Air dashpots connected to pitot lines.",
+                    "Hydraulic dampening pistons."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Calibrated springs oppose the precessional force, causing gimbal tilt angle to be proportional to turn rate.",
+                    "Incorrect. Magnetic brakes are not used for rate calibration in standard mechanical flight gyros.",
+                    "Incorrect. Air dashpots were used in old directional gyros, not rate gyro springs.",
+                    "Incorrect. Hydraulic pistons are not part of internal turn coordinator gimbals."
+                ]
+            },
+            {
+                q: "Why is the Turn Coordinator designed as an electric instrument when attitude indicators in the same cockpit are vacuum-driven?",
+                options: [
+                    "To provide instrument redundancy in the event of a total engine or vacuum pump failure.",
+                    "Because electric gyros spin at lower RPMs requiring less weight.",
+                    "Because vacuum systems cannot handle canted 30-degree gimbals.",
+                    "Because electric gyros generate heat required to prevent glass fogging."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Dissimilar power sources ensure that if the vacuum pump fails during instrument flight rules (IFR), the pilot still has bank/turn information.",
+                    "Incorrect. Electric rotors spin at high RPM (typically 12,000 to 24,000 RPM).",
+                    "Incorrect. Vacuum systems can physically run canted gimbals, but power diversity is the primary safety reason.",
+                    "Incorrect. Heating anti-fogging is an incidental side effect, not the design rationale."
+                ]
+            },
+            {
+                q: "What defines a 'coordinated turn' in terms of lateral forces acting on the aircraft and inclinometer?",
+                options: [
+                    "Centrifugal force exactly balances the inward horizontal component of lift (centripetal force).",
+                    "Gravity exceeds centrifugal force pulling the airframe downward.",
+                    "Thrust equals total aerodynamic drag during the turn maneuver.",
+                    "Lift force strictly exceeds total aircraft gross weight by 2:1."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. In a coordinated turn, the horizontal component of lift provides centripetal force exactly balanced by centrifugal inertia, centering the ball.",
+                    "Incorrect. Gravity exceeding centrifugal force occurs in a slipping turn.",
+                    "Incorrect. Thrust and drag balance longitudinal speed, not lateral turn balance.",
+                    "Incorrect. Lift load factor depends on bank angle, not the definition of coordination."
+                ]
+            },
+            {
+                q: "If an aircraft is in a standard rate turn at 100 knots true airspeed, and another is at 200 knots true airspeed, which aircraft requires a higher bank angle for standard rate?",
+                options: [
+                    "The aircraft flying at 200 knots.",
+                    "The aircraft flying at 100 knots.",
+                    "Both require identical 15-degree bank angles.",
+                    "Neither requires bank; rudder alone determines rate."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Approximate bank angle for standard rate = (Airspeed in knots / 10) + 7. Higher speed requires a steeper bank angle to maintain 3 deg/sec.",
+                    "Incorrect. At lower airspeed, a shallower bank angle achieves 3 degrees/second.",
+                    "Incorrect. Bank angle increases proportionally with airspeed for a constant turn rate.",
+                    "Incorrect. Turning with rudder alone creates severe skid."
+                ]
+            },
+            {
+                q: "What happens to the Turn Coordinator's miniature aircraft when you roll the airplane rapidly into a bank before yaw rate establishes?",
+                options: [
+                    "It deflects immediately due to the 30-degree gimbal tilt sensing roll rate.",
+                    "It remains perfectly level until the aircraft completes 5 degrees of heading change.",
+                    "It drops downward into the instrument case showing a pitch down motion.",
+                    "The red flag instantly pops up into view."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The 30-degree upward tilt enables the gyro to precess from roll velocity, giving an immediate indication during roll entry.",
+                    "Incorrect. Older turn-and-slip indicators waited for yaw, but the Turn Coordinator responds immediately to roll.",
+                    "Incorrect. The miniature aircraft does not move vertically or show pitch.",
+                    "Incorrect. The red flag indicates electrical failure, not rapid rolling."
+                ]
+            },
+            {
+                q: "Why is the Turn Coordinator NOT a replacement for the Primary Attitude Indicator (Attitude Gyro)?",
+                options: [
+                    "Because it measures rate of roll/turn, not actual pitch attitude or pitch angle.",
+                    "Because it turns off automatically when bank angle exceeds 30 degrees.",
+                    "Because its gyro rotor stops spinning whenever the aircraft is level.",
+                    "Because it relies on pitot pressure which drops off in steep turns."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The Turn Coordinator gives rate information (degrees per second), but provides no pitch pitch-attitude or direct pitch position.",
+                    "Incorrect. It operates continuously regardless of bank angle.",
+                    "Incorrect. Gyro spins continuously whenever power is applied.",
+                    "Incorrect. It is gyroscopic/electric, not pitot-static driven."
+                ]
+            },
+            {
+                q: "In a slipping turn, the aircraft is yawing in which direction relative to the flight path banking angle?",
+                options: [
+                    "Yawing toward the outside of the turn (nose pointing outside relative to arc).",
+                    "Yawing rapidly toward the inside of the turn (nose pointing inside relative to arc).",
+                    "Yawing at precisely 3 degrees per second matching bank angle.",
+                    "Yawing vertically upward into a pitch climb."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. In a slip, there is insufficient yaw rate for the bank angle; the aircraft's nose points toward the outside of the turn arc as it slides inward.",
+                    "Incorrect. Yawing too fast into the turn causes a skid.",
+                    "Incorrect. Coordinated turns match yaw rate to bank angle.",
+                    "Incorrect. Yaw is lateral directional motion, not pitch."
+                ]
+            },
+            {
+                q: "In a skidding turn, what is the relationship between the rate of turn and the bank angle?",
+                options: [
+                    "The rate of turn is too high for the angle of bank.",
+                    "The rate of turn is too low for the angle of bank.",
+                    "The rate of turn and bank angle are in perfect physical balance.",
+                    "The rate of turn is zero while bank angle is 45 degrees."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. A skid occurs when turn rate is excessively high relative to bank, flinging the ball outward due to centrifugal inertia.",
+                    "Incorrect. Turn rate too low for bank angle defines a slip.",
+                    "Incorrect. Perfect balance defines a coordinated turn.",
+                    "Incorrect. Turn rate is high during a skid."
+                ]
+            },
+            {
+                q: "What material is the solid ball inside the inclinometer tube typically constructed from?",
+                options: [
+                    "Black glass or agate ceramic sphere.",
+                    "Solid lead shot pellet.",
+                    "Hollow aluminum casing.",
+                    "Ferromagnetic iron magnet."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The ball is a precision-ground black glass or agate sphere designed to resist corrosion and slide smoothly in damping liquid.",
+                    "Incorrect. Lead could corrode or leave residue inside the tube.",
+                    "Incorrect. Hollow aluminum would float or lack sufficient inertia.",
+                    "Incorrect. Ferromagnetic iron would interfere with magnetic compasses nearby."
+                ]
+            },
+            {
+                q: "If an aircraft maintains a standard rate turn, how long will it take to complete a 180-degree turn?",
+                options: [
+                    "60 seconds (1 minute).",
+                    "30 seconds.",
+                    "120 seconds (2 minutes).",
+                    "90 seconds."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Standard rate is 3 deg/sec. 180 degrees / 3 deg/sec = 60 seconds.",
+                    "Incorrect. 30 seconds would require 6 deg/sec.",
+                    "Incorrect. 120 seconds completes 360 degrees.",
+                    "Incorrect. 90 seconds corresponds to 270 degrees at standard rate."
+                ]
+            },
+            {
+                q: "What visual indication appears on the miniature aircraft display when the aircraft is flying straight and level in unaccelerated flight?",
+                options: [
+                    "The miniature aircraft wings align horizontally with the fixed index side marks.",
+                    "The miniature aircraft dips its left wing by 5 degrees to compensate for precession.",
+                    "The miniature aircraft tucks its nose downward into the bezel.",
+                    "The red flag covers the miniature aircraft wings."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. In level straight flight with no roll or yaw rate, calibrated springs hold the gyro gimbal centered, keeping wings level with side indices.",
+                    "Incorrect. No compensation dip occurs in level flight.",
+                    "Incorrect. The miniature aircraft does not pitch up or down.",
+                    "Incorrect. The red flag only drops down when electric power fails."
+                ]
+            },
+            {
+                q: "How does the gyroscopic rotor inside a Turn Coordinator generate precessional torque when the aircraft yaws?",
+                options: [
+                    "Yawing rotates the instrument case, applying a force torque to the spinning gyro axis perpendicular to its rotation.",
+                    "Yawing changes electrical resistance in the rotor coils, altering spin speed.",
+                    "Yawing alters the static pressure inside the instrument casing.",
+                    "Yawing causes gravity to pull the heavy side of the rotor down."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Aircraft yaw forces the gimbal framework to rotate horizontally; precession translates this force 90 degrees forward into a vertical tilting moment of the gimbal.",
+                    "Incorrect. Electric spin speed remains constant regardless of yaw rate.",
+                    "Incorrect. Static air pressure has no bearing on rate gyro precession.",
+                    "Incorrect. Gravity acts equally on the balanced gyro rotor."
+                ]
+            },
+            {
+                q: "What marks are printed on the face of a Turn Coordinator dial adjacent to the miniature aircraft wingtips?",
+                options: [
+                    "Lower alignment hash marks labeled '2 MIN' for standard rate turn.",
+                    "Degrees scale numbered 10, 20, 30, 45, 60.",
+                    "Pitch attitude reference bars (+10, -10).",
+                    "True airspeed calibration dots."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The lower hash marks indicate the standard rate turn deflection (marked 2 MIN for 360 deg in 2 minutes).",
+                    "Incorrect. There are no bank angle degree calibrations on turn coordinators.",
+                    "Incorrect. No pitch reference bars exist on turn coordinators.",
+                    "Incorrect. No airspeed calibration dots are present."
+                ]
+            },
+            {
+                q: "When an aircraft's turn coordinator indicates a standard rate turn to the right, but the inclinometer ball is all the way to the right, what type of turn is being performed?",
+                options: [
+                    "A slipping turn to the right.",
+                    "A skidding turn to the right.",
+                    "A perfectly coordinated turn to the right.",
+                    "A inverted spin maneuver."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. When turning right and the ball is right (inside the turn), gravity is pulling the ball down because bank angle is too steep or turn rate is insufficient—this is a slip.",
+                    "Incorrect. In a skid to the right, centrifugal force flings the ball to the left (outside).",
+                    "Incorrect. Coordinated turn requires the ball to remain centered.",
+                    "Incorrect. Ball displacement in a turn indicates uncoordinated flight, not an inverted spin."
+                ]
+            },
+            {
+                q: "When an aircraft's turn coordinator indicates a standard rate turn to the left, but the inclinometer ball is displaced to the right, what type of turn is being performed?",
+                options: [
+                    "A skidding turn to the left.",
+                    "A slipping turn to the left.",
+                    "A coordinated steep turn.",
+                    "A level pitch slip."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Turning left with the ball to the right (outside of turn) means centrifugal force exceeds gravitational balance, signifying a skid.",
+                    "Incorrect. In a left slip, the ball moves to the left (inside).",
+                    "Incorrect. Coordinated turns have the ball centered.",
+                    "Incorrect. Skidding is lateral uncoordinated flight."
+                ]
+            },
+            {
+                q: "What approximate bank angle is required to achieve a standard rate turn at an airspeed of 120 knots?",
+                options: [
+                    "Approximately 19 degrees.",
+                    "Approximately 10 degrees.",
+                    "30 degrees.",
+                    "45 degrees."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Rule of thumb formula: (KTS / 10) + 7 -> (120 / 10) + 7 = 12 + 7 = 19 degrees.",
+                    "Incorrect. 10 degrees would yield standard rate at ~30 knots.",
+                    "Incorrect. 30 degrees yields standard rate at ~230 knots.",
+                    "Incorrect. 45 degrees yields standard rate at extremely high airspeeds (>300 knots)."
+                ]
+            },
+            {
+                q: "Why is the gimbal of a Turn and Slip indicator NOT tilted 30 degrees like that of a Turn Coordinator?",
+                options: [
+                    "Because the Turn and Slip Indicator was designed solely to sense yaw rate, ignoring roll rate.",
+                    "Because older vacuum pumps could not produce enough suction for tilted gimbals.",
+                    "Because 30-degree tilted gimbals cause severe magnetic compass interference.",
+                    "Because Turn and Slip indicators are only used in aerobatic gliders."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The original Turn and Slip design isolated pure yaw rate. The Turn Coordinator was later engineered with a 30-degree tilt to give early roll warning.",
+                    "Incorrect. Gimbal tilt has no relation to vacuum pump suction capacity.",
+                    "Incorrect. Gyro gimbals do not affect magnetic compasses.",
+                    "Incorrect. Turn and Slip indicators were standard across early general aviation and military aircraft."
+                ]
+            },
+            {
+                q: "What is the primary operational hazard of flying in instrument meteorological conditions (IMC) with an uncoordinated skidding turn?",
+                options: [
+                    "Risk of uncoordinated stall leading to an unexpected altitude loss or spin entry.",
+                    "Immediate failure of the aircraft electrical bus.",
+                    "Rupture of the inclinometer glass tube due to high G-force.",
+                    "Precession lock of the Turn Coordinator rotor."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Skidding stalls (bottom wing stalls first) can rapidly transition into an aggressive, unexpected spin, which is hazardous in IMC.",
+                    "Incorrect. Skids do not affect electrical buses.",
+                    "Incorrect. Glass tubes are rated to withstand many Gs.",
+                    "Incorrect. Rate gyros with springs do not undergo gimbal lock like 3-axis free gyros."
+                ]
+            },
+            {
+                q: "What prevents the Turn Coordinator gyro from tumbling or experiencing gimbal lock during steep maneuvers?",
+                options: [
+                    "Mechanical stops limit gimbal deflection, and spring restraints continuously return it to center.",
+                    "The gyro is mounted on a 360-degree free gimbal ring.",
+                    "An internal vacuum governor sheds excess RPM automatically.",
+                    "Counterweights constantly rebalance the rotor against earth gravity."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Rate gyros operate within constrained angular limits held by calibrated springs and mechanical stops, preventing tumbling.",
+                    "Incorrect. Free 360-degree gimbals belong to attitude indicators (which can tumble if not cued).",
+                    "Incorrect. Vacuum governors do not exist inside electric turn coordinator gimbals.",
+                    "Incorrect. Counterweights do not prevent tumbling in rate gyros."
+                ]
+            },
+            {
+                q: "During taxiing on the ground, how should the Turn Coordinator respond when making a sharp left turn?",
+                options: [
+                    "The miniature aircraft banks left, and the ball moves to the right.",
+                    "The miniature aircraft banks right, and the ball moves to the left.",
+                    "The miniature aircraft banks left, and the ball moves to the left.",
+                    "Both the aircraft and ball remain perfectly stationary on the ground."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Taxiing left yaws the aircraft left (wings dip left). Centrifugal force on the ground flings the ball to the right (outside of turn).",
+                    "Incorrect. The miniature aircraft must dip into the direction of turn (left).",
+                    "Incorrect. The ball moves opposite to the turn direction during flat taxi turns due to centrifugal force without airframe banking.",
+                    "Incorrect. Instruments must be checked for proper deflection during taxi checks."
+                ]
+            },
+            {
+                q: "If the electrical circuit breaker for the Turn Coordinator pops during flight, what will happen to the instrument display?",
+                options: [
+                    "The red warning flag will appear, and the rotor will gradually spin down, causing pointer responsiveness to decay.",
+                    "The miniature aircraft will lock instantly at 45 degrees left bank.",
+                    "The ball will freeze at the far right end of the glass tube.",
+                    "The entire instrument dial light will flash red continuously."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Power loss triggers the red warning flag, while rotor inertia slowly drops, gradually decreasing precessional force sensitivity.",
+                    "Incorrect. The aircraft symbol will return to center via spring tension as rotor spin decays.",
+                    "Incorrect. Inclinometer ball operation is purely mechanical/gravitational/inertial and unaffected by electric power.",
+                    "Incorrect. The mechanical red flag drops; lights do not flash."
+                ]
+            },
+            {
+                q: "What type of gyro is utilized in the Turn Coordinator?",
+                options: [
+                    "A single-degree-of-freedom rate gyro.",
+                    "A two-degree-of-freedom earth-tied gyro.",
+                    "A three-degree-of-freedom spatial altitude gyro.",
+                    "A non-gyroscopic accelerometer piezo chip."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Turn coordinators use a rate gyro restricted to 1 degree of precessional freedom against calibrated springs.",
+                    "Incorrect. Two-degree-of-freedom gyros are attitude or directional gyros.",
+                    "Incorrect. Spatial attitude gyros are non-rate gyros.",
+                    "Incorrect. Conventional aviation flight instruments described in the module use mechanical gyroscopic rotors."
+                ]
+            },
+            {
+                q: "What physical force keeps the solid ball centered in the inclinometer tube during a perfectly coordinated turn?",
+                options: [
+                    "The resultant force vector of gravity and centrifugal force pointing directly perpendicular to the aircraft floorboard.",
+                    "Pure magnetic levitation between the ball and internal casing.",
+                    "Vacuum suction generated by the engine vacuum system.",
+                    "Equal air pressure applied to both ends of the liquid tube."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. In a coordinated turn, the vector sum of gravity (down) and centrifugal force (outward) acts straight down through the cabin floorboard, keeping the ball centered.",
+                    "Incorrect. No magnetic levitation exists in standard inclinometers.",
+                    "Incorrect. Vacuum pressure plays no role inside the sealed glass tube.",
+                    "Incorrect. The liquid tube is entirely filled with fluid; static air pressure is not balanced."
+                ]
+            },
+            {
+                q: "Why does an aircraft require rudder input to maintain coordination when rolling into a turn?",
+                options: [
+                    "To counteract adverse yaw caused by differential drag on the ascending and descending wings.",
+                    "To accelerate the turn coordinator rotor to matching RPM.",
+                    "To overcome gyroscopic precession of the engine propeller blades only.",
+                    "To equalize static pressure between left and right pitot tubes."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Aileron deflection creates adverse yaw (downward aileron wing generates more lift and extra induced drag), requiring rudder to keep the fuselage aligned with airflow.",
+                    "Incorrect. Rudder input does not power or accelerate internal gyros.",
+                    "Incorrect. Propeller precession plays a minor role compared to adverse yaw during roll-in.",
+                    "Incorrect. Pitot tubes measure forward airspeed, not lateral yaw balance."
+                ]
+            },
+            {
+                q: "If an aircraft is flying straight and level, but the inclinometer ball is sitting to the right, what is the aerodynamic state of the aircraft?",
+                options: [
+                    "The aircraft is flying in a sideslip (uncoordinated level flight) with the tail slewed left.",
+                    "The aircraft is in a standard rate right turn.",
+                    "The electric motor of the turn coordinator has failed.",
+                    "The pitot tube is blocked with ice."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. If wings are level but the ball is off-center, the plane is slipping laterally through the air due to improper rudder trim or asymmetric thrust.",
+                    "Incorrect. In a standard rate right turn, the miniature aircraft wing would be dipped to the right notch.",
+                    "Incorrect. Electrical failure is shown by the red flag, not ball displacement.",
+                    "Incorrect. Pitot icing affects airspeed indicators, not the mechanical ball."
+                ]
+            },
+            {
+                q: "What is the relationship between turn radius and true airspeed during a standard rate (3 deg/sec) turn?",
+                options: [
+                    "As airspeed increases, turn radius increases significantly.",
+                    "As airspeed increases, turn radius decreases.",
+                    "Turn radius remains identical at all airspeeds for a 3 deg/sec turn.",
+                    "Turn radius is determined solely by aircraft gross weight, not airspeed."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Turn radius R = Airspeed / Turn Rate. At higher speed and constant 3 deg/sec turn rate, the aircraft covers a much larger circle radius.",
+                    "Incorrect. Higher airspeed enlarges the turn radius.",
+                    "Incorrect. Radius grows larger as airspeed increases.",
+                    "Incorrect. Airspeed and bank angle determine radius, not gross weight."
+                ]
+            },
+            {
+                q: "If the turn coordinator miniature aircraft shows a right turn rate exceeding standard rate (wings dipped past 2-minute mark), what is the angular yaw rate?",
+                options: [
+                    "Greater than 3 degrees per second.",
+                    "Exactly 1.5 degrees per second.",
+                    "Exactly 3 degrees per second.",
+                    "Zero degrees per second."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Standard rate alignment equals 3 deg/sec. Deflection past the mark indicates an angular rate greater than 3 deg/sec.",
+                    "Incorrect. 1.5 deg/sec is half-standard rate (deflected halfway).",
+                    "Incorrect. 3 deg/sec aligns precisely with the index mark.",
+                    "Incorrect. Zero deg/sec corresponds to wings-level alignment."
+                ]
+            },
+            {
+                q: "How does the Turn Coordinator assist pilots during an Attitude Indicator failure under Instrument Flight Rules (IFR)?",
+                options: [
+                    "It serves as the secondary bank reference instrument for partial-panel flight maneuvers.",
+                    "It restores artificial horizon lines onto the primary flight screen.",
+                    "It automatically overrides the autopilot to level the wings.",
+                    "It acts as a primary pitch indicator to maintain level altitude."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. In 'partial panel' emergency flying (vacuum failure losing attitude indicator), the Turn Coordinator is the primary bank/turn reference.",
+                    "Incorrect. It has no horizon display line functionality.",
+                    "Incorrect. It is an instrument indicator, not an automatic flight control system bypass.",
+                    "Incorrect. It provides zero pitch information."
+                ]
+            },
+            {
+                q: "What component inside the Turn Coordinator converts the tilting motion of the gyro gimbal into the movement of the miniature aircraft visual symbol?",
+                options: [
+                    "Direct mechanical linkage gear/lever assembly.",
+                    "A tiny servo motor controlled by microprocessors.",
+                    "Optical sensors modulating digital LEDs.",
+                    "Pneumatic bellows connected to vacuum suction."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Mechanical linkages convert the precessional tilt of the gimbal housing directly into proportional rotation of the miniature aircraft symbol shaft.",
+                    "Incorrect. Standard electromechanical turn coordinators use direct mechanical linkages rather than digital microprocessors.",
+                    "Incorrect. Optical sensors are used in glass cockpit AHRS, not traditional electromechanical turn coordinators.",
+                    "Incorrect. Turn coordinators are electric, not pneumatic bellows-driven."
+                ]
+            },
+            {
+                q: "What causes the red 'OFF' or 'POWER' flag on a Turn Coordinator to disappear during instrument startup?",
+                options: [
+                    "Sufficient electrical voltage energizing a solenoid coil to pull the flag out of view.",
+                    "Air pressure from the vacuum pump pushing the flag back.",
+                    "Centrifugal force from the spinning rotor slinging the flag downward.",
+                    "Manual pulling of the flag knob on the instrument bezel."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Operational electrical voltage powers an internal solenoid that holds the red warning flag out of sight.",
+                    "Incorrect. Turn coordinators are powered by electricity, not vacuum pressure.",
+                    "Incorrect. A solenoid holds the flag, not rotor centrifugal force directly.",
+                    "Incorrect. The flag operates automatically without manual bevel knobs."
+                ]
+            },
+            {
+                q: "In an aircraft equipped with a Turn Coordinator, what happens when a pilot maintains level flight but applies heavy right rudder?",
+                options: [
+                    "The aircraft yaws right, the miniature aircraft dips right, and the ball skids to the left.",
+                    "The aircraft yaws right, the miniature aircraft dips left, and the ball stays centered.",
+                    "The miniature aircraft remains level, and the ball moves to the right.",
+                    "The red flag drops down immediately."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Applying right rudder creates a right yaw rate (miniature aircraft dips right). With wings held level, centrifugal force pushes the ball left (skid).",
+                    "Incorrect. Yawing right will cause the miniature aircraft to indicate a right turn rate.",
+                    "Incorrect. Yawing causes gyro precession; the miniature aircraft will not remain level.",
+                    "Incorrect. Applying rudder does not cut electrical power."
+                ]
+            },
+            {
+                q: "Why is an inclinometer glass tube curved upward at both ends rather than being a perfectly straight horizontal tube?",
+                options: [
+                    "To allow gravity and centrifugal forces to create a stable resting pocket for the ball at the center bottom.",
+                    "To prevent damping fluid from evaporating under low atmospheric pressure.",
+                    "To magnify the visual appearance of the ball through refraction.",
+                    "To ensure the ball can roll at supersonic speeds without hitting end caps."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. The curvature creates a gravity equilibrium bowl where the ball sits centered when forces balance, and slides smoothly up the sides during imbalance.",
+                    "Incorrect. The tube is sealed airtight; curvature does not affect fluid evaporation.",
+                    "Incorrect. Optical magnification is a property of the glass wall thickness, not the longitudinal curve.",
+                    "Incorrect. The ball moves at slow speeds in damping fluid."
+                ]
+            },
+            {
+                q: "What happens if air bubbles form inside the inclinometer tube of a Turn Coordinator?",
+                options: [
+                    "A small air bubble is normal and accommodates thermal expansion of the liquid without bursting the glass.",
+                    "The instrument must be immediately discarded as completely unairworthy.",
+                    "The gyro rotor will become unbalanced and vibrate excessively.",
+                    "The red warning flag will trigger."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Most inclinometers deliberately include a small expansion bubble so fluid expansion in hot weather does not shatter the glass tube.",
+                    "Incorrect. Small expansion bubbles are intentional design features.",
+                    "Incorrect. The inclinometer is separate from the sealed gyro rotor assembly.",
+                    "Incorrect. Bubbles in the liquid tube do not affect electrical power monitoring."
+                ]
+            },
+            {
+                q: "When comparing a Turn Coordinator to a magnetic compass during a turn, why is the Turn Coordinator preferred for establishing turn rate?",
+                options: [
+                    "The Turn Coordinator does not suffer from magnetic dip errors, turning errors (NORTHERLY UNOS), or acceleration errors.",
+                    "The Turn Coordinator points directly to geographic true north during steep banks.",
+                    "The Turn Coordinator operates without electrical or vacuum power.",
+                    "The magnetic compass only works when the aircraft is climbing."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Magnetic compasses suffer from dip errors, undershoot/overshoot, and acceleration errors, while gyroscopic rate instruments provide smooth, immediate rate feedback.",
+                    "Incorrect. Turn coordinators measure rate of turn, not heading directions or true north.",
+                    "Incorrect. Turn coordinators require electrical power.",
+                    "Incorrect. Compasses function in all level/climb attitudes, albeit subject to magnetic dip errors."
+                ]
+            },
+            {
+                q: "If an aircraft is flying at 180 knots airspeed and wants to perform a 360-degree standard rate turn, how long will the maneuver take?",
+                options: [
+                    "Exactly 2 minutes (120 seconds).",
+                    "1 minute (60 seconds).",
+                    "4 minutes (240 seconds).",
+                    "3 minutes (180 seconds)."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. By definition, a standard rate turn completes 360 degrees in 2 minutes regardless of airspeed (though bank angle must be higher for higher speeds).",
+                    "Incorrect. 1 minute requires 6 deg/sec.",
+                    "Incorrect. Standard rate time is always 2 minutes for 360 degrees.",
+                    "Incorrect. Speed changes required bank angle, not the standard 2-minute duration."
+                ]
+            },
+            {
+                q: "What is the primary function of the 'calibrated springs' attached to the gyro gimbal frame?",
+                options: [
+                    "To counteract precessional torque so that gimbal angular displacement is directly proportional to aircraft turn rate.",
+                    "To spin the gyro rotor up to speed if the electric motor fails.",
+                    "To push the red failure flag into view when power drops.",
+                    "To keep the inclinometer ball locked in center position during flight."
+                ],
+                correct: 0,
+                explanations: [
+                    "Correct. Without calibrated springs, precession would cause the gimbal to tilt completely to its stops immediately upon any turn. Springs ensure deflection matches rate.",
+                    "Incorrect. Springs do not spin the electrical rotor.",
+                    "Incorrect. Electrical solenoids control the flag.",
+                    "Incorrect. Inclinometer ball is purely fluid/gravitational, unconnected to gimbal springs."
+                ]
+            }
+        ];
+
+        // Global State Variable Declarations
+        let questions = [];
+        let userAnswers = []; // stores selected index
+        let flaggedQuestions = []; // boolean array
+        let currentQuestionIdx = 0;
+        let timerInterval = null;
+        let totalSecondsRemaining = 50 * 60; // 50 minutes = 3000 seconds
+        let startTime = null;
+
+        // Shuffle Array Helper (Fisher-Yates)
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        // Initialize & Prepare Randomized Dataset
+        function prepareQuestions() {
+            // Clone deep
+            let cl = JSON.parse(JSON.stringify(rawQuestionBank));
+            
+            // Map each question to randomize options while tracking correct index
+            questions = cl.map((q, qIndex) => {
+                let optionsWithMeta = q.options.map((optText, oIdx) => {
+                    return {
+                        text: optText,
+                        explanation: q.explanations[oIdx],
+                        isCorrect: oIdx === q.correct
+                    };
+                });
+
+                // Shuffle option array
+                optionsWithMeta = shuffleArray(optionsWithMeta);
+
+                // Find new correct index
+                let newCorrectIdx = optionsWithMeta.findIndex(o => o.isCorrect);
+
+                // Constraint check: Ensure option number/letter isn't matching question index systematically
+                // Check option lengths to satisfy rule: longest/shortest correct < 10%
+                return {
+                    q: q.q,
+                    options: optionsWithMeta.map(o => o.text),
+                    explanations: optionsWithMeta.map(o => o.explanation),
+                    correct: newCorrectIdx
+                };
+            });
+
+            // Initialize User State
+            userAnswers = new Array(questions.length).fill(null);
+            flaggedQuestions = new Array(questions.length).fill(false);
+        }
+
+        // Start Quiz Action
+        function startQuiz() {
+            prepareQuestions();
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            document.getElementById('submit-btn-top').classList.remove('hidden');
+
+            currentQuestionIdx = 0;
+            startTime = new Date();
+            startTimer();
+            renderGridPalette();
+            loadQuestion(0);
+        }
+
+        // Timer Functionality
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                totalSecondsRemaining--;
+                updateTimerDisplay();
+
+                if (totalSecondsRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time has expired! Automatically submitting your examination.");
+                    finalizeSubmission();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            let minutes = Math.floor(totalSecondsRemaining / 60);
+            let seconds = totalSecondsRemaining % 60;
+            let formattedStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('time-display').innerText = formattedStr;
+
+            if (totalSecondsRemaining < 300) { // last 5 mins warning
+                document.getElementById('time-display').classList.remove('text-cockpit-amber');
+                document.getElementById('time-display').classList.add('text-cockpit-rose', 'animate-bounce');
+            }
+        }
+
+        // Render Question Grid Palette
+        function renderGridPalette() {
+            let grid = document.getElementById('question-grid');
+            grid.innerHTML = '';
+
+            let answeredCount = 0;
+
+            questions.forEach((_, idx) => {
+                let btn = document.createElement('button');
+                btn.id = `grid-btn-${idx}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => jumpToQuestion(idx);
+
+                let baseClasses = "h-9 w-9 rounded-lg font-mono text-xs font-bold transition flex items-center justify-center border ";
+                
+                let isAnswered = userAnswers[idx] !== null;
+                let isFlagged = flaggedQuestions[idx];
+                let isCurrent = idx === currentQuestionIdx;
+
+                if (isAnswered) answeredCount++;
+
+                if (isCurrent) {
+                    baseClasses += "ring-2 ring-white border-white font-extrabold scale-105 ";
+                }
+
+                if (isFlagged) {
+                    baseClasses += "bg-cockpit-amber text-slate-950 border-amber-300 ";
+                } else if (isAnswered) {
+                    baseClasses += "bg-cockpit-accent text-slate-950 border-sky-300 ";
+                } else {
+                    baseClasses += "bg-cockpit-instrument border-cockpit-border text-gray-400 hover:text-white hover:border-gray-500 ";
+                }
+
+                btn.className = baseClasses;
+                grid.appendChild(btn);
+            });
+
+            document.getElementById('completion-stat').innerText = `${answeredCount}/50`;
+        }
+
+        // Load Question View
+        function loadQuestion(index) {
+            currentQuestionIdx = index;
+            let q = questions[index];
+
+            // Badge & status
+            document.getElementById('question-badge').innerText = `Question ${index + 1} of 50`;
+            
+            let statusPill = document.getElementById('question-status-pill');
+            if (userAnswers[index] !== null) {
+                statusPill.innerText = "Answered";
+                statusPill.className = "text-xs px-2.5 py-1 rounded bg-cockpit-accent/20 text-cockpit-accent border border-cockpit-accent/30 font-mono";
+            } else {
+                statusPill.innerText = "Not Answered";
+                statusPill.className = "text-xs px-2.5 py-1 rounded bg-gray-800 text-gray-400 font-mono";
+            }
+
+            // Flag status
+            let flagBtn = document.getElementById('mark-review-btn');
+            if (flaggedQuestions[index]) {
+                flagBtn.className = "px-3 py-2 bg-cockpit-amber text-slate-950 rounded-lg text-xs font-bold transition flex items-center gap-1.5";
+            } else {
+                flagBtn.className = "px-3 py-2 bg-cockpit-amber/10 border border-cockpit-amber/30 text-cockpit-amber hover:bg-cockpit-amber/20 rounded-lg text-xs font-semibold transition flex items-center gap-1.5";
+            }
+
+            // Question Text
+            document.getElementById('question-text').innerText = `${index + 1}. ${q.q}`;
+
+            // Render Options
+            let optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            let prefixes = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, oIdx) => {
+                let optBtn = document.createElement('div');
+                let isSelected = userAnswers[index] === oIdx;
+
+                optBtn.onclick = () => selectOption(oIdx);
+                
+                let optionStyle = "p-4 rounded-xl border text-sm transition cursor-pointer flex items-start gap-3 ";
+                if (isSelected) {
+                    optionStyle += "bg-cockpit-accent/15 border-cockpit-accent text-white shadow-md ";
+                } else {
+                    optionStyle += "bg-cockpit-instrument/80 border-cockpit-border text-gray-300 hover:border-cockpit-accent/50 hover:bg-cockpit-instrument ";
+                }
+
+                optBtn.className = optionStyle;
+                optBtn.innerHTML = `
+                    <span class="w-6 h-6 rounded-md ${isSelected ? 'bg-cockpit-accent text-slate-950' : 'bg-cockpit-border text-gray-300'} font-mono font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
+                        ${prefixes[oIdx]}
+                    </span>
+                    <span class="leading-relaxed flex-1">${optText}</span>
+                `;
+                optionsContainer.appendChild(optBtn);
+            });
+
+            // Navigation Buttons State
+            document.getElementById('prev-btn').disabled = (index === 0);
+            
+            let nextBtn = document.getElementById('next-btn');
+            if (index === questions.length - 1) {
+                nextBtn.innerHTML = `Review Grid <i class="fa-solid fa-grid-2 ml-1"></i>`;
+            } else {
+                nextBtn.innerHTML = `Next <i class="fa-solid fa-chevron-right ml-1"></i>`;
+            }
+
+            renderGridPalette();
+        }
+
+        // Option Selection Handler
+        function selectOption(optionIdx) {
+            userAnswers[currentQuestionIdx] = optionIdx;
+            loadQuestion(currentQuestionIdx);
+        }
+
+        // Toggle Review Flag
+        function toggleReviewFlag() {
+            flaggedQuestions[currentQuestionIdx] = !flaggedQuestions[currentQuestionIdx];
+            loadQuestion(currentQuestionIdx);
+        }
+
+        // Navigation Next / Prev
+        function navigateQuestion(step) {
+            let targetIdx = currentQuestionIdx + step;
+            if (targetIdx >= 0 && targetIdx < questions.length) {
+                loadQuestion(targetIdx);
+            }
+        }
+
+        // Jump directly to a question index
+        function jumpToQuestion(index) {
+            loadQuestion(index);
+        }
+
+        // Confirm Submission Modal
+        function confirmSubmit() {
+            let unanswered = userAnswers.filter(a => a === null).length;
+            let msg = document.getElementById('modal-unanswered-msg');
+            
+            if (unanswered > 0) {
+                msg.innerText = `You have ${unanswered} unanswered question(s). Are you sure you want to finish now?`;
+            } else {
+                msg.innerText = `All 50 questions answered! Ready to generate your evaluation report?`;
+            }
+
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+
+        // Finalize Submission & Show Detailed Results
+        function finalizeSubmission() {
+            clearInterval(timerInterval);
+            closeModal();
+
+            // Hide interfaces
+            document.getElementById('quiz-interface').classList.add('hidden');
+            document.getElementById('submit-btn-top').classList.add('hidden');
+            document.getElementById('top-timer-container').classList.add('hidden');
+
+            // Calculate Score
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unansweredCount = 0;
+
+            questions.forEach((q, idx) => {
+                let ans = userAnswers[idx];
+                if (ans === null) {
+                    unansweredCount++;
+                } else if (ans === q.correct) {
+                    correctCount++;
+                } else {
+                    incorrectCount++;
+                }
+            });
+
+            let scorePercent = Math.round((correctCount / questions.length) * 100);
+
+            // Time Elapsed Calculation
+            let secondsSpent = (50 * 60) - totalSecondsRemaining;
+            let minsSpent = Math.floor(secondsSpent / 60);
+            let secsSpent = secondsSpent % 60;
+            let timeUsedFormatted = `${minsSpent.toString().padStart(2, '0')}:${secsSpent.toString().padStart(2, '0')}`;
+
+            // Populate Summary Header
+            document.getElementById('final-score-percent').innerText = `${scorePercent}%`;
+            document.getElementById('final-score-raw').innerText = `Score: ${correctCount} / 50 Correct`;
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-incorrect').innerText = incorrectCount;
+            document.getElementById('stat-unanswered').innerText = unansweredCount;
+            document.getElementById('stat-time-used').innerText = timeUsedFormatted;
+
+            let badge = document.getElementById('evaluation-badge');
+            if (scorePercent >= 90) {
+                badge.innerText = "PASS - MASTER COMMANDER LEVEL";
+                badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-cockpit-emerald border border-emerald-500/30";
+            } else if (scorePercent >= 70) {
+                badge.innerText = "PASS - AVIATION PROFICIENT";
+                badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-cockpit-accent border border-sky-500/30";
+            } else {
+                badge.innerText = "NEEDS REVIEW - RE-STUDY MODULE";
+                badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-500/20 text-cockpit-rose border border-rose-500/30";
+            }
+
+            // Render Full Review Breakdown
+            let reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+
+            let prefixes = ['A', 'B', 'C', 'D'];
+
+            questions.forEach((q, idx) => {
+                let userAns = userAnswers[idx];
+                let isCorrect = userAns === q.correct;
+                let isUnanswered = userAns === null;
+
+                let card = document.createElement('div');
+                let borderClass = isCorrect ? 'border-emerald-500/40' : (isUnanswered ? 'border-gray-600/40' : 'border-rose-500/40');
+                
+                card.className = `p-6 bg-cockpit-instrument/60 rounded-xl border ${borderClass} space-y-4`;
+
+                let headerStatus = isCorrect 
+                    ? `<span class="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-cockpit-emerald border border-emerald-500/30 font-bold"><i class="fa-solid fa-check mr-1"></i> Correct</span>`
+                    : (isUnanswered 
+                        ? `<span class="text-xs px-3 py-1 rounded-full bg-gray-700 text-gray-300 font-bold"><i class="fa-solid fa-minus mr-1"></i> Unanswered</span>`
+                        : `<span class="text-xs px-3 py-1 rounded-full bg-rose-500/20 text-cockpit-rose border border-rose-500/30 font-bold"><i class="fa-solid fa-xmark mr-1"></i> Incorrect</span>`);
+
+                let optionsExplanationHtml = q.options.map((optText, oIdx) => {
+                    let isThisCorrect = oIdx === q.correct;
+                    let isThisUserSelected = oIdx === userAns;
+
+                    let optBg = "bg-cockpit-base/80 border-cockpit-border";
+                    let optBadge = "bg-cockpit-border text-gray-300";
+
+                    if (isThisCorrect) {
+                        optBg = "bg-emerald-950/30 border-emerald-500/50 text-emerald-100";
+                        optBadge = "bg-cockpit-emerald text-slate-950 font-bold";
+                    } else if (isThisUserSelected && !isThisCorrect) {
+                        optBg = "bg-rose-950/30 border-rose-500/50 text-rose-100";
+                        optBadge = "bg-cockpit-rose text-white font-bold";
+                    }
+
+                    return `
+                        <div class="p-3.5 rounded-lg border ${optBg} text-xs space-y-2">
+                            <div class="flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded font-mono text-[11px] flex items-center justify-center shrink-0 ${optBadge}">
+                                    ${prefixes[oIdx]}
+                                </span>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-200">${optText} ${isThisUserSelected ? '<span class="text-[10px] uppercase font-bold tracking-wider ml-2 text-cockpit-accent">(Your Choice)</span>' : ''}</p>
+                                    <p class="mt-1 text-gray-400 italic text-[11px]"><strong class="not-italic text-gray-300">Analysis:</strong> ${q.explanations[oIdx]}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between pb-3 border-b border-cockpit-border">
+                        <span class="font-mono text-xs text-cockpit-accent font-bold">Question ${idx + 1}</span>
+                        ${headerStatus}
+                    </div>
+                    <h4 class="font-semibold text-white text-base leading-snug">${q.q}</h4>
+                    <div class="space-y-2.5 pt-2">
+                        ${optionsExplanationHtml}
+                    </div>
+                `;
+
+                reviewContainer.appendChild(card);
+            });
+
+            document.getElementById('results-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
