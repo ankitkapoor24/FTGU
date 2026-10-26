@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attitude Indicator Advanced Flight Quiz</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --correct: #22c55e;
+      --incorrect: #ef4444;
+      --warning: #f59e0b;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    header {
+      max-width: 1000px;
+      margin: 0 auto 20px auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 20px 30px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .title-area h1 {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .title-area p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .timer-badge {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: #090d16;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      color: var(--warning);
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Palette Grid */
+    .nav-card {
+      background: var(--card-bg);
+      padding: 15px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .grid-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .q-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+      gap: 6px;
+    }
+
+    .q-btn {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 0;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .q-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .q-btn.current {
+      outline: 2px solid var(--accent);
+      background: #1e3a8a;
+    }
+
+    .q-btn.answered {
+      background: #0369a1;
+      border-color: #0284c7;
+    }
+
+    /* Main Question Card */
+    .quiz-card {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .q-header {
+      margin-bottom: 20px;
+    }
+
+    .q-number {
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .q-text {
+      font-size: 1.15rem;
+      line-height: 1.5;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .option-btn {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      padding: 14px 18px;
+      border-radius: 8px;
+      color: var(--text-main);
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .option-btn:hover {
+      border-color: var(--accent);
+      background: #1a2436;
+    }
+
+    .option-btn.selected {
+      border-color: var(--accent);
+      background: #0284c7;
+      color: #fff;
+    }
+
+    .opt-prefix {
+      font-weight: 700;
+      min-width: 24px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-sec {
+      background: #334155;
+      color: var(--text-main);
+    }
+
+    .btn-sec:hover {
+      background: #475569;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-submit {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    .btn-submit:hover {
+      background: #15803d;
+    }
+
+    /* Results Screen */
+    #results-card {
+      display: none;
+    }
+
+    .score-summary {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 25px;
+      background: #0f172a;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .score-stat {
+      flex: 1;
+      text-align: center;
+    }
+
+    .score-stat .val {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .score-stat .lbl {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .review-item {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .review-item.correct-border {
+      border-left: 5px solid var(--correct);
+    }
+
+    .review-item.incorrect-border {
+      border-left: 5px solid var(--incorrect);
+    }
+
+    .review-q-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .review-opt {
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .review-opt.c-ans {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid var(--correct);
+      color: #4ade80;
+    }
+
+    .review-opt.u-ans {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--incorrect);
+      color: #fca5a5;
+    }
+
+    .exp-box {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border-color);
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .timer-badge {
+        align-self: flex-end;
+      }
+      .controls {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title-area">
+      <h1>Attitude Indicator Mastery Exam</h1>
+      <p>Based on Aviation Theory Reference Materials • 50 Questions • 50 Minutes</p>
+    </div>
+    <div class="timer-badge" id="timer">50:00</div>
+  </header>
+
+  <div class="container">
+    <!-- Quiz Interface -->
+    <div id="quiz-ui">
+      <div class="nav-card" style="margin-bottom: 20px;">
+        <div class="grid-title">Question Navigator</div>
+        <div class="q-grid" id="q-grid"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div>
+          <div class="q-header">
+            <div class="q-number" id="q-num-label">Question 1 of 50</div>
+            <div class="q-text" id="q-text">Loading question...</div>
+          </div>
+          <div class="options-list" id="options-container"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn btn-sec" id="prev-btn" onclick="navigate(-1)">Previous</button>
+          <button class="btn btn-sec" id="skip-btn" onclick="navigate(1)">Skip / Next</button>
+          <button class="btn btn-submit" id="submit-btn" onclick="confirmSubmit()">Submit Quiz</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Interface -->
+    <div id="results-card" class="quiz-card">
+      <h2 style="color: var(--accent); margin-bottom: 15px;">Exam Results & Comprehensive Breakdown</h2>
+      <div class="score-summary">
+        <div class="score-stat">
+          <div class="val" id="score-val">0 / 50</div>
+          <div class="lbl">Score</div>
+        </div>
+        <div class="score-stat">
+          <div class="val" id="pct-val">0%</div>
+          <div class="lbl">Percentage</div>
+        </div>
+        <div class="score-stat">
+          <div class="val" id="time-val">00:00</div>
+          <div class="lbl">Time Elapsed</div>
+        </div>
+      </div>
+
+      <div id="review-container"></div>
+    </div>
+  </div>
+
+  <script>
+    // 50 High-Quality Questions based strictly on transcript & domain physics
+    const rawQuestions = [
+      {
+        q: "What fundamental physical phenomenon does the attitude indicator utilize to maintain an artificial horizon reference?",
+        options: [
+          "Precession caused by angular momentum",
+          "Gyroscopic rigidity in space",
+          "Dynamic pressure differential",
+          "Centripetal acceleration displacement"
+        ],
+        answerIdx: 1,
+        exp: "The attitude indicator relies directly on the gyroscopic principle of 'rigidity in space', which allows the vertical gyro to maintain its plane of rotation fixed relative to the true horizon regardless of aircraft orientation."
+      },
+      {
+        q: "In a standard light aircraft pneumatic configuration, how is power distributed among the primary gyroscopic instruments?",
+        options: [
+          "Vacuum drives turn coordinator; DC electricity drives heading and attitude indicators",
+          "DC electricity drives heading indicator; vacuum drives attitude indicator and turn coordinator",
+          "Vacuum drives attitude and heading indicators; DC electricity drives turn coordinator",
+          "AC electrical bus powers all three primary gyroscopic instruments simultaneously"
+        ],
+        answerIdx: 2,
+        exp: "As outlined, typical light aircraft utilize a vacuum pump system to drive the suction gyros for both the attitude indicator and heading indicator, while the turn coordinator's gyro is electrically powered by DC current."
+      },
+      {
+        q: "How is the internal gyroscope inside a standard attitude indicator aligned relative to the Earth?",
+        options: [
+          "Horizontal gyro with rotation plane perpendicular to true horizon",
+          "Vertical gyro with rotation plane parallel to true horizon",
+          "Canted gyro set at 45 degrees relative to longitudinal axis",
+          "Single-axis rate gyro aligned parallel to the lateral axis"
+        ],
+        answerIdx: 1,
+        exp: "The attitude indicator incorporates a vertical gyroscope mounted such that its plane of rotation is parallel to the Earth's real horizon."
+      },
+      {
+        q: "How many degrees of freedom does the mechanical gimbal mechanism of the attitude indicator gyro theoretically possess?",
+        options: [
+          "One degree of freedom",
+          "Two degrees of freedom",
+          "Three degrees of freedom",
+          "Four degrees of freedom"
+        ],
+        answerIdx: 2,
+        exp: "The instrument gyro possesses three degrees of freedom, allowing it to rotate freely in all three spatial axes and remain rigid in space."
+      },
+      {
+        q: "What primary parameter does the bank angle measurement convey?",
+        options: [
+          "The rate of heading change per unit of time",
+          "The angle between the horizon line and the aircraft's lateral axis",
+          "The slip/skid displacement relative to the vertical axis",
+          "The angle between the longitudinal axis and the true horizon"
+        ],
+        answerIdx: 1,
+        exp: "Bank angle measures the inclination of the aircraft's wings in relation to the horizon, which corresponds to the angle between the horizon and the lateral axis."
+      },
+      {
+        q: "What primary parameter does the pitch angle measurement convey?",
+        options: [
+          "The vertical rate of climb or descent in feet per minute",
+          "The angle between the flight path vector and the relative wind",
+          "The angle between the aircraft's longitudinal axis and the horizon line",
+          "The angle between the vertical axis and gravity vector"
+        ],
+        answerIdx: 2,
+        exp: "Pitch angle is defined as the inclination of the aircraft's nose relative to the horizon, which is the angle between the horizon and the aircraft's longitudinal axis."
+      },
+      {
+        q: "Which specific aircraft flight instrument must be consulted to determine if the aircraft is actively turning?",
+        options: [
+          "Attitude Indicator",
+          "Turn Coordinator",
+          "Vertical Speed Indicator",
+          "Altimeter"
+        ],
+        answerIdx: 1,
+        exp: "The attitude indicator shows only bank angle, not rate of turn. The turn coordinator is the instrument specifically designed to indicate if the aircraft is turning and its rate."
+      },
+      {
+        q: "Which instrument confirms whether an indicated nose-up pitch attitude is resulting in an actual climb?",
+        options: [
+          "Attitude Indicator",
+          "Heading Indicator",
+          "Vertical Speed Indicator",
+          "Airspeed Indicator only"
+        ],
+        answerIdx: 2,
+        exp: "The attitude indicator displays pitch attitude only. The vertical speed indicator (VSI) must be referenced to verify actual vertical displacement (climbing or descending)."
+      },
+      {
+        q: "On a standard banking scale, what are the exact angle increments represented by the scale index marks?",
+        options: [
+          "5, 10, 15, 20, 25, 30 degrees",
+          "10, 20, 30, 45, 60, 90 degrees",
+          "15, 30, 45, 60, 75, 90 degrees",
+          "10, 25, 45, 60, 80, 90 degrees"
+        ],
+        answerIdx: 1,
+        exp: "The banking scale markings on standard attitude indicators represent 10, 20, 30, 45, 60, and 90 degrees of bank."
+      },
+      {
+        q: "On the pitch scale, what do the short lines and long lines represent respectively?",
+        options: [
+          "Short lines: 2 degrees; Long lines: 5 degrees",
+          "Short lines: 5 degrees; Long lines: 10 degrees",
+          "Short lines: 10 degrees; Long lines: 20 degrees",
+          "Short lines: 1 degree; Long lines: 5 degrees"
+        ],
+        answerIdx: 1,
+        exp: "On the pitch scale, short lines indicate 5-degree pitch increments, while long lines indicate 10-degree increments."
+      },
+      {
+        q: "How does a 'sky pointer' bank indicator differ in motion from a conventional bank pointer?",
+        options: [
+          "The sky pointer rotates with the miniature aircraft during a roll",
+          "The sky pointer remains fixed pointing upward while the scale moves, shifting opposite to the roll",
+          "The sky pointer drops downward toward the horizon during bank angles greater than 30 degrees",
+          "The sky pointer changes color from yellow to red during steep turns"
+        ],
+        answerIdx: 1,
+        exp: "A sky pointer remains fixed pointing upward while the banking scale moves. Consequently, when the aircraft banks right, the sky pointer appears on the left side of the scale."
+      },
+      {
+        q: "What rule should pilots follow to prevent spatial disorientation when reading an attitude indicator equipped with a sky pointer?",
+        options: [
+          "Use the sky pointer for turn direction and miniature aircraft for pitch angle",
+          "Use the bank indicator for bank angle magnitude, and the miniature aircraft for turn direction",
+          "Rely solely on the turn coordinator when flying sky pointer instruments",
+          "Ignore the pitch scale whenever bank angle exceeds 20 degrees"
+        ],
+        answerIdx: 1,
+        exp: "To avoid confusion with a sky pointer, pilots must use the bank indicator pointer strictly to read the angle magnitude, and observe the miniature aircraft to confirm bank direction."
+      },
+      {
+        q: "What is the primary function of the adjustment knob found on certain attitude indicators?",
+        options: [
+          "To cage the gyroscope prior to performing acrobatic maneuvers",
+          "To align the miniature aircraft with the horizon line according to pilot line-of-sight and level attitude",
+          "To recalibrate the gyroscopic precessional drift rate in flight",
+          "To manually adjust vacuum pressure delivered to the gyro casing"
+        ],
+        answerIdx: 1,
+        exp: "The adjustment knob permits adjusting the vertical position of the miniature aircraft relative to the horizon line to account for pilot height and cruise pitch trim."
+      },
+      {
+        q: "Why have some aviation authorities restricted or prohibited the use of the in-flight adjustment knob?",
+        options: [
+          "It frequently strips the mechanical gears of the internal gimbal",
+          "Inadequate adjustment in IMC can mislead the pilot regarding true pitch attitude",
+          "Rotating the knob introduces extreme apparent precession into the vertical gyro",
+          "It forces the vacuum pump to operate under excessive backpressure"
+        ],
+        answerIdx: 1,
+        exp: "In IMC or night conditions without external visual references, improper adjustment of the miniature aircraft can lead to erroneous pitch interpretation and loss of control."
+      },
+      {
+        q: "Under what specific conditions is it acceptable to adjust the miniature aircraft using the adjustment knob?",
+        options: [
+          "At any point during steady instrument approach procedures in IMC",
+          "On the ground or while flying straight and level in clear VMC conditions",
+          "Only when experiencing extreme precessional drift in steep turns",
+          "During steep turns to keep the miniature aircraft centered on the horizon"
+        ],
+        answerIdx: 1,
+        exp: "As a rule of thumb, adjustment should only occur on the ground or during established straight-and-level flight in Visual Meteorological Conditions (VMC)."
+      },
+      {
+        q: "What does the appearance of a red flag on the face of an attitude indicator signify?",
+        options: [
+          "The aircraft has exceeded 45 degrees of bank",
+          "The instrument's gyroscope is inoperative or unpowered and should not be used",
+          "The vertical speed indicator has failed",
+          "The pitch scale requires immediate manual adjustment"
+        ],
+        answerIdx: 1,
+        exp: "A visible red flag indicates that the gyroscope is not functioning correctly (e.g., loss of electrical power or vacuum pressure), warning the pilot not to rely on the instrument."
+      },
+      {
+        q: "What causes an attitude indicator to 'topple' during extreme flight maneuvers?",
+        options: [
+          "Complete loss of electrical power to the instrument bus",
+          "Internal mechanical stops restricting the limits of gimbal rotation",
+          "Excessive buildup of vacuum pressure inside the housing",
+          "Rapid reversal of Earth's gravitational pull"
+        ],
+        answerIdx: 1,
+        exp: "Although theoretical gyros have 360-degree freedom, physical attitude indicators have mechanical stops. Exceeding pitch/bank limits forces gimbals against stops, causing the gyro to tumble or topple."
+      },
+      {
+        q: "What are typical pitch and bank limits for older design attitude indicators before toppling occurs?",
+        options: [
+          "Pitch limit: ~30 degrees; Bank limit: ~45 degrees",
+          "Pitch limit: ~60 degrees; Bank limit: ~100 degrees",
+          "Pitch limit: ~85 degrees; Bank limit: No limit",
+          "Pitch limit: ~90 degrees; Bank limit: ~180 degrees"
+        ],
+        answerIdx: 1,
+        exp: "Older mechanical attitude indicators commonly exhibit pitch limits of approximately 60 degrees and bank limits of around 100 degrees."
+      },
+      {
+        q: "What are typical operating limits for modern non-toppling design attitude indicators?",
+        options: [
+          "Pitch limits of 45 degrees; Bank limits of 60 degrees",
+          "Pitch limits of 85 degrees; No bank limit",
+          "Pitch limits of 90 degrees; Bank limits of 90 degrees",
+          "No pitch limits; Bank limits of 45 degrees"
+        ],
+        answerIdx: 1,
+        exp: "Modern attitude indicators feature less restrictive pitch limits of approximately 85 degrees and no bank limits before gimbal lock/toppling."
+      },
+      {
+        q: "If an attitude indicator topples due to exceeding maneuver limits, how long does it typically take to self-erect and realign?",
+        options: [
+          "Immediately within 2 to 3 seconds",
+          "A few minutes while internal correction mechanisms realign it with the horizon",
+          "It will never realign until full teardown and overhaul on the ground",
+          "Exactly 15 hours due to Earth's rotation speed"
+        ],
+        answerIdx: 1,
+        exp: "Once toppled, the instrument becomes inoperative for a few minutes while gravity-based erection mechanisms gradually draw the gyro back parallel to the horizon."
+      },
+      {
+        q: "What is 'apparent gyroscopic wander' (apparent drift)?",
+        options: [
+          "Physical bearing wear causing the gyro axis to slip",
+          "Apparent shift of the gyro's spin axis relative to Earth due to Earth's 15 deg/hr rotation",
+          "Displacement of the horizon bar caused by fluctuating engine RPM",
+          "Bending of light across the instrument glass face"
+        ],
+        answerIdx: 1,
+        exp: "Apparent wander occurs because a space-rigid gyroscope maintains its orientation in space while the Earth beneath it rotates at approximately 15 degrees per hour."
+      },
+      {
+        q: "At what rate does the Earth rotate, driving apparent gyroscopic drift?",
+        options: [
+          "5 degrees per hour",
+          "10 degrees per hour",
+          "15 degrees per hour",
+          "30 degrees per hour"
+        ],
+        answerIdx: 2,
+        exp: "The Earth rotates 360 degrees in 24 hours, which yields an apparent drift rate of 15 degrees per hour."
+      },
+      {
+        q: "Where on Earth is vertical gyroscopic apparent wander at its MAXIMUM rate?",
+        options: [
+          "At the North and South Poles",
+          "At the Equator",
+          "At 45 degrees latitude North or South",
+          "It is uniform across all geographic latitudes"
+        ],
+        answerIdx: 1,
+        exp: "For a vertical gyro (attitude indicator), apparent wander in pitch/roll alignment is at its maximum at the equator and minimum at the geographic poles."
+      },
+      {
+        q: "Where on Earth is vertical gyroscopic apparent wander at its MINIMUM rate?",
+        options: [
+          "At the Equator",
+          "At the Poles",
+          "At the Tropic of Cancer",
+          "At the Prime Meridian"
+        ],
+        answerIdx: 1,
+        exp: "Apparent drift for a vertical gyro is at its minimum (zero vertical drift effect relative to local vertical) at the Earth's geographic poles."
+      },
+      {
+        q: "If an attitude indicator at the equator operates for 2 hours without correction, what is the theoretical magnitude of apparent wander error?",
+        options: [
+          "10 degrees",
+          "15 degrees",
+          "30 degrees",
+          "45 degrees"
+        ],
+        answerIdx: 2,
+        exp: "At 15 degrees per hour, over a 2-hour period, the Earth rotates 30 degrees, yielding 30 degrees of theoretical apparent wander error."
+      },
+      {
+        q: "What mechanism is incorporated into pneumatic (air-driven) gyros to continuously combat apparent wander and keep the gyro horizontal?",
+        options: [
+          "Electric torque motors",
+          "Pendulous vane system using Earth's gravity",
+          "Magnetic compass slaving gimbals",
+          "Manual ratchet system"
+        ],
+        answerIdx: 1,
+        exp: "Air-driven gyros use a mechanical pendulous vane system driven by gravity and exhaust air ports to continuously erect the gyro spin axis back to vertical."
+      },
+      {
+        q: "What mechanism is incorporated into electrically driven attitude indicators to maintain gyro alignment relative to gravity?",
+        options: [
+          "Pendulous air vanes",
+          "Electrical torque motors",
+          "Hydraulic leveling actuators",
+          "Centrifugal governor weights"
+        ],
+        answerIdx: 1,
+        exp: "Electrically driven gyros utilize electrical torque motors controlled by leveling switches to apply correcting forces when the gyro axis drifts from gravity vertical."
+      },
+      {
+        q: "What is the primary function of a 'caging knob' found on some electrically driven attitude indicators?",
+        options: [
+          "To lock the gyro at maximum bank for acrobatic flight",
+          "To decouple the gyro from mechanical stops or quickly realign/erect the gyro with the horizon",
+          "To shut off electrical power to the instrument during engine start",
+          "To manually trim the pitch indicator during supersonic flight"
+        ],
+        answerIdx: 1,
+        exp: "The caging knob decouples the gyro from gimbals/stops to prevent toppling during aerobatics and allows rapid manual realignment with the horizon."
+      },
+      {
+        q: "Under what flight condition should a pilot pull/engage the caging knob to realign a toppled gyro?",
+        options: [
+          "During a steep turn bank of 45 degrees",
+          "Only in straight-and-level unaccelerated flight or on the ground",
+          "While climbing at maximum pitch angle in IMC",
+          "During active spin recovery"
+        ],
+        answerIdx: 1,
+        exp: "Caging or manually realigning the gyro must only take place in straight-and-level flight or on the ground to ensure the reference locks onto true gravity vertical."
+      },
+      {
+        q: "If an attitude indicator displays 0 degrees pitch and 18 degrees bank left, what is the aircraft doing?",
+        options: [
+          "Climbing straight ahead at 18 knots",
+          "Wings inclined 18 degrees to the left with nose level with horizon",
+          "Turning right at 18 degrees per second",
+          "Descending with nose 18 degrees down"
+        ],
+        answerIdx: 1,
+        exp: "0 degrees pitch means the longitudinal axis is on the horizon; 18 degrees bank left indicates the left wing is inclined downward by 18 degrees relative to horizon."
+      },
+      {
+        q: "If the instrument indicates 8 degrees nose up pitch and 0 degrees bank, what is the physical attitude?",
+        options: [
+          "The aircraft is banked 8 degrees right",
+          "The nose is pitched 8 degrees above the horizon with wings level",
+          "The aircraft is climbing at exactly 800 feet per minute",
+          "The nose is pitched 8 degrees below the horizon in a level bank"
+        ],
+        answerIdx: 1,
+        exp: "8 degrees nose up with 0 degrees bank means wings are parallel to horizon and the longitudinal axis points 8 degrees above horizon."
+      },
+      {
+        q: "If the instrument shows 9 degrees pitch up and 10 degrees bank right, which option correctly states the attitude?",
+        options: [
+          "Nose 9 degrees below horizon, banking 10 degrees left",
+          "Nose 9 degrees above horizon, banking 10 degrees right",
+          "Nose level, banking 19 degrees right",
+          "Nose 10 degrees above horizon, banking 9 degrees right"
+        ],
+        answerIdx: 1,
+        exp: "The pitch scale indicates 9 degrees above the horizon line (nose up) and the bank index shows 10 degrees right tilt."
+      },
+      {
+        q: "An attitude indicator displays 2 degrees nose down pitch and 0 degrees bank. What does this represent?",
+        options: [
+          "Aircraft wings level with nose pitched 2 degrees below horizon",
+          "Aircraft climbing at 200 feet per minute with 2 degrees right bank",
+          "Aircraft level with 2 degrees left slip",
+          "Gyro turned off with 2 degree mounting calibration error"
+        ],
+        answerIdx: 0,
+        exp: "2 degrees nose down indicates longitudinal axis angled 2 degrees below horizon, while 0 degrees bank indicates wings level."
+      },
+      {
+        q: "Why is the attitude indicator considered the primary instrument in pitch/bank control during instrument flight (IFR)?",
+        options: [
+          "It directly measures airspeed changes faster than pitot-static instruments",
+          "It provides an immediate visual depiction of aircraft attitude relative to horizon without delay",
+          "It is the only instrument not subject to mechanical failure",
+          "It directly displays magnetic heading and rate of climb"
+        ],
+        answerIdx: 1,
+        exp: "Unlike pitot-static or rate instruments which exhibit lag or indirect data, the attitude indicator provides instant, intuitive pitch and bank presentation."
+      },
+      {
+        q: "What term describes the horizon line on the attitude indicator face?",
+        options: [
+          "Natural horizon",
+          "Artificial horizon",
+          "Terrestrial vector",
+          "Geodetic datum"
+        ],
+        answerIdx: 1,
+        exp: "The attitude indicator line separating sky and ground is universally referred to as the artificial horizon."
+      },
+      {
+        q: "What color scheme typically differentiates the upper and lower halves of a modern attitude indicator face?",
+        options: [
+          "Upper half green (sky), lower half brown (ground)",
+          "Upper half blue (sky), lower half brown/black (ground)",
+          "Upper half white (sky), lower half red (ground)",
+          "Upper half yellow (sky), lower half blue (ground)"
+        ],
+        answerIdx: 1,
+        exp: "Standard aviation attitude displays represent the sky on the upper portion in blue (or light color) and the ground on the lower portion in brown or black."
+      },
+      {
+        q: "When an aircraft banks 30 degrees to the right, what physically happens to the internal gyro rotor of the attitude indicator?",
+        options: [
+          "The gyro rotor tilts 30 degrees to the right with the case",
+          "The gyro rotor stays rigid in space while instrument case and aircraft rotate around it by 30 degrees",
+          "The gyro rotor precesses 30 degrees downward",
+          "The gyro rotor spins backwards at 30 RPM"
+        ],
+        answerIdx: 1,
+        exp: "Due to rigidity in space, the internal gyro rotor remains locked in its spatial orientation; the aircraft frame and instrument housing roll 30 degrees around it."
+      },
+      {
+        q: "What dynamic force powers the vacuum pump driven attitude indicator gyro rotor?",
+        options: [
+          "Direct engine belt gear drive",
+          "Suction air stream drawn past the bucket vanes on the gyro rim",
+          "Exhaust gas expansion",
+          "High voltage AC induction field"
+        ],
+        answerIdx: 1,
+        exp: "Engine-driven vacuum pumps draw air through the instrument case, where air jets strike buckets carved into the rotor perimeter to spin it at high RPM."
+      },
+      {
+        q: "Which axis of the aircraft corresponds to pitch motion displayed on the attitude indicator?",
+        options: [
+          "Vertical axis",
+          "Longitudinal axis",
+          "Lateral axis",
+          "Normal axis"
+        ],
+        answerIdx: 2,
+        exp: "Pitch motion involves rotation around the aircraft's lateral axis (wingtip to wingtip)."
+      },
+      {
+        q: "Which axis of the aircraft corresponds to roll/bank motion displayed on the attitude indicator?",
+        options: [
+          "Lateral axis",
+          "Longitudinal axis",
+          "Vertical axis",
+          "Directional axis"
+        ],
+        answerIdx: 1,
+        exp: "Roll or bank motion occurs around the aircraft's longitudinal axis (nose to tail)."
+      },
+      {
+        q: "If an attitude indicator gyro loses vacuum pressure in flight, what behavior will the display show initially?",
+        options: [
+          "The horizon bar will immediately snap upside down",
+          "The gyro RPM slows down, losing rigidity, causing slow drift, erratic indications, and eventual card drop",
+          "The red warning flag immediately retracts into the bezel",
+          "The instrument pitch indication freezes perfectly at 0 degrees"
+        ],
+        answerIdx: 1,
+        exp: "As vacuum drops, gyro RPM decreases, reducing rigidity in space and causing the horizon bar to slowly drift and wobble inaccurately."
+      },
+      {
+        q: "What is the key structural component holding the gyro rotor within the instrument housing?",
+        options: [
+          "A Bourdon tube assembly",
+          "Gimbal rings allowing rotational freedom",
+          "A sealed aneroid wafer stack",
+          "A magnetic induction coil"
+        ],
+        answerIdx: 1,
+        exp: "Gimbal rings support the spinning rotor and grant the multi-axis freedom of motion needed to isolate gyro position from airframe movement."
+      },
+      {
+        q: "During rapid acceleration in a straight line, what temporary acceleration error may appear on a conventional analog attitude indicator?",
+        options: [
+          "Slight indication of a bank to the left",
+          "Slight false indication of a pitch-up attitude",
+          "Slight false indication of a 45-degree dive",
+          "Total reversal of pitch and bank markings"
+        ],
+        answerIdx: 1,
+        exp: "Due to pendulous erection mechanism dynamics, rapid longitudinal acceleration creates centrifugal forces on erection vanes, causing a slight temporary false nose-up pitch indication."
+      },
+      {
+        q: "During rapid deceleration in a straight line, what temporary error may be observed on a conventional attitude indicator?",
+        options: [
+          "Slight false indication of a pitch-down attitude",
+          "Slight false indication of steep right bank",
+          "Rapid rotation of the banking scale",
+          "Immediate illumination of failure flag"
+        ],
+        answerIdx: 0,
+        exp: "Deceleration causes pendulous vanes to swing forward, inducing a temporary false pitch-down indication."
+      },
+      {
+        q: "Why does the turn coordinator NOT replace the attitude indicator in instrument flying?",
+        options: [
+          "The turn coordinator cannot operate on DC electrical power",
+          "The turn coordinator indicates rate of turn/roll rate, not direct bank or pitch attitude pitch angles",
+          "The turn coordinator is subject to severe vacuum leaks",
+          "The turn coordinator is locked strictly to North"
+        ],
+        answerIdx: 1,
+        exp: "The turn coordinator measures roll rate and yaw rate (turn rate), whereas the attitude indicator directly measures pitch and bank angle position relative to horizon."
+      },
+      {
+        q: "On a digital Glass Cockpit Flight Display (PFD), how is the artificial horizon displayed?",
+        options: [
+          "By a mechanical spinning drum behind glass",
+          "By a full-width blue/brown synthetic background tape with pitch ladder and bank sky-pointer/trapezoid",
+          "By a liquid-filled spirit level tube",
+          "By a rotating shadow-graph projection"
+        ],
+        answerIdx: 1,
+        exp: "Modern glass cockpits present a continuous full-screen synthetic horizon background split into sky (blue) and ground (brown) with pitch scale ladders and top bank indices."
+      },
+      {
+        q: "What operational advantage does dual power source configuration (vacuum attitude indicator + electric turn coordinator) offer?",
+        options: [
+          "Prevents gyroscopic precession entirely",
+          "Reduces total aircraft fuel consumption",
+          "Provides instrument redundancy in event of vacuum pump or electrical system failure",
+          "Eliminates apparent Earth drift completely"
+        ],
+        answerIdx: 2,
+        exp: "Splitting instrument power sources ensures that if the vacuum system fails, the electric turn coordinator remains operational (and vice versa) for emergency partial-panel flight."
+      },
+      {
+        q: "What unit of angular speed defines Earth's rotational rate responsible for 15°/hr drift?",
+        options: [
+          "360 degrees per 12 hours",
+          "15 degrees per hour (360 degrees in 24 hours)",
+          "1 degree per minute",
+          "90 degrees per quarter day"
+        ],
+        answerIdx: 1,
+        exp: "Earth completes a 360-degree rotation once every 24 hours ($360 \\div 24 = 15$ degrees/hour)."
+      },
+      {
+        q: "When flying in IMC (clouds), what visual cue is the pilot restricted to for attitude control?",
+        options: [
+          "The true visual horizon outside the cockpit window",
+          "Flight instruments, primarily the attitude indicator",
+          "Ground topography lights",
+          "Cloud top angles"
+        ],
+        answerIdx: 1,
+        exp: "In Instrument Meteorological Conditions (IMC), outside visual references are absent, forcing the pilot to rely entirely on flight instruments like the attitude indicator."
+      },
+      {
+        q: "What is the pitch angle reading when the center dot of the miniature aircraft rests exactly on the horizontal white horizon line?",
+        options: [
+          "5 degrees nose up",
+          "0 degrees pitch attitude",
+          "10 degrees nose down",
+          "2.5 degrees climb pitch"
+        ],
+        answerIdx: 1,
+        exp: "When the central dot of the miniature aircraft aligns directly with the horizon bar, pitch attitude is exactly 0 degrees."
+      }
+    ];
+
+    // Shuffle & Option Randomization Logic satisfying strict rules
+    let shuffledQuestions = [];
+    let userAnswers = {};
+    let timerInterval = null;
+    let timeRemaining = 50 * 60; // 50 minutes in seconds
+    let startTime = null;
+    let currentQIdx = 0;
+
+    function randomizeQuiz() {
+      shuffledQuestions = rawQuestions.map((item, originalIndex) => {
+        // Prepare options with tracking of correct text
+        const correctText = item.options[item.answerIdx];
+        
+        // Randomize options until conditions met:
+        // 1. Correct answer option index + 1 != question number (qNum % 4 check)
+        // 2. Shortest/longest option not overused as correct answer (<10% chance)
+        let shuffledOpts = [...item.options];
+        let newCorrectIdx = -1;
+
+        let valid = false;
+        let attempts = 0;
+
+        while (!valid && attempts < 100) {
+          attempts++;
+          // Fisher-Yates shuffle options
+          for (let i = shuffledOpts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledOpts[i], shuffledOpts[j]] = [shuffledOpts[j], shuffledOpts[i]];
+          }
+          newCorrectIdx = shuffledOpts.indexOf(correctText);
+
+          const qNum = originalIndex + 1; // 1-based question number
+          const answerNumber = newCorrectIdx + 1; // 1-based option number (1:A, 2:B, 3:C, 4:D)
+
+          // Rule: Next question / question number must NOT have same number as correct answer number
+          if (qNum === answerNumber) continue;
+
+          // Check length conditions (shortest/longest shouldn't always be correct)
+          const lengths = shuffledOpts.map(o => o.length);
+          const minLen = Math.min(...lengths);
+          const maxLen = Math.max(...lengths);
+          const isShortest = shuffledOpts[newCorrectIdx].length === minLen;
+          const isLongest = shuffledOpts[newCorrectIdx].length === maxLen;
+
+          // Reject if it lands on shortest or longest unless random chance (<10%) permits
+          if ((isShortest || isLongest) && Math.random() > 0.08) {
+            continue;
+          }
+
+          valid = true;
+        }
+
+        return {
+          id: originalIndex + 1,
+          q: item.q,
+          options: shuffledOpts,
+          answerIdx: newCorrectIdx,
+          exp: item.exp
+        };
+      });
+    }
+
+    // Timer Implementation
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        if (timeRemaining <= 0) {
+          timeRemaining = 0;
+          updateTimerDisplay();
+          clearInterval(timerInterval);
+          finishQuiz();
+        } else {
+          updateTimerDisplay();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timeRemaining / 60);
+      const secs = timeRemaining % 60;
+      document.getElementById('timer').textContent = 
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    // UI Rendering
+    function buildGrid() {
+      const gridContainer = document.getElementById('q-grid');
+      gridContainer.innerHTML = '';
+      shuffledQuestions.forEach((_, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `q-btn ${idx === currentQIdx ? 'current' : ''} ${userAnswers[idx] !== undefined ? 'answered' : ''}`;
+        btn.textContent = idx + 1;
+        btn.onclick = () => jumpToQuestion(idx);
+        gridContainer.appendChild(btn);
+      });
+    }
+
+    function renderQuestion() {
+      const item = shuffledQuestions[currentQIdx];
+      document.getElementById('q-num-label').textContent = `Question ${currentQIdx + 1} of 50`;
+      document.getElementById('q-text').textContent = item.q;
+
+      const optsContainer = document.getElementById('options-container');
+      optsContainer.innerHTML = '';
+
+      const prefixes = ['A', 'B', 'C', 'D'];
+      item.options.forEach((optText, oIdx) => {
+        const btn = document.createElement('button');
+        btn.className = `option-btn ${userAnswers[currentQIdx] === oIdx ? 'selected' : ''}`;
+        btn.innerHTML = `<span class="opt-prefix">${prefixes[oIdx]}.</span> <span>${optText}</span>`;
+        btn.onclick = () => selectOption(oIdx);
+        optsContainer.appendChild(btn);
+      });
+
+      // Update Nav Grid highlight
+      buildGrid();
+
+      // Update Prev button state
+      document.getElementById('prev-btn').style.visibility = currentQIdx === 0 ? 'hidden' : 'visible';
+    }
+
+    function selectOption(oIdx) {
+      userAnswers[currentQIdx] = oIdx;
+      renderQuestion();
+    }
+
+    function navigate(direction) {
+      const newIdx = currentQIdx + direction;
+      if (newIdx >= 0 && newIdx < shuffledQuestions.length) {
+        currentQIdx = newIdx;
+        renderQuestion();
+      }
+    }
+
+    function jumpToQuestion(idx) {
+      currentQIdx = idx;
+      renderQuestion();
+    }
+
+    function confirmSubmit() {
+      const answeredCount = Object.keys(userAnswers).length;
+      const confirmText = answeredCount < 50 
+        ? `You have answered ${answeredCount} of 50 questions. Are you sure you want to submit?`
+        : `Are you sure you want to submit your quiz?`;
+      if (confirm(confirmText)) {
+        finishQuiz();
+      }
+    }
+
+    function finishQuiz() {
+      clearInterval(timerInterval);
+
+      document.getElementById('quiz-ui').style.display = 'none';
+      document.getElementById('results-card').style.display = 'block';
+
+      // Calculate score
+      let score = 0;
+      shuffledQuestions.forEach((q, idx) => {
+        if (userAnswers[idx] === q.answerIdx) {
+          score++;
+        }
+      });
+
+      const pct = Math.round((score / 50) * 100);
+      const elapsedSecs = (50 * 60) - timeRemaining;
+      const eMins = Math.floor(elapsedSecs / 60);
+      const eSecs = elapsedSecs % 60;
+
+      document.getElementById('score-val').textContent = `${score} / 50`;
+      document.getElementById('pct-val').textContent = `${pct}%`;
+      document.getElementById('time-val').textContent = `${String(eMins).padStart(2, '0')}:${String(eSecs).padStart(2, '0')}`;
+
+      // Render Detailed Summary
+      const reviewContainer = document.getElementById('review-container');
+      reviewContainer.innerHTML = '';
+
+      const prefixes = ['A', 'B', 'C', 'D'];
+
+      shuffledQuestions.forEach((q, idx) => {
+        const uAns = userAnswers[idx];
+        const isCorrect = uAns === q.answerIdx;
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = `review-item ${isCorrect ? 'correct-border' : 'incorrect-border'}`;
+
+        let optsHtml = '';
+        q.options.forEach((optStr, oIdx) => {
+          let optClass = 'review-opt';
+          if (oIdx === q.answerIdx) {
+            optClass += ' c-ans';
+          } else if (oIdx === uAns && !isCorrect) {
+            optClass += ' u-ans';
+          }
+
+          let label = '';
+          if (oIdx === q.answerIdx) label = ' ✓ (Correct Answer)';
+          if (oIdx === uAns && !isCorrect) label = ' ✗ (Your Answer)';
+
+          optsHtml += `<div class="${optClass}"><strong>${prefixes[oIdx]}.</strong> ${optStr}${label}</div>`;
+        });
+
+        itemDiv.innerHTML = `
+          <div class="review-q-title">Q${idx + 1}. ${q.q}</div>
+          ${optsHtml}
+          <div class="exp-box">
+            <strong>Detailed Explanation:</strong> ${q.exp}
+          </div>
+        `;
+        reviewContainer.appendChild(itemDiv);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    // Initialize Quiz on page load
+    window.onload = () => {
+      randomizeQuiz();
+      startTimer();
+      renderQuestion();
+    };
+  </script>
+</body>
+</html>
