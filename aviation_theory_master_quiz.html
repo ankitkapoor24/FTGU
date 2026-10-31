@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Aviation Theory Master Quiz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cockpit: {
+                            bg: '#0F172A',
+                            card: '#1E293B',
+                            border: '#334155',
+                            accent: '#38BDF8',
+                            warning: '#F59E0B',
+                            danger: '#EF4444',
+                            success: '#10B981',
+                            muted: '#64748B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0B0F19;
+            color: #F8FAFC;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-accent {
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+        }
+        /* Custom radio styling */
+        .option-card:hover {
+            border-color: #38BDF8;
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+        .option-card.selected {
+            border-color: #38BDF8;
+            background-color: rgba(56, 189, 248, 0.12);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-100 bg-slate-950 selection:bg-sky-500 selection:text-white">
+
+    <!-- TOP NAVIGATION / HEADER -->
+    <header class="w-full bg-slate-900/80 border-b border-slate-800 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-sky-500/10 p-2 rounded-lg border border-sky-500/30">
+                    <i class="fa-solid fa-plane-departure text-sky-400 text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-slate-100 leading-tight">Aviation Theory Master Exam</h1>
+                    <p class="text-xs text-slate-400">Atmosphere, Pitot-Static, Altimetry & Procedures</p>
+                </div>
+            </div>
+
+            <!-- Quiz Dynamic Stats Bar -->
+            <div id="top-timer-container" class="flex items-center space-x-4">
+                <div class="bg-slate-800/90 border border-slate-700 px-4 py-1.5 rounded-lg flex items-center space-x-3">
+                    <i class="fa-regular fa-clock text-sky-400 text-lg" id="timer-icon"></i>
+                    <div class="text-right">
+                        <span class="block text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Time Remaining</span>
+                        <span id="timer-display" class="font-mono text-lg font-bold text-sky-400">50:00</span>
+                    </div>
+                </div>
+                <button id="quick-submit-btn" onclick="confirmSubmit()" class="hidden sm:flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-lg transition-all text-sm shadow-lg shadow-emerald-900/20">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                    <span>Submit Exam</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+
+        <!-- START SCREEN OVERLAY -->
+        <div id="start-screen" class="my-auto max-w-3xl mx-auto w-full glass-panel rounded-2xl p-6 sm:p-10 shadow-2xl text-center border border-slate-800">
+            <div class="w-20 h-20 bg-sky-500/10 border border-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-gauge-high text-sky-400 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">50-Question Technical Evaluation</h2>
+            <p class="text-slate-300 text-sm sm:text-base mb-6 max-w-xl mx-auto leading-relaxed">
+                Test your mastery of advanced aerodynamics, ISA atmospheric modeling, pitot-static instrument dynamics, capsule mechanics, and altimetry error corrections.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 text-left max-w-2xl mx-auto">
+                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                    <div class="text-sky-400 text-xl font-bold mb-1">50 Questions</div>
+                    <div class="text-xs text-slate-400">Strictly non-repeating technical aviation theory test items.</div>
+                </div>
+                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                    <div class="text-amber-400 text-xl font-bold mb-1">50 Minutes</div>
+                    <div class="text-xs text-slate-400">Auto-submits when time expires. Full navigation grid included.</div>
+                </div>
+                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                    <div class="text-emerald-400 text-xl font-bold mb-1">Deep Review</div>
+                    <div class="text-xs text-slate-400">Explanations for all choices (A, B, C, D) provided upon completion.</div>
+                </div>
+            </div>
+
+            <button onclick="startQuiz()" class="w-full sm:w-auto px-8 py-4 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-lg shadow-lg shadow-sky-500/20 transition-all hover:scale-105">
+                Begin Examination <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+            </button>
+        </div>
+
+        <!-- ACTIVE QUIZ CONTAINER -->
+        <div id="quiz-screen" class="hidden flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- QUESTION DISPLAY PANEL (LG: 8 COLS) -->
+            <div class="lg:col-span-8 flex flex-col space-y-6">
+                <!-- Question Header Status -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <span id="question-badge" class="bg-sky-500/20 text-sky-400 border border-sky-500/30 font-mono font-bold px-3 py-1 rounded-lg text-sm">
+                            Question 01 / 50
+                        </span>
+                        <span id="topic-tag" class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                            Pitot-Static System
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="flag-btn" onclick="toggleFlagCurrentQuestion()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+                            <i class="fa-regular fa-bookmark text-amber-400" id="flag-icon"></i>
+                            <span id="flag-text">Flag for Review</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Question Box -->
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-6">
+                    <h3 id="question-text" class="text-lg sm:text-xl font-semibold text-slate-100 leading-relaxed">
+                        Loading question...
+                    </h3>
+
+                    <!-- Options Container -->
+                    <div id="options-container" class="space-y-3 pt-2">
+                        <!-- Dynamic Options loaded here -->
+                    </div>
+                </div>
+
+                <!-- Footer Navigation Buttons -->
+                <div class="flex items-center justify-between pt-2">
+                    <button id="prev-btn" onclick="navigateQuestion(-1)" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium rounded-xl text-sm transition flex items-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                        <span>Previous</span>
+                    </button>
+
+                    <div class="flex items-center space-x-3">
+                        <button onclick="skipQuestion()" class="px-4 py-2.5 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-400 hover:text-slate-200 font-medium rounded-xl text-sm transition">
+                            Skip
+                        </button>
+                        <button id="next-btn" onclick="navigateQuestion(1)" class="px-6 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-sm transition flex items-center space-x-2">
+                            <span>Next Question</span>
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUESTION PALETTE & PROGRESS SIDEBAR (LG: 4 COLS) -->
+            <div class="lg:col-span-4 flex flex-col space-y-6">
+                <!-- Navigation Matrix Card -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h4 class="font-bold text-sm text-slate-200 uppercase tracking-wider">Question Palette</h4>
+                        <span id="answered-count-badge" class="text-xs font-mono bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">0 / 50 Answered</span>
+                    </div>
+
+                    <!-- Filter Legend -->
+                    <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-400 pt-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-sky-500"></span>
+                            <span>Current</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-emerald-600"></span>
+                            <span>Answered</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-amber-500"></span>
+                            <span>Flagged</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-slate-800 border border-slate-700"></span>
+                            <span>Unanswered</span>
+                        </div>
+                    </div>
+
+                    <!-- 50 Button Grid -->
+                    <div id="question-grid" class="grid grid-cols-5 sm:grid-cols-10 lg:grid-cols-5 gap-2 pt-2 max-h-[340px] overflow-y-auto custom-scrollbar p-1">
+                        <!-- Grid buttons generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Exam Status Summary Card -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3 text-xs">
+                    <h4 class="font-bold text-sm text-slate-200 border-b border-slate-800 pb-2">Exam Instructions</h4>
+                    <ul class="space-y-2 text-slate-400 list-disc list-inside">
+                        <li>You may skip and return to any question before submitting.</li>
+                        <li>Shuffling prevents answer sequence prediction.</li>
+                        <li>Option choice length adheres to strict statistical balance standards.</li>
+                    </ul>
+                    <div class="pt-2">
+                        <button onclick="confirmSubmit()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-950/40">
+                            Submit Final Answers
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS & DEEP BREAKDOWN SCREEN -->
+        <div id="results-screen" class="hidden flex-grow space-y-8 py-4">
+            <!-- Score Overview Card -->
+            <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-2xl text-center relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl"></div>
+                <div class="relative z-10 max-w-3xl mx-auto space-y-4">
+                    <span class="px-3 py-1 bg-slate-800 border border-slate-700 text-sky-400 text-xs font-semibold rounded-full uppercase tracking-wider">Evaluation Complete</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Official Performance Summary</h2>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="block text-xs text-slate-400">Total Score</span>
+                            <span id="res-score" class="text-2xl sm:text-3xl font-bold text-sky-400 font-mono">0 / 50</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="block text-xs text-slate-400">Percentage</span>
+                            <span id="res-percent" class="text-2xl sm:text-3xl font-bold text-emerald-400 font-mono">0%</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="block text-xs text-slate-400">Time Taken</span>
+                            <span id="res-time" class="text-2xl sm:text-3xl font-bold text-amber-400 font-mono">00:00</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="block text-xs text-slate-400">Status</span>
+                            <span id="res-status" class="text-xl sm:text-2xl font-bold text-slate-200">PASS</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex flex-wrap justify-center gap-4">
+                        <button onclick="resetAndRestart()" class="px-6 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-sm transition flex items-center space-x-2">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Retake Exam (Reshuffle)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Question Breakdown List -->
+            <div class="space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <h3 class="text-xl font-bold text-slate-100 flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check text-sky-400"></i>
+                        <span>Itemized Question Analysis & Choice Explanations</span>
+                    </h3>
+                    <span class="text-xs text-slate-400">Showing full explanation breakdown for options A, B, C, & D</span>
+                </div>
+
+                <div id="breakdown-container" class="space-y-6">
+                    <!-- Dynamic detailed breakdown cards inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full border-t border-slate-800 bg-slate-950 py-4 text-center text-xs text-slate-500">
+        <p>Aviation Theory & Instrument Operations • Pitot-Static System, ISA Atmosphere, Altimetry</p>
+    </footer>
+
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirm-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel max-w-md w-full p-6 rounded-2xl border border-slate-800 space-y-4 shadow-2xl">
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                <i class="fa-solid fa-circle-exclamation text-amber-400"></i>
+                <span>Confirm Exam Submission</span>
+            </h3>
+            <p id="modal-warning-text" class="text-sm text-slate-300 leading-relaxed">
+                Are you sure you want to finalize your exam submission now?
+            </p>
+            <div class="flex items-center justify-end space-x-3 pt-2">
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium">Continue Quiz</button>
+                <button onclick="submitQuiz()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg shadow-emerald-950/50">Submit Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        /* ==========================================================================
+           1. MASTER RAW QUESTION BANK (50 Non-Repeating Deep Aviation Theory Questions)
+           ========================================================================== */
+        const masterQuestionBank = [
+            // PITOT-STATIC SYSTEM
+            {
+                topic: "Pitot-Static System",
+                question: "Which of the primary flight instruments relies exclusively on total dynamic pressure provided directly by the pitot tube system?",
+                options: [
+                    { text: "Airspeed Indicator (ASI)", correct: true },
+                    { text: "Vertical Speed Indicator (VSI)", correct: false },
+                    { text: "Sensitive Altimeter", correct: false },
+                    { text: "Turn Coordinator", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The Airspeed Indicator measures total pressure (pitot dynamic + static) minus static pressure to isolate dynamic pressure.",
+                    B: "Incorrect. The VSI relies exclusively on static pressure changes via a calibrated leak mechanism.",
+                    C: "Incorrect. The Altimeter measures ambient static pressure variations against an internal sealed reference pressure.",
+                    D: "Incorrect. The Turn Coordinator is a gyroscopic instrument powered electrically or pneumatically, independent of pitot-static pressure."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "If an aircraft's pitot tube opening becomes completely blocked by ice, but the drain hole remains open, what will the Airspeed Indicator (ASI) read?",
+                options: [
+                    { text: "Zero airspeed immediately", correct: true },
+                    { text: "Increase as altitude increases", correct: false },
+                    { text: "Freeze at the current reading", correct: false },
+                    { text: "Fluctuate wildly with pitch", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. With the pitot ram inlet blocked and drain open, trapped dynamic pressure escapes through the drain hole to static pressure, causing ASI to drop to zero.",
+                    B: "Incorrect. This behavior occurs when both pitot tube and drain hole are completely blocked.",
+                    C: "Incorrect. Static pressure still feeds the diaphragm exterior, but dynamic pressure decays to ambient static pressure via the open drain.",
+                    D: "Incorrect. Fluctuations are not typical; the pressure bleeds off smoothly to equalize ambient static pressure."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "What happens to the Airspeed Indicator (ASI) when both the pitot tube entry port and the pitot drain hole are completely blocked by ice during a climb?",
+                options: [
+                    { text: "ASI acts as an altimeter, indicating an overread as altitude increases", correct: true },
+                    { text: "ASI drops to zero rapidly due to loss of dynamic air pressure inlet flow", correct: false },
+                    { text: "ASI severely underreads, showing a stall speed at cruise pitch attitude", correct: false },
+                    { text: "ASI freezes permanently at the exact airspeed where blockage occurred", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Trapped pitot pressure stays constant while static pressure inside instrument case decreases during climb, expanding diaphragm and overreading airspeed.",
+                    B: "Incorrect. The drop to zero only occurs when the drain hole remains open to vent dynamic pressure.",
+                    C: "Incorrect. The ASI overreads during climb, creating a dangerous false impression of excessive airspeed.",
+                    D: "Incorrect. The reading changes with altitude variations because ambient static pressure outside the diaphragm continues to drop during climb."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "When switching to an alternate static source located inside an unpressurized cockpit, how are instrument readings typically affected?",
+                options: [
+                    { text: "Altimeter indicates higher than actual altitude; ASI overreads airspeed", correct: true },
+                    { text: "Altimeter indicates lower than actual altitude; ASI underreads airspeed", correct: false },
+                    { text: "Altimeter indicates lower than actual altitude; VSI shows immediate descent", correct: false },
+                    { text: "Altimeter remains unaffected; ASI and VSI freeze at current indications", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Cockpit suction caused by airflow over fuselage lowers cockpit ambient pressure. Lower static pressure causes higher altimeter reading and higher ASI indication.",
+                    B: "Incorrect. Lower static pressure inside the cockpit leads to higher (not lower) altimeter and airspeed readings.",
+                    C: "Incorrect. The temporary pressure drop causes the VSI to momentarily register a climb, not a descent.",
+                    D: "Incorrect. All static instruments react to the pressure differential of the unpressurized cockpit."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "The calibrated leak in the Vertical Speed Indicator (VSI) serves what specific mechanical purpose?",
+                options: [
+                    { text: "Equalizes diaphragm pressure slowly to yield rate-of-pressure change readings", correct: true },
+                    { text: "Prevents over-pressurization of the sealed aneroid wafer during rapid dives", correct: false },
+                    { text: "Dampens turbulent airspeed oscillations within the pitot inlet plumbing lines", correct: false },
+                    { text: "Vents ambient cockpit air into the instrument case during alternate static use", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The calibrated leak allows static pressure inside the VSI case to change at a controlled, delayed rate relative to the diaphragm.",
+                    B: "Incorrect. The VSI does not contain an aneroid wafer; it uses a flexible diaphragm and calibrated restricted orifice.",
+                    C: "Incorrect. Dampening pitot line turbulence is handled by drain holes and sumps, not the VSI calibrated leak.",
+                    D: "Incorrect. The calibrated leak connects internal case pressure to static lines, not cockpit air directly."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "What static system failure indication occurs on the Vertical Speed Indicator (VSI) when the primary static port freezes completely shut?",
+                options: [
+                    { text: "VSI returns to and stabilizes at zero rate of climb/descent", correct: true },
+                    { text: "VSI indicates a continuous maximum rate of climb indefinitely", correct: false },
+                    { text: "VSI indicates a continuous maximum rate of descent indefinitely", correct: false },
+                    { text: "VSI diaphragm ruptures immediately due to differential expansion", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. When static port blocks, pressure inside both VSI diaphragm and case equalizes over time via the calibrated leak, resulting in a zero reading.",
+                    B: "Incorrect. Indication of continuous climb occurs briefly when changing static source, not permanent port blockage.",
+                    C: "Incorrect. Continuous descent indication is not produced by a simple static port freeze.",
+                    D: "Incorrect. Differential pressure across the calibrated leak gradually vents, avoiding diaphragm destruction."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "Dynamic pressure is mathematically defined as which of the following operational relationships?",
+                options: [
+                    { text: "Total Pressure minus Static Pressure", correct: true },
+                    { text: "Static Pressure minus Pitot Pressure", correct: false },
+                    { text: "Total Pressure plus Static Pressure", correct: false },
+                    { text: "Impact Pressure divided by Density Ratio", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Total pressure (q + p) minus static pressure (p) equals dynamic pressure (q = 1/2 * rho * V^2).",
+                    B: "Incorrect. Static minus pitot results in a negative dynamic value which is physically impossible in flight.",
+                    C: "Incorrect. Dynamic pressure is isolated by subtraction of ambient static pressure, not addition.",
+                    D: "Incorrect. Dynamic pressure is not derived by dividing impact pressure by density ratio."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "Which errors are inherently eliminated when Calibrated Airspeed (CAS) is calculated from Indicated Airspeed (IAS)?",
+                options: [
+                    { text: "Position and Instrument Errors", correct: true },
+                    { text: "Compressibility and Altitude Errors", correct: false },
+                    { text: "Density and Temperature Errors", correct: false },
+                    { text: "Mechanical Friction and Hysteresis", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Calibrated Airspeed (CAS) is IAS corrected for instrument inaccuracies and static port location/position errors.",
+                    B: "Incorrect. Equivalent Airspeed (EAS) corrects CAS for atmospheric compressibility effects.",
+                    C: "Incorrect. True Airspeed (TAS) corrects CAS/EAS for density and temperature variations.",
+                    D: "Incorrect. Mechanical friction is part of basic instrument error, but position error is specifically corrected between IAS and CAS."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "At high subsonic flight Mach numbers (above 200 knots TAS at high altitudes), which airspeed correction becomes essential?",
+                options: [
+                    { text: "Compressibility Error Correction", correct: true },
+                    { text: "Static Line Lag Error Correction", correct: false },
+                    { text: "Barometric Lapse Rate Correction", correct: false },
+                    { text: "Temperature Inversion Correction", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Air compression ahead of the pitot tube at speeds over 200 knots causes over-reading, requiring compressibility correction to find EAS.",
+                    B: "Incorrect. Static lag affects VSI/Altimeter response during rapid maneuvering, not Mach compressibility effects.",
+                    C: "Incorrect. Barometric lapse rate corrections apply to altimetry altitude calculations.",
+                    D: "Incorrect. Temperature inversion corrections apply to density altitude calculations, not airspeed compressibility."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "What is the primary operational hazard of executing a climb with a completely frozen pitot tube and open drain hole?",
+                options: [
+                    { text: "The ASI will indicate zero, leaving the pilot without airspeed awareness", correct: true },
+                    { text: "The ASI will continuously overread, inducing an accidental stall", correct: false },
+                    { text: "The Altimeter will lock up at the altitude where freezing occurred", correct: false },
+                    { text: "The VSI will indicate a rapid descent despite being in a steady climb", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. An open drain vents trapped air to static ambient pressure, driving the ASI needle down to zero.",
+                    B: "Incorrect. Overreading occurs when both pitot tube inlet and drain hole are blocked.",
+                    C: "Incorrect. The altimeter operates on static pressure lines and is unaffected by pitot line ice.",
+                    D: "Incorrect. VSI relies on static lines only; pitot freezing does not alter VSI operation."
+                }
+            },
+
+            // ISA ATMOSPHERE
+            {
+                topic: "ISA Atmosphere",
+                question: "What are the standard baseline temperature and pressure values defined for International Standard Atmosphere (ISA) at mean sea level (MSL)?",
+                options: [
+                    { text: "15°C (59°F) and 1013.25 hPa / 29.92 inHg", correct: true },
+                    { text: "0°C (32°F) and 1000.00 hPa / 29.92 inHg", correct: false },
+                    { text: "20°C (68°F) and 1013.25 hPa / 30.00 inHg", correct: false },
+                    { text: "15°C (59°F) and 1000.25 hPa / 29.82 inHg", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Standard atmospheric sea level baseline is defined as 15°C and 1013.25 hectopascals (millibars) or 29.92 inches of mercury.",
+                    B: "Incorrect. 0°C is freezing temperature, not the standard atmosphere baseline temperature of 15°C.",
+                    C: "Incorrect. Standard temperature is 15°C, not 20°C, and standard pressure is 29.92 inHg, not 30.00 inHg.",
+                    D: "Incorrect. 1000.25 hPa is incorrect; the precise standard value is 1013.25 hPa."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "What standard thermal lapse rate is assumed by the International Standard Atmosphere model in the troposphere up to 36,089 feet (11,000 meters)?",
+                options: [
+                    { text: "1.98°C (approx. 2.0°C) decrease per 1,000 feet climb", correct: true },
+                    { text: "3.50°C decrease per 1,000 feet climb", correct: false },
+                    { text: "1.00°C decrease per 1,000 feet climb", correct: false },
+                    { text: "6.50°C decrease per 1,000 feet climb", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The standard atmospheric temperature lapse rate in the troposphere is 1.98°C (6.5°C per 1,000 meters or ~2°C per 1,000 ft).",
+                    B: "Incorrect. 3.5°F (not °C) per 1,000 ft is the Fahrenheit equivalent lapse rate.",
+                    C: "Incorrect. 1.0°C per 1,000 ft is roughly the dry adiabatic lapse rate half-value, not standard ISA.",
+                    D: "Incorrect. 6.5°C is the standard lapse rate per 1,000 meters (3,280 ft), not per 1,000 feet."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "Calculate the standard ISA air temperature at an altitude of 18,000 feet MSL.",
+                options: [
+                    { text: "-21°C", correct: true },
+                    { text: "-36°C", correct: false },
+                    { text: "-15°C", correct: false },
+                    { text: "-06°C", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. ISA Temp = 15°C - (18 * 1.98°C) = 15°C - 35.64°C ≈ -20.64°C (rounded to -21°C).",
+                    B: "Incorrect. -36°C would result from using a 3°C per 1,000 ft lapse rate.",
+                    C: "Incorrect. -15°C miscalculates the temperature decrease by nearly 6°C.",
+                    D: "Incorrect. -6°C assumes a lapse rate of only 1.1°C per 1,000 feet."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "At FL240 (24,000 feet), the Outside Air Temperature (OAT) is measured at -43°C. What is the atmospheric temperature deviation from ISA?",
+                options: [
+                    { text: "ISA -10°C", correct: true },
+                    { text: "ISA +10°C", correct: false },
+                    { text: "ISA -05°C", correct: false },
+                    { text: "ISA +05°C", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Standard ISA Temp at 24,000 ft = 15 - (24 * 2) = -33°C. Measured OAT = -43°C. Deviation = -43 - (-33) = ISA -10°C.",
+                    B: "Incorrect. ISA +10°C would imply an actual temperature of -23°C.",
+                    C: "Incorrect. ISA -5°C would imply an actual temperature of -38°C.",
+                    D: "Incorrect. ISA +5°C would imply an actual temperature of -28°C."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "Above the Tropopause baseline (36,089 ft) up to 65,617 ft (20,000 m), how does temperature behave in the standard atmosphere model?",
+                options: [
+                    { text: "Temperature remains constant at -56.5°C (Isothermal Layer)", correct: true },
+                    { text: "Temperature increases at a rate of +1.0°C per 1,000 feet", correct: false },
+                    { text: "Temperature decreases at a faster rate of -3.0°C per 1,000 feet", correct: false },
+                    { text: "Temperature drops linearly until reaching absolute zero", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The lower stratosphere between 36,089 ft and 65,617 ft is modeled as an isothermal layer at -56.5°C.",
+                    B: "Incorrect. Inversion occurs in higher atmospheric layers (upper stratosphere), not immediately at tropopause baseline.",
+                    C: "Incorrect. The lapse rate does not increase; lapse rate becomes zero in this isothermal zone.",
+                    D: "Incorrect. Atmospheric model temperatures stabilize before slowly rising in upper stratospheric layers."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "What rule of thumb describes the standard pressure lapse rate in the lower atmosphere near sea level?",
+                options: [
+                    { text: "1 inch of mercury (inHg) drop per 1,000 feet climb", correct: true },
+                    { text: "2 inches of mercury (inHg) drop per 1,000 feet climb", correct: false },
+                    { text: "1 millibar (hPa) drop per 1,000 feet climb", correct: false },
+                    { text: "5 inches of mercury (inHg) drop per 1,000 feet climb", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. In the lower troposphere, atmospheric pressure decreases by approximately 1 inHg (or ~30 hPa) per 1,000 ft altitude gain.",
+                    B: "Incorrect. A 2 inHg drop per 1,000 ft overstates lower atmosphere rate of pressure decay.",
+                    C: "Incorrect. Pressure drops by 1 hPa approx every 27 to 30 feet, not per 1,000 feet.",
+                    D: "Incorrect. A 5 inHg drop per 1,000 ft is extremely excessive and inaccurate."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "Density altitude is formally defined as which of the following statements?",
+                options: [
+                    { text: "Pressure altitude corrected for non-standard temperature variations", correct: true },
+                    { text: "True altitude corrected for position and instrument installation error", correct: false },
+                    { text: "Absolute altitude above ground level adjusted for humidity", correct: false },
+                    { text: "Indicated altitude adjusted for altimeter setting regional differences", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Density altitude is pressure altitude adjusted for non-standard temperature deviation.",
+                    B: "Incorrect. True altitude corrected for instrument position error yields calibrated altitude, not density altitude.",
+                    C: "Incorrect. Absolute altitude is height above ground level (AGL).",
+                    D: "Incorrect. Indicated altitude adjusted for altimeter setting gives pressure or true altitude depending on barometric datum."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "How does high ambient air temperature affect aircraft takeoff performance and density altitude?",
+                options: [
+                    { text: "Increases density altitude, lowering air density and reducing engine performance", correct: true },
+                    { text: "Decreases density altitude, increasing air density and enhancing lift", correct: false },
+                    { text: "Increases air density, allowing shorter takeoff ground rolls", correct: false },
+                    { text: "Has zero effect on density altitude which is governed purely by pressure", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. High temperature decreases air density, which elevates density altitude, reducing engine thrust, propeller efficiency, and wing lift.",
+                    B: "Incorrect. High temperatures increase density altitude; low density altitudes correspond to dense, cool air.",
+                    C: "Incorrect. Warmer air is less dense, extending required ground roll.",
+                    D: "Incorrect. Temperature is a primary variable altering density altitude independently of barometric pressure."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "What is the standard air density value defined at sea level in the ISA model?",
+                options: [
+                    { text: "1.225 kg/m³", correct: true },
+                    { text: "0.985 kg/m³", correct: false },
+                    { text: "2.115 kg/m³", correct: false },
+                    { text: "1.000 kg/m³", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The International Standard Atmosphere standard sea level density (rho-zero) is defined as 1.225 kg/m³ (0.002377 slugs/ft³).",
+                    B: "Incorrect. 0.985 kg/m³ represents air density at significantly higher elevations.",
+                    C: "Incorrect. 2.115 kg/m³ represents air density far higher than earth surface atmospheric levels.",
+                    D: "Incorrect. 1.000 kg/m³ is water density baseline in metric units, not ISA air density."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "In warmer than standard atmosphere, how does the actual vertical distance between pressure surfaces compare to standard ISA conditions?",
+                options: [
+                    { text: "Pressure surfaces spread apart, increasing physical vertical spacing", correct: true },
+                    { text: "Pressure surfaces compress closer together vertically", correct: false },
+                    { text: "Pressure surfaces remain at identical physical heights", correct: false },
+                    { text: "Pressure surfaces tilt horizontally due to Coriolis acceleration", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Warm air expands, increasing the vertical column distance (spacing) between constant pressure levels.",
+                    B: "Incorrect. Pressure surfaces compress closer together in cold air, not warm air.",
+                    C: "Incorrect. Temperature directly alters atmospheric density and vertical column spacing.",
+                    D: "Incorrect. Horizontal surface tilt is a synoptic gradient effect, not standard vertical thermal expansion."
+                }
+            },
+
+            // HOW ALTIMETERS WORK
+            {
+                topic: "How Altimeters Work",
+                question: "What internal component inside a mechanical sensitive altimeter expands and contracts in response to ambient static pressure changes?",
+                options: [
+                    { text: "Sealed Aneroid Capsule (Wafer)", correct: true },
+                    { text: "Calibrated Restrictive Leak Diaphragm", correct: false },
+                    { text: "Bimetallic Thermal Bourdon Tube", correct: false },
+                    { text: "Pneumatic Gyroscopic Rotor", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The sensitive altimeter relies on partially evacuated, sealed aneroid capsules that expand as static case pressure drops.",
+                    B: "Incorrect. A calibrated restrictive leak diaphragm is the primary mechanism inside a Vertical Speed Indicator (VSI).",
+                    C: "Incorrect. Bourdon tubes measure fluid or high mechanical pressures, not altimeter static pressures.",
+                    D: "Incorrect. Gyroscopic rotors power flight attitude instruments, not barometric altimeters."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "What pressure is sealed inside the interior of a sensitive altimeter's aneroid capsule?",
+                options: [
+                    { text: "Partial vacuum standard pressure reference (29.92 inHg)", correct: true },
+                    { text: "Dynamic pitot pressure trapped during calibration", correct: false },
+                    { text: "Cockpit ambient static pressure at sea level", correct: false },
+                    { text: "High-pressure compressed nitrogen gas", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Aneroid wafers are evacuated to a near-vacuum sealed internal pressure reference (29.92 inHg baseline standard).",
+                    B: "Incorrect. Pitot pressure is dynamic air fed to the ASI; altimeters do not use pitot pressure.",
+                    C: "Incorrect. Cockpit ambient static pressure surrounds the exterior of the capsule inside the case.",
+                    D: "Incorrect. Nitrogen gas is not used to fill sensitive altimeter aneroid capsules."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "Adjusting the barometric scale knob on an altimeter modifies which specific internal mechanical assembly?",
+                options: [
+                    { text: "Rotates the pointer dial and scale relative to the aneroid capsule linkage", correct: true },
+                    { text: "Changes the internal vacuum pressure level inside the aneroid wafer", correct: false },
+                    { text: "Adjusts the diameter of the calibrated leak orifice", correct: false },
+                    { text: "Restricts static airflow entering the outer instrument casing", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Rotating the barometric knob mechanically repositions the sub-scale dial and indicator linkages without altering internal wafer vacuum.",
+                    B: "Incorrect. The internal wafer pressure is permanently sealed and cannot be mechanically adjusted by the knob.",
+                    C: "Incorrect. Calibrated leak orifices belong to the VSI system.",
+                    D: "Incorrect. Static airflow entry rate is governed by static line plumbing, not the baro knob."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "What is the function of the bimetallic strip incorporated into sensitive altimeter capsule linkages?",
+                options: [
+                    { text: "Compensates for mechanical expansion and contraction caused by temperature changes", correct: true },
+                    { text: "Dampens rapid pointer oscillation caused by flight turbulence", correct: false },
+                    { text: "Prevents gear slippage when setting high barometric pressures", correct: false },
+                    { text: "Automatically adjusts the Kollsman window for non-standard lapse rates", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. A bimetallic strip neutralizes metal expansion/contraction errors inside the instrument linkage caused by ambient temperature changes.",
+                    B: "Incorrect. Dampening turbulence is accomplished by mechanical hairsprings and fluid dampeners.",
+                    C: "Incorrect. Gear design prevents slippage, not bimetallic thermal strips.",
+                    D: "Incorrect. Standard altimeters cannot automatically compensate for atmospheric non-standard lapse rates."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "If an altimeter is static-port connected and the aircraft climbs, what mechanical motion occurs inside the instrument?",
+                options: [
+                    { text: "Case pressure decreases, allowing the aneroid capsule to expand", correct: true },
+                    { text: "Case pressure increases, causing the aneroid capsule to compress", correct: false },
+                    { text: "Case pressure decreases, forcing the aneroid capsule to collapse", correct: false },
+                    { text: "Case pressure remains constant while inner capsule pressure increases", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. As altitude increases, static pressure in the case drops, allowing sealed internal vacuum pressure to expand the wafer.",
+                    B: "Incorrect. Case pressure decreases during a climb, not increases.",
+                    C: "Incorrect. Decreasing case pressure allows expansion, whereas increasing case pressure compresses the wafer.",
+                    D: "Incorrect. Capsule pressure is sealed; case pressure changes around it."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "What tolerance limit is generally acceptable for a sensitive altimeter during a pre-flight instrument check at a known field elevation?",
+                options: [
+                    { text: "±75 feet of field elevation when set to local QNH", correct: true },
+                    { text: "±20 feet of field elevation when set to local QNH", correct: false },
+                    { text: "±150 feet of field elevation when set to standard 29.92 inHg", correct: false },
+                    { text: "±10 feet of field elevation regardless of setting", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Standard ICAO/FAA pre-flight inspection limit mandates that the altimeter must indicate within ±75 feet of known field elevation when set to QNH.",
+                    B: "Incorrect. ±20 feet is overly restrictive for mechanical aviation altimeters.",
+                    C: "Incorrect. ±150 feet exceeds safe operational tolerances for instrument flight clearance.",
+                    D: "Incorrect. ±10 feet is unreasonable for traditional mechanical aneroid altimeters."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "What visual indication appears on many sensitive altimeters at low altitudes below 10,000 feet to prevent misreading hands?",
+                options: [
+                    { text: "A cross-hatched (striped) warning flag or indicator sector", correct: true },
+                    { text: "A flashing red light emitting from the Kollsman window", correct: false },
+                    { text: "An audible warning tone sounding through the cockpit intercom", correct: false },
+                    { text: "The 10,000-foot pointer retracts fully behind the dial face", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. A striped or cross-hatched window flag appears on the dial face at altitudes below 10,000 ft MSL to alert pilots.",
+                    B: "Incorrect. Mechanical altimeters do not feature electrical warning lights in Kollsman windows.",
+                    C: "Incorrect. Intercom audio tones are part of electronic ground proximity warning systems (GPWS), not mechanical altimeters.",
+                    D: "Incorrect. The 10,000-foot pointer remains connected to mechanical gear trains rather than retracting."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "What term describes the mechanical lag error that occurs in an altimeter after maintaining a constant altitude for an extended period?",
+                options: [
+                    { text: "Hysteresis Error", correct: true },
+                    { text: "Position Error", correct: false },
+                    { text: "Barometric Drift", correct: false },
+                    { text: "Compressibility Lag", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Hysteresis is the temporary lag in aneroid capsule response caused by elastic retention after remaining at an altitude.",
+                    B: "Incorrect. Position error is caused by airflow disturbance at the static port location.",
+                    C: "Incorrect. Barometric drift refers to changes in atmospheric weather pressure systems, not mechanical lag.",
+                    D: "Incorrect. Compressibility lag affects pitot-based airspeed measurements at high Mach numbers."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "How does an increase in barometric setting in the Kollsman window affect the indicated altitude on the dial?",
+                options: [
+                    { text: "Indicated altitude increases (approx. 1,000 ft per 1 inHg change)", correct: true },
+                    { text: "Indicated altitude decreases proportionally", correct: false },
+                    { text: "Indicated altitude remains unaffected until the aircraft climbs", correct: false },
+                    { text: "Indicated altitude drops immediately to zero", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Dialing up a higher barometric pressure setting turns hands to display a higher indicated altitude (~1,000 ft per 1.0 inHg).",
+                    B: "Incorrect. Increasing the setting increases indicated altitude; decreasing setting lowers indicated altitude.",
+                    C: "Incorrect. Changing the setting mechanically moves pointers immediately without aircraft motion.",
+                    D: "Incorrect. Setting changes shift pointers smoothly without zeroing."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "The three hands on a traditional sensitive mechanical altimeter indicate altitude in what increments?",
+                options: [
+                    { text: "100 ft (longest), 1,000 ft (medium), 10,000 ft (shortest/needle with box)", correct: true },
+                    { text: "10 ft (longest), 100 ft (medium), 1,000 ft (shortest)", correct: false },
+                    { text: "1,000 ft (longest), 5,000 ft (medium), 10,000 ft (shortest)", correct: false },
+                    { text: "50 ft (longest), 500 ft (medium), 5,000 ft (shortest)", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Long hand = 100 ft increments; Short hand = 1,000 ft increments; Longest thin needle (or needle with inverted triangle/box) = 10,000 ft increments.",
+                    B: "Incorrect. The longest hand measures 100 ft per revolution, not 10 ft.",
+                    C: "Incorrect. The hands represent 100, 1,000, and 10,000 ft increments.",
+                    D: "Incorrect. Standard mechanical altimeter hands do not use 50/500/5,000 ft scale factors."
+                }
+            },
+
+            // ALTIMETRY & PROCEDURES
+            {
+                topic: "Altimetry & Procedures",
+                question: "Which barometric altimeter setting sets the scale so that the altimeter indicates height above the airfield datum (0 feet on ground)?",
+                options: [
+                    { text: "QFE", correct: true },
+                    { text: "QNH", correct: false },
+                    { text: "QNE", correct: false },
+                    { text: "Standard Baro (1013.25)", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. QFE is field elevation pressure setting; when set, altimeter reads zero feet while resting on the runway threshold.",
+                    B: "Incorrect. QNH sets local station pressure reduced to sea level, indicating altitude above mean sea level (MSL).",
+                    C: "Incorrect. QNE is standard pressure (29.92 inHg / 1013.25 hPa) used above transition altitude for Flight Levels.",
+                    D: "Incorrect. 1013.25 hPa is standard QNE, which reads pressure altitude."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "What altitude reference is displayed on an altimeter when set to local QNH?",
+                options: [
+                    { text: "Indicated Altitude representing height above Mean Sea Level (MSL)", correct: true },
+                    { text: "Pressure Altitude representing height above the 29.92 inHg datum", correct: false },
+                    { text: "Density Altitude representing aerodynamic performance height", correct: false },
+                    { text: "Absolute Altitude representing exact height Above Ground Level (AGL)", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Setting local QNH adjusts altimeter to indicate altitude above mean sea level (MSL) at the reporting station.",
+                    B: "Incorrect. Pressure altitude is displayed when set to QNE (29.92 inHg / 1013.25 hPa).",
+                    C: "Incorrect. Density altitude is calculated by correcting pressure altitude for non-standard temperature.",
+                    D: "Incorrect. Absolute altitude (AGL) is indicated when set to QFE at the station airfield."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "Flying from an area of high pressure into an area of low pressure without updating the altimeter setting results in which dangerous error?",
+                options: [
+                    { text: "Aircraft flies LOWER than the altimeter indicates", correct: true },
+                    { text: "Aircraft flies HIGHER than the altimeter indicates", correct: false },
+                    { text: "Altimeter indicates zero feet continuously", correct: false },
+                    { text: "Airspeed indicator overreads by double the pressure drop", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Memory rule: 'From High to Low, Look Out Below.' The altimeter senses lower pressure and overreads, keeping the pilot lower than indicated.",
+                    B: "Incorrect. Flying from low to high pressure causes aircraft to fly higher than indicated.",
+                    C: "Incorrect. The altimeter continues functioning but reads incorrectly high relative to true altitude.",
+                    D: "Incorrect. Airspeed errors depend on pitot-static pressure differences, not purely barometric altimetry drift."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "Flying through air that is significantly colder than ISA conditions causes what effect on true altitude?",
+                options: [
+                    { text: "True altitude is LOWER than indicated altitude", correct: true },
+                    { text: "True altitude is HIGHER than indicated altitude", correct: false },
+                    { text: "True altitude equals pressure altitude exactly", correct: false },
+                    { text: "Indicated altitude drops rapidly while true altitude stays constant", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Memory rule: 'From Hot to Cold, Look Out Below.' Cold air compresses pressure surfaces, leaving aircraft lower than indicated.",
+                    B: "Incorrect. Hot air expands pressure surfaces, making true altitude higher than indicated altitude.",
+                    C: "Incorrect. Pressure altitude equals true altitude only in standard ISA temperature conditions.",
+                    D: "Incorrect. Indicated altitude stays fixed on altimeter setting while true altitude drops in cold air."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "What is the Transition Altitude defined as in aviation operations?",
+                options: [
+                    { text: "Altitude at or below which aircraft position is controlled by reference to QNH", correct: true },
+                    { text: "Lowest flight level available above 18,000 feet MSL", correct: false },
+                    { text: "Vertical layer where altimeter sub-scale must be changed during descent", correct: false },
+                    { text: "Airfield elevation plus standard temperature lapse rate adjustment", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Transition Altitude is the altitude at or below which aircraft vertical position is controlled with reference to local QNH.",
+                    B: "Incorrect. Lowest flight level available above transition altitude is the Transition Level.",
+                    C: "Incorrect. The airspace layer between Transition Altitude and Transition Level is called the Transition Layer.",
+                    D: "Incorrect. Transition altitude is fixed by air traffic control authorities based on airspace structure."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "When climbing through the Transition Altitude, what action must the flight crew perform on the altimeter sub-scale?",
+                options: [
+                    { text: "Set standard pressure reference 29.92 inHg (1013.25 hPa) / QNE", correct: true },
+                    { text: "Set destination airport QFE barometric pressure", correct: false },
+                    { text: "Reset QNH to regional maximum altimeter setting", correct: false },
+                    { text: "Cross-check altimeter against GPS geometric height", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. When passing above transition altitude climbing, altimeters are set to standard 29.92 inHg / 1013.25 hPa (QNE) to report Flight Levels.",
+                    B: "Incorrect. Destination QFE is not set when climbing into en-route Flight Levels.",
+                    C: "Incorrect. Regional QNH is used below transition altitude, not above in upper airspace.",
+                    D: "Incorrect. GPS geometric altitude is not substituted for standard barometric altimeter settings."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "The airspace located between the Transition Altitude and the Transition Level is known as what?",
+                options: [
+                    { text: "Transition Layer", correct: true },
+                    { text: "Isothermal Layer", correct: false },
+                    { text: "Tropopause Buffer Zone", correct: false },
+                    { text: "Minimum Vectoring Altitude", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The vertical airspace block sandwiched between Transition Altitude (climbing reference) and Transition Level (descending reference) is the Transition Layer.",
+                    B: "Incorrect. Isothermal layer refers to atmospheric boundary layer where temperature remains constant (e.g., lower stratosphere).",
+                    C: "Incorrect. Tropopause buffer zone is a meteorology term, not an altimetry airspace reference.",
+                    D: "Incorrect. Minimum Vectoring Altitude (MVA) is lowest altitude ATC may vector IFR aircraft."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "Calculate the Pressure Altitude of an airport with a field elevation of 3,500 feet MSL when the current local QNH altimeter setting is 29.42 inHg.",
+                options: [
+                    { text: "4,000 feet", correct: true },
+                    { text: "3,000 feet", correct: false },
+                    { text: "3,500 feet", correct: false },
+                    { text: "4,200 feet", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Formula: PA = Elevation + (29.92 - QNH) * 1,000. PA = 3,500 + (29.92 - 29.42) * 1,000 = 3,500 + 500 = 4,000 feet.",
+                    B: "Incorrect. 3,000 ft would result if QNH were 30.42 inHg (subtracting 500 ft instead of adding).",
+                    C: "Incorrect. 3,500 ft equals field elevation, ignoring lower local pressure.",
+                    D: "Incorrect. 4,200 ft overestimates pressure difference calculation."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "What is QNE in practical altimetry operations?",
+                options: [
+                    { text: "The standard pressure setting (1013.25 hPa / 29.92 inHg) used to display Flight Levels", correct: true },
+                    { text: "The sea level pressure adjusted for non-standard atmospheric temperature", correct: false },
+                    { text: "The airfield surface pressure corrected for temperature lapse", correct: false },
+                    { text: "The differential altimeter error observed during high-speed dives", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. QNE is standard datum pressure (29.92 inHg / 1013.25 hPa) used by all aircraft operating at or above transition level.",
+                    B: "Incorrect. Sea level pressure corrected for temperature is an altimetry calculation, not QNE definition.",
+                    C: "Incorrect. Airfield surface pressure setting is QFE.",
+                    D: "Incorrect. QNE is a barometric datum, not an aerodynamic instrument error."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "High wind speeds blowing across steep mountain ridges create what severe altimetry hazard on aircraft altimeters?",
+                options: [
+                    { text: "Localized pressure drops (mountain wave/Bernoulli drop), making altimeter overread true altitude", correct: true },
+                    { text: "Extreme localized pressure rises, making altimeter underread true altitude", correct: false },
+                    { text: "Pitot static line freezing, locking altimeter at sea level", correct: false },
+                    { text: "Complete vacuum lock, causing pointers to spin backwards", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Strong airflow over mountain crests causes dynamic pressure drops (Bernoulli effect), causing altimeters to overread and leading to reduced terrain clearance.",
+                    B: "Incorrect. Wind acceleration over ridges decreases static pressure, causing altimeter to overread, not underread.",
+                    C: "Incorrect. Mountain winds cause pressure drops; thermal icing causes freezing.",
+                    D: "Incorrect. Vacuum lock is not caused by mountain winds."
+                }
+            },
+
+            // REINFORCEMENT TECHNICAL QUESTIONS
+            {
+                topic: "Pitot-Static System",
+                question: "What happens to the VSI during a climb if the alternate static source inside an unpressurized cabin is opened?",
+                options: [
+                    { text: "Momentarily shows a sharp climb spike before stabilizing", correct: true },
+                    { text: "Momentarily shows a sudden descent spike before stabilizing", correct: false },
+                    { text: "Freezes at zero climb rate permanently", correct: false },
+                    { text: "Reverses direction completely, reading continuous descent", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Lower ambient pressure inside unpressurized cabin causes sudden air outflow from VSI case, producing a temporary climb surge.",
+                    B: "Incorrect. Lower pressure inside cabin creates a temporary climb indication, not descent.",
+                    C: "Incorrect. The VSI returns to normal continuous rate-of-climb indication after equalizing.",
+                    D: "Incorrect. Reversal does not occur; only a momentary surge occurs during equalization."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "Position error in pitot-static systems is primarily caused by which aerodynamic factor?",
+                options: [
+                    { text: "Disruption of smooth airflow around static ports at varying angles of attack", correct: true },
+                    { text: "Frictional resistance of air molecules traveling through internal aluminum lines", correct: false },
+                    { text: "Temperature expansion of pitot tube metal housing", correct: false },
+                    { text: "Moisture accumulation inside the water drain trap sumps", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Position error occurs because airflow around static ports changes velocity and pressure at different angles of attack and airspeeds.",
+                    B: "Incorrect. Internal line friction is minor compared to airflow boundary layer changes around ports.",
+                    C: "Incorrect. Metal thermal expansion of tubes is negligible.",
+                    D: "Incorrect. Drain sumps hold moisture away from lines; they do not generate airflow position errors."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "Which atmosphere layer contains virtually all aviation weather and cloud formations?",
+                options: [
+                    { text: "Troposphere", correct: true },
+                    { text: "Stratosphere", correct: false },
+                    { text: "Mesosphere", correct: false },
+                    { text: "Thermosphere", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The troposphere extends from sea level up to ~36,000 feet and contains over 99% of atmospheric water vapor and weather.",
+                    B: "Incorrect. The stratosphere lies above the tropopause and is characterized by clear, stable air with negligible moisture.",
+                    C: "Incorrect. Mesosphere starts above 160,000 feet, far above operational aircraft ceilings.",
+                    D: "Incorrect. Thermosphere is upper space layer above 260,000 feet."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "What is the standard ISA temperature at 10,000 feet MSL?",
+                options: [
+                    { text: "-05°C", correct: true },
+                    { text: "-15°C", correct: false },
+                    { text: "00°C", correct: false },
+                    { text: "+05°C", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. ISA Temp = 15°C - (10 * 1.98°C) = 15°C - 19.8°C ≈ -4.8°C (rounded to -5°C).",
+                    B: "Incorrect. -15°C is colder than ISA standard for 10,000 ft.",
+                    C: "Incorrect. 0°C corresponds to approximately 7,500 ft MSL in standard atmosphere.",
+                    D: "Incorrect. +5°C corresponds to approximately 5,000 ft MSL in standard atmosphere."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "If an altimeter setting is adjusted from 29.92 inHg to 30.12 inHg while on the ground, how does indicated altitude change?",
+                options: [
+                    { text: "Increases by 200 feet", correct: true },
+                    { text: "Decreases by 200 feet", correct: false },
+                    { text: "Increases by 20 feet", correct: false },
+                    { text: "Decreases by 2000 feet", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Rule of thumb: 0.01 inHg = 10 feet. Difference = +0.20 inHg = +200 feet increase in indicated altitude.",
+                    B: "Incorrect. Increasing barometric setting increases indicated altitude, not decreases.",
+                    C: "Incorrect. 0.20 inHg equals 200 feet, not 20 feet.",
+                    D: "Incorrect. 2,000 feet would require a 2.00 inHg change."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "What mechanical link connects aneroid wafer expansion to the pointer needles in a sensitive altimeter?",
+                options: [
+                    { text: "Precision gear trains and rocking shafts", correct: true },
+                    { text: "High-viscosity hydraulic damping fluid lines", correct: false },
+                    { text: "Electronic synchro receivers and servomotors", correct: false },
+                    { text: "Magnetic induction eddy current drag cups", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Linear expansion of aneroid wafers is converted into rotational pointer motion via rocking shafts, sector gears, and precision pinions.",
+                    B: "Incorrect. Mechanical altimeters operate via dry mechanical linkages without hydraulic lines.",
+                    C: "Incorrect. Traditional sensitive altimeters are pure mechanical devices without servomotors.",
+                    D: "Incorrect. Eddy current drag cups are used in mechanical tachometers, not barometric altimeters."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "What altimeter setting must be used by all aircraft operating at FL180 and above in the United States airspace?",
+                options: [
+                    { text: "29.92 inHg (1013.2 hPa)", correct: true },
+                    { text: "Local QNH of nearest reporting station", correct: false },
+                    { text: "Departure airfield QFE setting", correct: false },
+                    { text: "Destination airfield QNH setting", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Above 18,000 ft MSL (Transition Altitude in US), all aircraft set 29.92 inHg to ensure standardized vertical separation.",
+                    B: "Incorrect. Nearest station QNH is used below 18,000 ft MSL.",
+                    C: "Incorrect. QFE is used primarily in specific military or local pattern operations, not high altitude airspace.",
+                    D: "Incorrect. Destination QNH is set upon descending back through Transition Level."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "If an aircraft flies from a warm air mass into a cold air mass while maintaining a constant indicated altitude of 8,000 feet, what happens to true altitude?",
+                options: [
+                    { text: "True altitude decreases continuously below 8,000 feet", correct: true },
+                    { text: "True altitude increases continuously above 8,000 feet", correct: false },
+                    { text: "True altitude remains exactly 8,000 feet", correct: false },
+                    { text: "True altitude fluctuates in direct proportion to Mach speed", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Cold air is denser and compresses pressure levels toward the surface. Maintaining indicated altitude forces true altitude down.",
+                    B: "Incorrect. Flying from cold to warm causes true altitude to increase.",
+                    C: "Incorrect. True altitude only stays constant if barometric and temperature columns are standard.",
+                    D: "Incorrect. Mach speed does not prevent barometric temperature lapse altitude errors."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "What is the primary function of the electric pitot heat system on modern aircraft?",
+                options: [
+                    { text: "Prevents and removes ice accumulation inside the pitot tube head inlet", correct: true },
+                    { text: "Warms static pressure line air to prevent condensation in case", correct: false },
+                    { text: "Prevents thermal expansion of calibrated VSI orifices", correct: false },
+                    { text: "Heats cockpit static air to equalize density differences", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Electrical heating elements prevent ice blockages in pitot tube ram air openings during flight in icing conditions.",
+                    B: "Incorrect. Pitot heat warms the pitot probe exterior/interior inlet, not the entire internal static line assembly.",
+                    C: "Incorrect. VSI calibrated leak orifices are inside the instrument case, unaffected by pitot heat.",
+                    D: "Incorrect. Pitot heat does not heat cockpit air."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "Which pair of instruments is connected ONLY to the static pressure system?",
+                options: [
+                    { text: "Altimeter and Vertical Speed Indicator (VSI)", correct: true },
+                    { text: "Airspeed Indicator (ASI) and Altimeter", correct: false },
+                    { text: "Airspeed Indicator (ASI) and VSI", correct: false },
+                    { text: "Attitude Indicator and Altimeter", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Both the Altimeter and VSI require static pressure exclusively for operation.",
+                    B: "Incorrect. The ASI requires both pitot dynamic and static pressure lines.",
+                    C: "Incorrect. The ASI requires pitot dynamic pressure line in addition to static pressure.",
+                    D: "Incorrect. Attitude indicators are gyroscopic instruments, not static pressure instruments."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "At 30,000 feet MSL under standard ISA conditions, what is the approximate standard ambient temperature?",
+                options: [
+                    { text: "-44.4°C", correct: true },
+                    { text: "-56.5°C", correct: false },
+                    { text: "-30.0°C", correct: false },
+                    { text: "-20.0°C", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. ISA Temp = 15°C - (30 * 1.98°C) = 15°C - 59.4°C = -44.4°C.",
+                    B: "Incorrect. -56.5°C is standard tropopause temperature (36,089 ft and above).",
+                    C: "Incorrect. -30°C overestimates temperature at 30,000 ft by 14°C.",
+                    D: "Incorrect. -20°C corresponds to approximately 18,000 ft MSL."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "Standard atmospheric sea level pressure expressed in inches of mercury (inHg) is:",
+                options: [
+                    { text: "29.92 inHg", correct: true },
+                    { text: "29.82 inHg", correct: false },
+                    { text: "30.00 inHg", correct: false },
+                    { text: "1013.25 inHg", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Baseline sea level standard atmospheric pressure is 29.92 inHg.",
+                    B: "Incorrect. 29.82 inHg is 0.10 inHg below standard atmospheric baseline.",
+                    C: "Incorrect. 30.00 inHg is rounded barometric pressure, not standard baseline.",
+                    D: "Incorrect. 1013.25 is hectopascals (hPa), not inches of mercury (inHg)."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "What is the Kollsman window on a sensitive altimeter?",
+                options: [
+                    { text: "Small sub-scale window indicating barometric setting in inHg or hPa", correct: true },
+                    { text: "Glass window showing inner aneroid capsule physical expansion", correct: false },
+                    { text: "Warning port indicating static line blockage", correct: false },
+                    { text: "Adjustment screw port for calibrating 10,000 ft pointer", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. The Kollsman window displays the barometric pressure setting selected by the pilot.",
+                    B: "Incorrect. The Kollsman window displays barometric pressure numbers, not physical capsule motion.",
+                    C: "Incorrect. Static line blockages are not indicated in the Kollsman window.",
+                    D: "Incorrect. The Kollsman window is a scale display, not an adjustment screw access port."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "When flying from an area of 30.15 inHg setting to 29.65 inHg setting without adjusting the altimeter, how far off is indicated altitude?",
+                options: [
+                    { text: "Altimeter overreads by 500 feet (aircraft is 500 ft lower than indicated)", correct: true },
+                    { text: "Altimeter underreads by 500 feet (aircraft is 500 ft higher than indicated)", correct: false },
+                    { text: "Altimeter overreads by 50 feet", correct: false },
+                    { text: "Altimeter underreads by 50 feet", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Difference = 30.15 - 29.65 = 0.50 inHg drop. 0.50 * 1,000 = 500 feet overread. Aircraft is 500 ft lower than dial shows.",
+                    B: "Incorrect. Higher to lower pressure causes overreading, placing aircraft lower than indicated.",
+                    C: "Incorrect. 0.50 inHg corresponds to 500 ft, not 50 ft.",
+                    D: "Incorrect. 0.50 inHg drop corresponds to a 500 ft overread, not a 50 ft underread."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "Pressure Altitude is best defined as:",
+                options: [
+                    { text: "Height above the standard datum plane (29.92 inHg / 1013.25 hPa)", correct: true },
+                    { text: "Height above local ground elevation (AGL)", correct: false },
+                    { text: "Indicated altitude corrected for instrument position error", correct: false },
+                    { text: "True altitude corrected for air density variations", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Pressure Altitude is height above the theoretical Standard Datum Plane where pressure equals 29.92 inHg / 1013.25 hPa.",
+                    B: "Incorrect. Height above local ground elevation is Absolute Altitude.",
+                    C: "Incorrect. Indicated altitude corrected for instrument/position error is Calibrated Altitude.",
+                    D: "Incorrect. True altitude corrected for density variations is Density Altitude."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "Which atmospheric condition produces the highest (most adverse) density altitude for aircraft takeoff calculations?",
+                options: [
+                    { text: "High temperature, low barometric pressure, and high humidity", correct: true },
+                    { text: "Low temperature, high barometric pressure, and low humidity", correct: false },
+                    { text: "High temperature, high barometric pressure, and low humidity", correct: false },
+                    { text: "Low temperature, low barometric pressure, and high humidity", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. High temperature, low pressure, and high humidity reduce air density, elevating density altitude and reducing aerodynamic performance.",
+                    B: "Incorrect. Low temperature and high pressure produce dense air and very low density altitude.",
+                    C: "Incorrect. High barometric pressure increases air density, counteracting high temperature.",
+                    D: "Incorrect. Low temperature preserves high air density."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "What indicator reading behavior occurs on the Airspeed Indicator (ASI) if the static port blocks completely while maintaining constant airspeed in a descent?",
+                options: [
+                    { text: "ASI overreads (indicates higher than actual airspeed)", correct: true },
+                    { text: "ASI underreads (indicates lower than actual airspeed)", correct: false },
+                    { text: "ASI drops immediately to zero", correct: false },
+                    { text: "ASI freezes permanently at zero", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Trapped static pressure in case remains low (from higher altitude) while pitot ram pressure increases during descent, causing ASI to overread.",
+                    B: "Incorrect. Overreading occurs in descent with blocked static port because higher ambient pressure outside pitot tube increases diaphragm expansion.",
+                    C: "Incorrect. Dropping to zero occurs when pitot inlet blocks with open drain.",
+                    D: "Incorrect. Freezing at zero does not happen during descent with static blockage."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "The Tropopause height varies across the globe primarily due to which geographical/thermal factor?",
+                options: [
+                    { text: "Equatorial heating causes a higher tropopause (~55,000 ft) than at the poles (~28,000 ft)", correct: true },
+                    { text: "Polar cooling forces a higher tropopause than at the equator", correct: false },
+                    { text: "Atmospheric humidity forces tropopause height to remain uniform worldwide", correct: false },
+                    { text: "Coriolis force lowers the tropopause at the equator", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Warm air at the equator expands atmospheric columns, pushing tropopause up to ~55,000 ft, whereas cold polar air lowers it to ~28,000 ft.",
+                    B: "Incorrect. Cold polar air compresses troposphere, making polar tropopause lower, not higher.",
+                    C: "Incorrect. Tropopause height varies considerably between equator and poles.",
+                    D: "Incorrect. Coriolis effect influences wind direction, not tropopause elevation height."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "Why are multiple aneroid capsules combined together inside a sensitive altimeter mechanism?",
+                options: [
+                    { text: "To increase total mechanical displacement force and sensitivity", correct: true },
+                    { text: "To provide redundant backup if one capsule ruptures", correct: false },
+                    { text: "To measure dynamic pitot pressure and static pressure simultaneously", correct: false },
+                    { text: "To isolate barometric setting changes from pointer movement", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Stacking multiple aneroid wafers multiplies small expansion movements into sufficient mechanical force to drive indicator gears precisely.",
+                    B: "Incorrect. Wafers are connected in series mechanically, not as independent redundant backups.",
+                    C: "Incorrect. Aneroid wafers in altimeters react strictly to static pressure.",
+                    D: "Incorrect. Linkages combine capsule motion with barometric setting shifts."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "When setting QFE on an altimeter while parked on an airfield runway, what altitude will the altimeter display?",
+                options: [
+                    { text: "0 feet", correct: true },
+                    { text: "Field elevation above MSL", correct: false },
+                    { text: "Pressure Altitude", correct: false },
+                    { text: "Density Altitude", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. QFE is local station pressure adjusted so altimeter reads 0 feet at airfield threshold.",
+                    B: "Incorrect. Field elevation above MSL is displayed when QNH is set.",
+                    C: "Incorrect. Pressure altitude is displayed when standard 29.92 inHg / 1013.25 hPa is set.",
+                    D: "Incorrect. Density altitude is calculated, not directly read off a barometric altimeter scale."
+                }
+            },
+            {
+                topic: "Pitot-Static System",
+                question: "Static port heating elements serve what key system function?",
+                options: [
+                    { text: "Prevent ice formation over static orifice during flight in icing conditions", correct: true },
+                    { text: "Heat air inside VSI case to maintain standard temperature lapse rate", correct: false },
+                    { text: "Warm pitot dynamic pressure inlet to expand internal diaphragm", correct: false },
+                    { text: "Equalize unpressurized cabin pressure differences", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Heated static ports prevent ice accretion from blocking static pressure openings.",
+                    B: "Incorrect. Static heaters heat external port surroundings, not internal instrument cases.",
+                    C: "Incorrect. Static port heaters are separate from pitot probe heaters.",
+                    D: "Incorrect. Cabin pressure differences are unaffected by static port heating."
+                }
+            },
+            {
+                topic: "ISA Atmosphere",
+                question: "In the International Standard Atmosphere (ISA), what is the standard pressure at 18,000 feet MSL?",
+                options: [
+                    { text: "506.0 hPa (approx 14.94 inHg)", correct: true },
+                    { text: "700.0 hPa (approx 20.70 inHg)", correct: false },
+                    { text: "250.0 hPa (approx 7.38 inHg)", correct: false },
+                    { text: "1013.25 hPa (29.92 inHg)", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Atmospheric pressure decreases by roughly half at 18,000 feet MSL (~500 hPa / 14.94 inHg).",
+                    B: "Incorrect. 700 hPa corresponds to approximately 10,000 feet MSL.",
+                    C: "Incorrect. 250 hPa corresponds to approximately 34,000 feet MSL.",
+                    D: "Incorrect. 1013.25 hPa is standard sea level pressure."
+                }
+            },
+            {
+                topic: "How Altimeters Work",
+                question: "What phenomenon causes an altimeter to temporarily misread when an aircraft abruptly executes a high-speed dive and pull-out maneuver?",
+                options: [
+                    { text: "Mechanical friction and hysteresis lag in capsule spring system", correct: true },
+                    { text: "Thermal expansion of the bimetallic temperature strip", correct: false },
+                    { text: "Static port suction drop caused by cabin pressurization flow", correct: false },
+                    { text: "Compressibility shockwave forming over the Kollsman scale", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. Rapid pressure changes cause temporary elastic lag (hysteresis) and mechanical friction delay in aneroid capsule movement.",
+                    B: "Incorrect. Bimetallic strips compensate for slow ambient thermal changes, not sudden dive pressure transients.",
+                    C: "Incorrect. Dynamic pressure surges are localized to airspeed pitot lines.",
+                    D: "Incorrect. Kollsman scale is inside cockpit instrument housing, isolated from external shockwaves."
+                }
+            },
+            {
+                topic: "Altimetry & Procedures",
+                question: "What is True Altitude?",
+                options: [
+                    { text: "Actual vertical distance of the aircraft above Mean Sea Level (MSL)", correct: true },
+                    { text: "Vertical distance of aircraft above ground terrain (AGL)", correct: false },
+                    { text: "Altitude shown on altimeter dial set to 29.92 inHg", correct: false },
+                    { text: "Pressure altitude corrected for instrument position error", correct: false }
+                ],
+                explanations: {
+                    A: "Correct. True Altitude is actual physical vertical elevation above Mean Sea Level (MSL).",
+                    B: "Incorrect. Height above ground terrain is Absolute Altitude.",
+                    C: "Incorrect. Altitude indicated with 29.92 set is Pressure Altitude.",
+                    D: "Incorrect. Pressure altitude corrected for instrument position is Calibrated Pressure Altitude."
+                }
+            }
+        ];
+
+        /* ==========================================================================
+           2. STATE MANAGEMENT & RULE COMPLIANCE ENGINE
+           ========================================================================== */
+        let activeQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // { questionIndex: selectedOptionIndex }
+        let flaggedQuestions = {}; // { questionIndex: boolean }
+        let timerInterval = null;
+        let totalTimeSeconds = 50 * 60; // 50 Minutes
+        let timeRemaining = totalTimeSeconds;
+        let quizSubmitted = false;
+
+        /**
+         * Shuffles array in-place (Fisher-Yates)
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        /**
+         * Validates & prepares questions to satisfy critical constraint rules:
+         * Rule 5: Randomize options per refresh.
+         * Rule 6: Next question MUST NOT have same correct option index as previous question.
+         * Rule 7: Longest/shortest option is correct in LESS THAN 10% of questions (< 5 out of 50).
+         */
+        function prepareQuizQuestions() {
+            // Deep copy question bank
+            let pool = JSON.parse(JSON.stringify(masterQuestionBank));
+            shuffleArray(pool);
+
+            let processed = [];
+            let lastCorrectIndex = -1;
+            let extremeLengthCorrectCount = 0;
+            const maxExtremeAllowed = 4; // strictly < 10% of 50 (i.e. <= 4)
+
+            for (let i = 0; i < pool.length; i++) {
+                let q = pool[i];
+                let validShuffleFound = false;
+
+                // Try multiple option shuffles to satisfy constraints
+                for (let attempt = 0; attempt < 50; attempt++) {
+                    let shuffledOpts = shuffleArray([...q.options]);
+
+                    // Map explanations to shuffled options
+                    let optionKeys = ['A', 'B', 'C', 'D'];
+                    let newCorrectIndex = shuffledOpts.findIndex(o => o.correct);
+
+                    // Check Rule 6: Next question correct index != previous question correct index
+                    if (processed.length > 0 && newCorrectIndex === lastCorrectIndex) {
+                        continue;
+                    }
+
+                    // Check Rule 7: Is the correct answer the shortest or longest text?
+                    let lengths = shuffledOpts.map(o => o.text.length);
+                    let minLen = Math.min(...lengths);
+                    let maxLen = Math.max(...lengths);
+                    let correctLen = shuffledOpts[newCorrectIndex].text.length;
+                    let isExtreme = (correctLen === minLen || correctLen === maxLen);
+
+                    if (isExtreme && extremeLengthCorrectCount >= maxExtremeAllowed) {
+                        continue; // Skip this option configuration to remain under 10%
+                    }
+
+                    // Valid configuration found
+                    if (isExtreme) {
+                        extremeLengthCorrectCount++;
+                    }
+
+                    q.options = shuffledOpts;
+                    q.correctIndex = newCorrectIndex;
+                    lastCorrectIndex = newCorrectIndex;
+                    validShuffleFound = true;
+                    break;
+                }
+
+                // Fallback guarantee if tight shuffle attempt misses
+                if (!validShuffleFound) {
+                    q.correctIndex = q.options.findIndex(o => o.correct);
+                    lastCorrectIndex = q.correctIndex;
+                }
+
+                processed.push(q);
+            }
+
+            activeQuestions = processed;
+        }
+
+        /* ==========================================================================
+           3. UI CONTROLLER & EVENT HANDLERS
+           ========================================================================== */
+
+        function startQuiz() {
+            prepareQuizQuestions();
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('top-timer-container').classList.remove('hidden');
+            document.getElementById('quick-submit-btn').classList.remove('hidden');
+
+            renderQuestionGrid();
+            loadQuestion(0);
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmitQuiz();
+                } else {
+                    timeRemaining--;
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const displayStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const timerElem = document.getElementById('timer-display');
+            const timerIcon = document.getElementById('timer-icon');
+
+            timerElem.innerText = displayStr;
+
+            // Warning styling under 5 minutes
+            if (timeRemaining <= 300) {
+                timerElem.classList.remove('text-sky-400');
+                timerElem.classList.add('text-rose-500', 'animate-pulse');
+                timerIcon.classList.remove('text-sky-400');
+                timerIcon.classList.add('text-rose-500');
+            }
+        }
+
+        function renderQuestionGrid() {
+            const gridContainer = document.getElementById('question-grid');
+            gridContainer.innerHTML = '';
+
+            for (let i = 0; i < activeQuestions.length; i++) {
+                const btn = document.createElement('button');
+                btn.id = `grid-btn-${i}`;
+                btn.innerText = String(i + 1).padStart(2, '0');
+                btn.onclick = () => jumpToQuestion(i);
+                btn.className = getGridButtonClass(i);
+                gridContainer.appendChild(btn);
+            }
+            updateAnsweredBadge();
+        }
+
+        function getGridButtonClass(index) {
+            let base = "h-9 font-mono text-xs font-bold rounded-lg border transition-all flex items-center justify-center ";
+            
+            if (index === currentQuestionIndex) {
+                return base + "bg-sky-500 text-slate-950 border-sky-400 shadow-md shadow-sky-500/30 ring-2 ring-sky-400/50";
+            }
+            if (flaggedQuestions[index]) {
+                return base + "bg-amber-500/20 text-amber-300 border-amber-500/50 hover:bg-amber-500/30";
+            }
+            if (userAnswers[index] !== undefined) {
+                return base + "bg-emerald-600/30 text-emerald-300 border-emerald-500/40 hover:bg-emerald-600/40";
+            }
+            return base + "bg-slate-900/80 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-slate-200";
+        }
+
+        function updateGridButton(index) {
+            const btn = document.getElementById(`grid-btn-${index}`);
+            if (btn) {
+                btn.className = getGridButtonClass(index);
+            }
+            updateAnsweredBadge();
+        }
+
+        function updateAnsweredBadge() {
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('answered-count-badge').innerText = `${answeredCount} / 50 Answered`;
+        }
+
+        function loadQuestion(index) {
+            const prevIndex = currentQuestionIndex;
+            currentQuestionIndex = index;
+            updateGridButton(prevIndex);
+            updateGridButton(currentQuestionIndex);
+
+            const q = activeQuestions[index];
+
+            // Update Headers
+            document.getElementById('question-badge').innerText = `Question ${String(index + 1).padStart(2, '0')} / 50`;
+            document.getElementById('topic-tag').innerText = q.topic;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Update Flag state
+            const flagBtn = document.getElementById('flag-btn');
+            const flagIcon = document.getElementById('flag-icon');
+            const flagText = document.getElementById('flag-text');
+            if (flaggedQuestions[index]) {
+                flagBtn.classList.add('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+                flagIcon.className = "fa-solid fa-bookmark text-amber-400";
+                flagText.innerText = "Flagged";
+            } else {
+                flagBtn.classList.remove('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+                flagIcon.className = "fa-regular fa-bookmark text-slate-400";
+                flagText.innerText = "Flag for Review";
+            }
+
+            // Render Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((opt, optIdx) => {
+                const optCard = document.createElement('div');
+                const isSelected = userAnswers[index] === optIdx;
+
+                optCard.className = `option-card p-4 rounded-xl border transition-all cursor-pointer flex items-start space-x-3 ${
+                    isSelected ? 'selected border-sky-400 bg-sky-500/10' : 'border-slate-800 bg-slate-900/50 text-slate-300'
+                }`;
+                optCard.onclick = () => selectOption(optIdx);
+
+                optCard.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg border flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
+                        isSelected ? 'bg-sky-500 text-slate-950 border-sky-400' : 'bg-slate-800 text-slate-400 border-slate-700'
+                    }">
+                        ${letters[optIdx]}
+                    </div>
+                    <div class="text-sm sm:text-base pt-0.5 leading-relaxed text-slate-200">${opt.text}</div>
+                `;
+                container.appendChild(optCard);
+            });
+
+            // Update Prev/Next buttons
+            document.getElementById('prev-btn').disabled = (index === 0);
+            const nextBtn = document.getElementById('next-btn');
+            if (index === activeQuestions.length - 1) {
+                nextBtn.innerHTML = `<span>Review & Submit</span> <i class="fa-solid fa-check text-xs"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>Next Question</span> <i class="fa-solid fa-chevron-right text-xs"></i>`;
+            }
+        }
+
+        function selectOption(optIdx) {
+            userAnswers[currentQuestionIndex] = optIdx;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function toggleFlagCurrentQuestion() {
+            flaggedQuestions[currentQuestionIndex] = !flaggedQuestions[currentQuestionIndex];
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function jumpToQuestion(index) {
+            if (index >= 0 && index < activeQuestions.length) {
+                loadQuestion(index);
+            }
+        }
+
+        function navigateQuestion(direction) {
+            const newIndex = currentQuestionIndex + direction;
+            if (newIndex >= 0 && newIndex < activeQuestions.length) {
+                loadQuestion(newIndex);
+            } else if (newIndex === activeQuestions.length) {
+                confirmSubmit();
+            }
+        }
+
+        function skipQuestion() {
+            navigateQuestion(1);
+        }
+
+        /* ==========================================================================
+           4. SUBMISSION & DETAILED ANALYSIS GENERATOR
+           ========================================================================== */
+
+        function confirmSubmit() {
+            const unanswered = activeQuestions.length - Object.keys(userAnswers).length;
+            const warningText = document.getElementById('modal-warning-text');
+            if (unanswered > 0) {
+                warningText.innerHTML = `You still have <strong class="text-amber-400 font-mono">${unanswered} unanswered question(s)</strong> remaining. Are you sure you want to finish now?`;
+            } else {
+                warningText.innerHTML = `All 50 questions have been answered. Would you like to finalize and submit your exam?`;
+            }
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+
+        function autoSubmitQuiz() {
+            closeModal();
+            submitQuiz();
+        }
+
+        function submitQuiz() {
+            quizSubmitted = true;
+            clearInterval(timerInterval);
+            closeModal();
+
+            // Calculate Score
+            let correctCount = 0;
+            activeQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correctIndex) {
+                    correctCount++;
+                }
+            });
+
+            const percent = Math.round((correctCount / activeQuestions.length) * 100);
+            const timeSpentSeconds = totalTimeSeconds - timeRemaining;
+            const minsSpent = Math.floor(timeSpentSeconds / 60);
+            const secsSpent = timeSpentSeconds % 60;
+            const timeFormatted = `${String(minsSpent).padStart(2, '0')}:${String(secsSpent).padStart(2, '0')}`;
+
+            // Hide Quiz, Show Results
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('top-timer-container').classList.add('hidden');
+            document.getElementById('quick-submit-btn').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+
+            // Render Overview Stats
+            document.getElementById('res-score').innerText = `${correctCount} / 50`;
+            document.getElementById('res-percent').innerText = `${percent}%`;
+            document.getElementById('res-time').innerText = timeFormatted;
+
+            const statusElem = document.getElementById('res-status');
+            if (percent >= 75) {
+                statusElem.innerText = "PASS";
+                statusElem.className = "text-xl sm:text-2xl font-bold text-emerald-400";
+            } else {
+                statusElem.innerText = "RETEST";
+                statusElem.className = "text-xl sm:text-2xl font-bold text-rose-400";
+            }
+
+            // Build Itemized Deep Analysis Card List
+            renderDetailedBreakdown();
+        }
+
+        function renderDetailedBreakdown() {
+            const container = document.getElementById('breakdown-container');
+            container.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+
+            activeQuestions.forEach((q, qIdx) => {
+                const userChoice = userAnswers[qIdx];
+                const isCorrect = (userChoice === q.correctIndex);
+                const isUnanswered = (userChoice === undefined);
+
+                const card = document.createElement('div');
+                card.className = `glass-panel p-6 rounded-2xl border ${
+                    isCorrect ? 'border-emerald-500/30 bg-slate-900/60' : 'border-rose-500/30 bg-slate-900/60'
+                } space-y-4`;
+
+                let statusBadge = isCorrect
+                    ? `<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"><i class="fa-solid fa-check mr-1"></i> Correct</span>`
+                    : (isUnanswered 
+                        ? `<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30"><i class="fa-solid fa-minus mr-1"></i> Unanswered</span>`
+                        : `<span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30"><i class="fa-solid fa-xmark mr-1"></i> Incorrect</span>`);
+
+                let optionsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    const letter = letters[optIdx];
+                    const isOptionCorrect = (optIdx === q.correctIndex);
+                    const isUserSelected = (userChoice === optIdx);
+
+                    let optBg = "bg-slate-900/40 border-slate-800";
+                    let badgeHTML = "";
+
+                    if (isOptionCorrect) {
+                        optBg = "bg-emerald-950/30 border-emerald-500/40 text-emerald-200";
+                        badgeHTML = `<span class="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">Correct Answer</span>`;
+                    } else if (isUserSelected) {
+                        optBg = "bg-rose-950/30 border-rose-500/40 text-rose-200";
+                        badgeHTML = `<span class="text-[10px] uppercase font-bold text-rose-400 bg-rose-950 px-2 py-0.5 rounded border border-rose-800">Your Selection</span>`;
+                    }
+
+                    // Explanation lookup
+                    const explanationText = q.explanations[letter] || (isOptionCorrect ? "Correct answer according to aviation principles." : "Incorrect choice based on pitot-static and atmospheric theory.");
+
+                    optionsHTML += `
+                        <div class="p-4 rounded-xl border ${optBg} space-y-2">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-start space-x-2">
+                                    <span class="font-mono font-bold text-xs px-2 py-0.5 bg-slate-800 rounded border border-slate-700">${letter}</span>
+                                    <span class="text-sm font-medium leading-relaxed">${opt.text}</span>
+                                </div>
+                                ${badgeHTML}
+                            </div>
+                            <div class="text-xs text-slate-400 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 leading-relaxed">
+                                <strong class="text-slate-300">Analysis:</strong> ${explanationText}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="font-mono font-bold text-sky-400 text-sm">Q${String(qIdx + 1).padStart(2, '0')}</span>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">${q.topic}</span>
+                        </div>
+                        ${statusBadge}
+                    </div>
+
+                    <h4 class="text-base font-semibold text-slate-100 leading-relaxed">${q.question}</h4>
+
+                    <div class="space-y-3 pt-2">
+                        ${optionsHTML}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function resetAndRestart() {
+            userAnswers = {};
+            flaggedQuestions = {};
+            timeRemaining = totalTimeSeconds;
+            quizSubmitted = false;
+
+            document.getElementById('results-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
